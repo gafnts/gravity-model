@@ -12,7 +12,7 @@ search <-
     data <- ct_search(
       reporters = "Guatemala",
       partners = partner,
-      trade_direction = "imports",
+      trade_direction = "exports",
       start_date = year,
       end_date = year,
       commod_codes = "AG4"
@@ -33,13 +33,40 @@ get <-
 
 ## Export as .rds
 write <-
-  function(.data, name) {
-    .data %>% write_rds(file = paste0("../Gravity/Data/", name, ".rds"))
+  function(data) {
+    name <- deparse(substitute(data))
+    write_rds(data, file = paste0("../Gravity model/Data/Exports raw/", name, ".rds"))
   }
 
 # (c) Data extraction ----
 
-ca_fst <-
+## Central America and Mexico
+ca_exports_fst <-
   get(partners = c("Belize", "Costa Rica", "Panama", "Honduras"),
-      years = c(1995:2020)) %>% 
-  write("ca_fst")
+      years = c(1995:2020))
+write(ca_exports_fst)
+
+ca_exports_snd <-
+  get(partners = c("Nicaragua", "El Salvador", "Mexico"),
+      years = c(1995:2020))
+write(ca_exports_snd)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
