@@ -51,22 +51,34 @@ ca_exports_snd <-
       years = c(1995:2020))
 write(ca_exports_snd)
 
+## South America
+sa_exports_fst <-
+  get(partners = c("Argentina", "Bolivia (Plurinational State of)",  "Brazil", "Chile"),
+      years = c(1995:2020))
+write(sa_exports_fst)
 
+sa_exports_snd <-
+  get(partners = c("Colombia", "Ecuador", "French Guiana", "Venezuela", "Guyana"),
+      years = c(1995:2020))
+write(sa_exports_snd)
 
+sa_exports_trd <-
+  get(partners = c("Guyana", "Paraguay", "Peru", "Uruguay", "Suriname"),
+      years = c(1995:2020))
+write(sa_exports_trd)
 
+## Caribbean
+car_exports_fst <-
+  get(partners = c("Dominican Rep.", "Cuba", "Haiti", "Trinidad and Tobago"),
+      years = c(1995:2020))
+write(car_exports_fst)
 
+car_exports_snd <-
+  get(partners = c("Antigua and Barbuda", "Dominica", "Grenada", "Jamaica", "Barbados"),
+      years = c(1995:2020))
+write(car_exports_snd)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+car_exports_trd <-
+  get(partners = c("Bahamas", "Saint Kitts and Nevis", "Saint Vincent and the Grenadines", "Saint Lucia"),
+      years = c(1995:2020))
+write(car_exports_trd)
