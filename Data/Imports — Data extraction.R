@@ -35,7 +35,7 @@ get <-
 write <-
   function(data) {
     name <- deparse(substitute(data))
-    write_rds(data, file = paste0(getwd(), "/Imports raw/", name, ".rds"))
+    write_rds(data, file = paste0(getwd(), "/Data/Imports raw/", name, ".rds"))
   }
 
 # (c) Data extraction ----
