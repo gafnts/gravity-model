@@ -6,6 +6,23 @@ pacman::p_load(tidyverse, here, data.table)
 # General data wrangling
 
 ```{r}
+process <- function(file) {
+  data <- read_rds(file)
+  return(data)
+}
+
+files <-
+  dir(
+    here("Data", "Exports raw"),
+    recursive = TRUE,
+    full.names = TRUE,
+    pattern = "\\.rds$"
+  )
+
+result <- sapply(files, process)
+```
+
+```{r}
 exports_raw <- 
   here("Data", "Exports raw") %>% 
   dir(pattern = "*.rds") %>% 
@@ -14,9 +31,8 @@ exports_raw <-
 ```
 
 ```{r}
-list.files(path = here("Data", "Imports raw"),
-           pattern = "*.rds") %>% 
-  map(read_rds) %>% 
+dir(path = here("Data", "Imports raw"), recursive = TRUE) %>%
+  map(read_rds()) %>%
   reduce(rbind)
 ```
 
