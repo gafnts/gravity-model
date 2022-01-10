@@ -1,33 +1,48 @@
 ```{r}
-pacman::p_load(tidyverse, here, data.table)
+pacman::p_load(tidyverse, here)
 ```
 
 # General data wrangling
 
-```{r}
+## (a) Trade data frame
 
-```
+### Loading exports and imports
 
 ```{r}
+# Exports
 setwd(here("Data", "Exports raw"))
 
 exports_raw <- 
-  here("Data", "Exports raw") %>% 
   dir(pattern = "*.rds") %>% 
   map(read_rds) %>% 
-  reduce(rbind)
-```
+  reduce(bind_rows)
 
-```{r}
+# Imports
 setwd(here("Data", "Imports raw"))
 
-imports_raw <- 
-  here("Data", "Imports raw") %>% 
-  dir(pattern = "*.rds") %>% 
-  map(read_rds) %>% 
-  reduce(rbind)
+imports_raw <-
+  dir(pattern = "*.rds") %>%
+  map(read_rds) %>%
+  reduce(bind_rows)
 ```
+
+### Binding and cleaning
+
+```{r}
+trade <- 
+  bind_rows(exports_raw, imports_raw) %>% 
+  select_if(~ !any(is.na(.))) %>% 
+  select(-c(classification, period, period_desc, 
+            is_leaf_code, trade_flow_code, flag, 
+            aggregate_level, reporter_code, partner_code)) %>% 
+  group_by(trade_flow) %>% 
+  arrange(year, trade_flow, partner, commodity) %>% 
+  ungroup()
+```
+
+### Writing tibble
 
 ```{r}
 setwd(here())
+write_rds(trade, file = paste0(here("Data"), "/trade.rds"))
 ```
