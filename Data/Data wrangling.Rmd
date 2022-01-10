@@ -44,7 +44,7 @@ trade <-
 
 ```{r}
 setwd(here())
-write_rds(trade, file = paste0(here("Data"), "/trade.rds"))
+write_rds(trade, file = paste0(here("Data", "Main data frames"), "/trade.rds"))
 ```
 
 ## (b) Country names data frame
