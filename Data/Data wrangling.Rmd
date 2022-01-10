@@ -55,25 +55,29 @@ write_rds(trade, file = paste0(here("Data", "Main data frames"), "/trade.rds"))
 
 ## (b) Country names data frame
 
+### Loading ISO codes from Github
+
 UN geoscheme: <https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>
 
 ```{r}
 codes <-
   read_csv("https://git.io/v564u") %>%
-  select(name,
+  select(partner = name,
          partner_iso = `alpha-3`,
          subregions = `sub-region`,
          int_region = `intermediate-region`) %>% 
   mutate(name = case_when(
-    name == "Venezuela (Bolivarian Republic of)" ~ "Venezuela", 
-    name == "Bolivia (Plurinational State of)" ~ "Bolivia",
-    TRUE ~ name 
+    partner == "Venezuela (Bolivarian Republic of)" ~ "Venezuela", 
+    partner == "Bolivia (Plurinational State of)" ~ "Bolivia",
+    TRUE ~ partner 
   ))
 ```
 
+### Joining with country names in the `trade` data frame
+
 ```{r}
 names <- 
-  tribble(~name,
+  tribble(~partner,
         # Central America and Mexico
         "Belize", "Costa Rica", "Panama", "Honduras",
         "Nicaragua", "El Salvador", "Mexico",
@@ -88,16 +92,24 @@ names <-
         "Antigua and Barbuda", "Dominica", "Grenada", "Jamaica", "Barbados",
         "Bahamas", "Saint Kitts and Nevis", "Saint Vincent and the Grenadines", 
         "Saint Lucia")
+
+countries <- 
+  codes %>% 
+  inner_join(names, by = "partner") %>% 
+  arrange(partner, int_region)
 ```
 
-```{r}
-countries <- codes %>% 
-  inner_join(names, by = "name") %>% 
-  arrange(name, int_region)
-```
+### Writing tibble
 
 ```{r}
 write_rds(countries, file = paste0(here("Data", "Main data frames"), "/countries.rds"))
+```
+
+```{r}
+# Test
+trade %>% 
+  left_join(countries, by = c("partner_iso", "partner")) %>% 
+  View()
 ```
 
 ## (c) Structural gravity variables
