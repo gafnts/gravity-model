@@ -55,6 +55,8 @@ write_rds(trade, file = paste0(here("Data", "Main data frames"), "/trade.rds"))
 
 ## (b) Country names data frame
 
+UN geoscheme: <https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>
+
 ```{r}
 codes <-
   read_csv("https://git.io/v564u") %>%
@@ -68,8 +70,6 @@ codes <-
     TRUE ~ name 
   ))
 ```
-
-Guyana is repeated twice, which means there are problems in the trade.rds tibble that need to be corrected. Consider extract the Comtrade data again, but this time paying close attention to UN's geoscheme. UN geoscheme: [<https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>](https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas){.uri}
 
 ```{r}
 names <- 
@@ -92,19 +92,16 @@ names <-
 
 ```{r}
 countries <- codes %>% 
-  inner_join(names, by = "name")
-```
-
-Problems with names:
-
-```{r}
-setdiff(names, countries %>% select(name))
+  inner_join(names, by = "name") %>% 
+  arrange(name, int_region)
 ```
 
 ```{r}
-codes %>% 
-  filter(subregions == "Latin America and the Caribbean") %>% 
-  arrange(int_region) %>% 
-  group_by(int_region) %>% 
-  summarise(n = length(int_region))
+write_rds(countries, file = paste0(here("Data", "Main data frames"), "/countries.rds"))
+```
+
+## (c) Structural gravity variables
+
+```{r}
+
 ```
