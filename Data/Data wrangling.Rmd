@@ -49,8 +49,6 @@ write_rds(trade, file = paste0(here("Data", "Main data frames"), "/trade.rds"))
 
 ## (b) Country names data frame
 
-UN geoscheme: <https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>
-
 ```{r}
 codes <-
   read_csv("https://git.io/v564u") %>%
@@ -60,16 +58,19 @@ codes <-
          int_region = `intermediate-region`)
 ```
 
-Guyana is repeated twice, which means there are problems in the trade.rds tibble that need to be corrected. Consider extract the Comtrade data again, but this time paying close attention to UN's geoscheme.
+Guyana is repeated twice, which means there are problems in the trade.rds tibble that need to be corrected. Consider extract the Comtrade data again, but this time paying close attention to UN's geoscheme. UN geoscheme: [<https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>](https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas){.uri}
 
 ```{r}
 names <- 
   tribble(~name,
+        # Central America and Mexico
         "Belize", "Costa Rica", "Panama", "Honduras",
         "Nicaragua", "El Salvador", "Mexico",
+        # South America
         "Argentina", "Bolivia (Plurinational State of)",  "Brazil", "Chile",
         "Colombia", "Ecuador", "French Guiana", "Venezuela", "Guyana",
-        "Guyana", "Paraguay", "Peru", "Uruguay", "Suriname",
+        "Paraguay", "Peru", "Uruguay", "Suriname",
+        # Caribbean
         "Dominican Rep.", "Cuba", "Haiti", "Trinidad and Tobago",
         "Antigua and Barbuda", "Dominica", "Grenada", "Jamaica", "Barbados",
         "Bahamas", "Saint Kitts and Nevis", "Saint Vincent and the Grenadines", 
@@ -85,4 +86,12 @@ Problems with names:
 
 ```{r}
 setdiff(names, countries %>% select(name))
+```
+
+```{r}
+codes %>% 
+  filter(subregions == "Latin America and the Caribbean") %>% 
+  arrange(int_region) %>% 
+  group_by(int_region) %>% 
+  summarise(n = length(int_region))
 ```
