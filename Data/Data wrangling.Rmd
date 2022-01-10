@@ -81,7 +81,7 @@ countries <- codes %>%
   inner_join(names, by = "name")
 ```
 
-Problems with names
+Problems with names:
 
 ```{r}
 setdiff(names, countries %>% select(name))
