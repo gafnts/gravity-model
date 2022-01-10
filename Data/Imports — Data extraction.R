@@ -63,7 +63,7 @@ sa_imports_snd <-
 write(sa_imports_snd)
 
 sa_imports_trd <-
-  get(partners = c("Guyana", "Paraguay", "Peru", "Uruguay", "Suriname"),
+  get(partners = c("Paraguay", "Peru", "Uruguay", "Suriname"),
       years = c(1995:2020))
 write(sa_imports_trd)
 
