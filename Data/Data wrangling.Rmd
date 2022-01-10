@@ -24,6 +24,8 @@ imports_raw <-
   dir(pattern = "*.rds") %>%
   map(read_rds) %>%
   reduce(bind_rows)
+
+setwd(here())
 ```
 
 ### Binding and cleaning
@@ -37,13 +39,17 @@ trade <-
             aggregate_level, reporter_code, partner_code)) %>% 
   group_by(trade_flow) %>% 
   arrange(year, trade_flow, partner, commodity) %>% 
+  mutate(partner = case_when(
+    partner == "Dominican Rep." ~ "Dominican Republic",
+    partner == "Bolivia (Plurinational State of)" ~ "Bolivia",
+    TRUE ~ partner
+  )) %>% 
   ungroup()
 ```
 
 ### Writing tibble
 
 ```{r}
-setwd(here())
 write_rds(trade, file = paste0(here("Data", "Main data frames"), "/trade.rds"))
 ```
 
@@ -55,7 +61,12 @@ codes <-
   select(name,
          partner_iso = `alpha-3`,
          subregions = `sub-region`,
-         int_region = `intermediate-region`)
+         int_region = `intermediate-region`) %>% 
+  mutate(name = case_when(
+    name == "Venezuela (Bolivarian Republic of)" ~ "Venezuela", 
+    name == "Bolivia (Plurinational State of)" ~ "Bolivia",
+    TRUE ~ name 
+  ))
 ```
 
 Guyana is repeated twice, which means there are problems in the trade.rds tibble that need to be corrected. Consider extract the Comtrade data again, but this time paying close attention to UN's geoscheme. UN geoscheme: [<https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>](https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas){.uri}
@@ -66,12 +77,14 @@ names <-
         # Central America and Mexico
         "Belize", "Costa Rica", "Panama", "Honduras",
         "Nicaragua", "El Salvador", "Mexico",
+        
         # South America
-        "Argentina", "Bolivia (Plurinational State of)",  "Brazil", "Chile",
+        "Argentina", "Bolivia",  "Brazil", "Chile",
         "Colombia", "Ecuador", "French Guiana", "Venezuela", "Guyana",
         "Paraguay", "Peru", "Uruguay", "Suriname",
+        
         # Caribbean
-        "Dominican Rep.", "Cuba", "Haiti", "Trinidad and Tobago",
+        "Dominican Republic", "Cuba", "Haiti", "Trinidad and Tobago",
         "Antigua and Barbuda", "Dominica", "Grenada", "Jamaica", "Barbados",
         "Bahamas", "Saint Kitts and Nevis", "Saint Vincent and the Grenadines", 
         "Saint Lucia")
