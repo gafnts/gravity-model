@@ -46,3 +46,21 @@ trade <-
 setwd(here())
 write_rds(trade, file = paste0(here("Data"), "/trade.rds"))
 ```
+
+## (b) Country names data frame
+
+```{r}
+countrycodes <-
+  read_csv("https://git.io/v564u") %>%
+  select(name,
+         partner_iso = `alpha-3`,
+         subregions = `sub-region`,
+         int_region = `intermediate-region`)
+```
+
+```{r}
+tribble(~name,
+        "Belize", "Costa Rica", "Panama", "Honduras",
+        "Nicaragua", "El Salvador", "Mexico",
+        "Argentina", "Bolivia (Plurinational State of)",  "Brazil", "Chile")
+```
