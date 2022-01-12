@@ -42,18 +42,23 @@ write <-
 
 ## (b) Data extraction
 
-#### List of countries in the main dataset
+#### Countries in the main dataset
 
 ```{r}
-countries <- 
+partners <- 
   read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Main%20data%20frames/countries.rds?raw=true") %>% 
   filter(!partner_iso %in% "GUF") %>% 
-  pull(partner_iso) 
+  pull(partner_iso)
 ```
 
 #### Extraction
 
 ```{r}
-worldbank <- search(countries)
-write(worldbank)
+partners_wdi <- search(partners)
+write(partners_wdi)
+```
+
+```{r}
+guatemala_wdi <- search("GT")
+write(guatemala_wdi)
 ```
