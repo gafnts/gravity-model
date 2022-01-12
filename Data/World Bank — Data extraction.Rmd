@@ -6,15 +6,48 @@ pacman::p_load(tidyverse, magrittr, WDI)
 # World Bank Development Indicators
 
 ```{r}
-as_tibble(WDIsearch("gdp")) %>% print(n = Inf)
+as_tibble(WDIsearch("population")) %>% print(n = Inf)
+```
 
-guate <- 
-  as_tibble(
-    WDI(indicator = c(gdp = "NY.GDP.MKTP.CN",
-                      exports = "NE.EXP.GNFS.CN", 
-                      imports = "NE.IMP.GNFS.CN"),
-        country = 'GT',
-        start = 1960, 
-        end = 2020)
+## (a) Extraction functions
+
+#### Search parameters
+
+```{r}
+search <- function(country) {
+  data <- WDI(
+    indicator = c(
+      gdp = "NY.GDP.MKTP.CD", # (current US$)
+      gdp_pcap = "NY.GDP.PCAP.CD", # (current US$)
+      population = "SP.POP.TOTL"
+    ),
+    country = country,
+    start = 1995,
+    end = 2020
   )
+}
+```
+
+#### Export as .rds
+
+```{r}
+write <-
+  function(data) {
+    name <- deparse(substitute(data))
+    write_rds(data, file = paste0("../Gravity model/Data/Exports raw/", name, ".rds"))
+  }
+```
+
+## (b) Data extraction
+
+```{r}
+{r}
+countries <- 
+  read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Main%20data%20frames/countries.rds?raw=true") %>% 
+  pull(partner_iso)
+```
+
+```{r}
+macro <- search(countries)
+write(macro)
 ```
