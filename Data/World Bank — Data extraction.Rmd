@@ -6,5 +6,15 @@ pacman::p_load(tidyverse, magrittr, WDI)
 # World Bank Development Indicators
 
 ```{r}
+as_tibble(WDIsearch("gdp")) %>% print(n = Inf)
 
+guate <- 
+  as_tibble(
+    WDI(indicator = c(gdp = "NY.GDP.MKTP.CN",
+                      exports = "NE.EXP.GNFS.CN", 
+                      imports = "NE.IMP.GNFS.CN"),
+        country = 'GT',
+        start = 1960, 
+        end = 2020)
+  )
 ```
