@@ -132,7 +132,8 @@ guatemala <-
 ### Writing tibbles
 
 ```{r}
-
+write_rds(partners, file = paste0(here("Data", "Main data frames"), "/partners.rds"))
+write_rds(guatemala, file = paste0(here("Data", "Main data frames"), "/guatemala.rds"))
 ```
 
 ## (d) To do list
