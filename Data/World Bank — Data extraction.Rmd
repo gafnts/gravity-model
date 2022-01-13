@@ -6,7 +6,7 @@ pacman::p_load(tidyverse, here, WDI)
 # World Bank Development Indicators
 
 ```{r}
-as_tibble(WDIsearch("population")) %>% print(n = Inf)
+as_tibble(WDIsearch("exchange")) %>% print(n = Inf)
 ```
 
 ## (a) Extraction functions
@@ -47,7 +47,6 @@ write <-
 ```{r}
 partners <- 
   read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Main%20data%20frames/countries.rds?raw=true") %>% 
-  filter(!partner_iso %in% "GUF") %>% 
   pull(partner_iso)
 ```
 
