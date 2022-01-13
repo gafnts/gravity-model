@@ -5,13 +5,15 @@ pacman::p_load(tidyverse, here, WDI)
 
 # World Bank Development Indicators
 
+### Names query
+
 ```{r}
 as_tibble(WDIsearch("exchange")) %>% print(n = Inf)
 ```
 
 ## (a) Extraction functions
 
-#### Search parameters
+### Search parameters
 
 ```{r}
 search <- function(country) {
@@ -30,7 +32,7 @@ search <- function(country) {
 }
 ```
 
-#### Export as .rds
+### Export as .rds
 
 ```{r}
 write <-
@@ -42,7 +44,7 @@ write <-
 
 ## (b) Data extraction
 
-#### Countries in the main dataset
+### Countries in the main dataset
 
 ```{r}
 partners <- 
@@ -50,7 +52,7 @@ partners <-
   pull(partner_iso)
 ```
 
-#### Extraction
+### Extraction
 
 ```{r}
 partners_wdi <- search(partners)
