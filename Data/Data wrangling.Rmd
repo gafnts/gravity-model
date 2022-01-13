@@ -126,7 +126,7 @@ partners <-
 guatemala <- 
   read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/World%20Bank%20raw/guatemala_wdi.rds?raw=true") %>% 
   select(year:iso3c, capital:latitude) %>% 
-  rename("partner_iso" = iso3c)
+  rename("reporter_iso" = iso3c)
 ```
 
 ### Writing tibbles
@@ -135,9 +135,3 @@ guatemala <-
 write_rds(partners, file = paste0(here("Data", "Main data frames"), "/partners.rds"))
 write_rds(guatemala, file = paste0(here("Data", "Main data frames"), "/guatemala.rds"))
 ```
-
-## (d) To do list
-
-As of this moment, Guatemala isn't contained in the worldbank.rds tibble, so I think that the country needs to have its own data frame. But take a moment to think about the best way to do it knowing that everything has to work in the econometric framework of the gravity model.
-
-Finally, an EDA needs to be done for the worldbank.rds in order to get sure all the information is available for every country.
