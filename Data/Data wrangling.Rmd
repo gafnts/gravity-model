@@ -84,7 +84,7 @@ names <-
         
         # South America
         "Argentina", "Bolivia",  "Brazil", "Chile",
-        "Colombia", "Ecuador", "French Guiana", "Venezuela", "Guyana",
+        "Colombia", "Ecuador", "Venezuela", "Guyana",
         "Paraguay", "Peru", "Uruguay", "Suriname",
         
         # Caribbean
@@ -105,11 +105,10 @@ countries <-
 write_rds(countries, file = paste0(here("Data", "Main data frames"), "/countries.rds"))
 ```
 
+### Join example
+
 ```{r}
-# Test
-trade %>% 
-  left_join(countries, by = c("partner_iso", "partner")) %>% 
-  View()
+trade %>% left_join(countries, by = c("partner_iso", "partner"))
 ```
 
 ## (c) Structural gravity variables
