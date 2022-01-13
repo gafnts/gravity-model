@@ -58,7 +58,7 @@ sa_exports_fst <-
 write(sa_exports_fst)
 
 sa_exports_snd <-
-  get(partners = c("Colombia", "Ecuador", "French Guiana", "Venezuela", "Guyana"),
+  get(partners = c("Colombia", "Ecuador", "Venezuela", "Guyana"),
       years = c(1995:2020))
 write(sa_exports_snd)
 
