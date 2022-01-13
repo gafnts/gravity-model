@@ -1,0 +1,9 @@
+```{r}
+pacman::p_load(tidyverse, here)
+```
+
+# Gravity equation
+
+```{r}
+
+```
