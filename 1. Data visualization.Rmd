@@ -4,6 +4,36 @@ pacman::p_load(tidyverse, here)
 
 # Data visualization
 
-```{r}
+#### Call main data frames
 
+```{r}
+trade <- read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Main%20data%20frames/trade.rds?raw=true")
+guatemala <- read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Main%20data%20frames/guatemala.rds?raw=true")
+partners <- read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Main%20data%20frames/partners.rds?raw=true")
+iso_codes <- read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Main%20data%20frames/countries.rds?raw=true")
+```
+
+## Trade overlap
+
+#### Intra-industry trade
+
+$$ GL_k^{ij} = 1 - \frac{|X_k^{ij} - M_k^{ij}|}{X_k^{ij} + M_k^{ij}} $$
+
+```{r}
+exports <- 
+  trade %>% 
+  filter(trade_flow == "Export", year == "2020") %>% 
+  # filter(str_detect(commodity, "plastic")) %>% 
+  summarize(exports = sum(trade_value_usd))
+
+imports <- 
+  trade %>% 
+  filter(trade_flow == "Import", year == "2020") %>% 
+  # filter(str_detect(commodity, "plastic")) %>% 
+  summarize(imports = sum(trade_value_usd))
+
+exports %>% 
+  bind_cols(imports) %>% 
+  mutate(gl_index = 1 - (abs(exports - imports) / (exports + imports)),
+         gl_index = round(gl_index, 4))
 ```
