@@ -1,5 +1,5 @@
 ```{r}
-pacman::p_load(tidyverse, here)
+pacman::p_load(tidyverse, magrittr, here)
 ```
 
 # Data visualization
@@ -19,7 +19,7 @@ iso_codes <- read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Ma
 
 $$ GL_k^{ij} = 1 - \frac{|X_k^{ij} - M_k^{ij}|}{X_k^{ij} + M_k^{ij}} $$
 
-```{r}
+```{r gl_general}
 exports <- 
   trade %>% 
   filter(trade_flow == "Export", year == "2020") %>% 
@@ -34,6 +34,45 @@ imports <-
 
 exports %>% 
   bind_cols(imports) %>% 
-  mutate(gl_index = 1 - (abs(exports - imports) / (exports + imports)),
-         gl_index = round(gl_index, 4))
+  mutate(
+    gl_index = 1 - (abs(exports - imports) / (exports + imports))
+    )
+```
+
+```{r gl_by_country}
+exports <- 
+  trade %>% 
+  filter(trade_flow == "Export", year == "2020") %>% 
+  mutate(partner_iso = as.factor(partner_iso)) %>% 
+  group_by(partner_iso) %>% 
+  summarise(exports = sum(trade_value_usd)) %>% 
+  arrange(desc(exports))
+
+imports <- 
+  trade %>% 
+  filter(trade_flow == "Import", year == "2020") %>% 
+  mutate(partner_iso = as.factor(partner_iso)) %>% 
+  group_by(partner_iso) %>% 
+  summarise(imports = sum(trade_value_usd)) %>% 
+  arrange(desc(imports))
+
+gl_index <- 
+  exports %>% 
+  left_join(imports) %>% 
+  mutate_if(is.numeric, ~replace(., is.na(.), 0))
+
+gl_index %<>% 
+  mutate(
+    gl_index = 1 - (abs(exports - imports) / (exports + imports))
+    )
+
+gl_index %>% print(n = Inf)
+```
+
+```{r}
+setdiff(exports %>% pull(partner_iso), 
+        imports %>% pull(partner_iso)) %>% 
+  as_tibble() %>% 
+  rename("partner_iso" = value) %>% 
+  inner_join(iso_codes)
 ```
