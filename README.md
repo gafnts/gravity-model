@@ -1,2 +1,2 @@
 # gravity-model
-Gravity model of trade for Guatemala's commercial patterns in a machine learning framework
+Gravity model of trade for Guatemala's commercial patterns.
