@@ -64,7 +64,8 @@ gl_index <-
 gl_index %<>% 
   mutate(
     gl_index = 1 - (abs(exports - imports) / (exports + imports))
-    )
+    ) %>% 
+  select(partner_iso, gl_index)
 
 gl_index %>% print(n = Inf)
 ```
@@ -76,3 +77,75 @@ setdiff(exports %>% pull(partner_iso),
   rename("partner_iso" = value) %>% 
   inner_join(iso_codes)
 ```
+
+#### Similarity index
+
+$$
+SI^{ij} = 1 - [\frac{Y^i}{Y^i + Y^j}]^2 - [\frac{Y^j}{Y^i + Y^j}]^2
+$$
+
+Points of objection: *Y* must be real gdp (I think this db has it nominal)
+
+```{r}
+guatemala %>% 
+  rename(partner_iso = "reporter_iso") %>% 
+  bind_rows(partners) %>% 
+  filter(year == "2020")
+```
+
+```{r}
+gdp_gt <- 
+  guatemala %>% 
+  filter(year == "2020") %>% 
+  select(gdp) %>% 
+  pull()
+
+similarity <- 
+  partners %>% 
+  filter(year == "2020") %>% 
+  select(partner_iso, gdp) %>% 
+  mutate(
+    gdp_gt = gdp_gt,
+    A = (gdp_gt / (gdp_gt + gdp))^2,
+    B = (gdp / (gdp_gt + gdp))^2,
+    SI = 1 - A- B
+  ) %>% 
+  select(partner_iso, SI)
+
+
+similarity %>% print(n = Inf)
+```
+
+#### Plot
+
+Comments: Venezuela has an NA in SI
+
+```{r}
+gl_index %>% 
+  left_join(similarity) %>% 
+  drop_na() %>% 
+  ggplot(aes(SI, gl_index, label = partner_iso)) +
+  geom_jitter() +
+  geom_text(hjust = 1, vjust = 0) +
+  geom_smooth(method = "lm")
+```
+
+```{r}
+lm <- gl_index %>% 
+  left_join(similarity) %>% 
+  drop_na()
+
+summary(lm(data = lm, gl_index ~ SI))
+```
+
+#### Comments: 
+
+Para comenzar, es importante revisar los pasos del procedimiento: ver qué países se pierden (y por qué razones) durante el procesamiento de datos. En general es buena idea entender con qué países no tuvimos flujos comerciales durante los años del estudio.
+
+Este primer plot muestra que existe una ligera relación lineal entre similaridad y flujos intraindustriales durante el 2022. Sin embargo, el coeficiente de similaridad, aunque considerable (0.65) se muestra poco significativo (p value = 0.07). El R-squared es de 0.12 y también poco significativo (0.07).
+
+Lo cual es bastante interesante, pues muestra que aunque existen países con una alta similaridad en ingresos (Uruguay, República Dominicana, Cuba), Guatemala no tiene virtualmente flujos intraindustriales con los mismos.
+
+Por otro lado, parece ser que hay un clúster de países (Salvador, Honduras, Perú, Costa Rica y Ecuador, Panamá) que tienen tanto una alta similaridad de ingresos como un alto comercio intraindustrial.
+
+Lo que me hace pensar que en esta misma gráfica se puede hacer un análisis clúster.
