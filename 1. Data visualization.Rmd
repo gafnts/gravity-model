@@ -1,5 +1,5 @@
 ```{r}
-pacman::p_load(tidyverse, magrittr, here)
+pacman::p_load(tidyverse, magrittr, here, plotly)
 ```
 
 # Data visualization
@@ -121,13 +121,16 @@ similarity %>% print(n = Inf)
 Comments: Venezuela has an NA in SI
 
 ```{r}
-gl_index %>% 
+plot <- 
+  gl_index %>% 
   left_join(similarity) %>% 
   drop_na() %>% 
   ggplot(aes(SI, gl_index, label = partner_iso)) +
   geom_jitter() +
   geom_text(hjust = 1, vjust = 0) +
   geom_smooth(method = "lm")
+
+ggplotly(plot)
 ```
 
 ```{r}
@@ -149,3 +152,5 @@ Lo cual es bastante interesante, pues muestra que aunque existen países con una
 Por otro lado, parece ser que hay un clúster de países (Salvador, Honduras, Perú, Costa Rica y Ecuador, Panamá) que tienen tanto una alta similaridad de ingresos como un alto comercio intraindustrial.
 
 Lo que me hace pensar que en esta misma gráfica se puede hacer un análisis clúster.
+
+Sería importante entender por qué URY es tan similar en ingreso a GMT, cuando el GDP (current USD) del primero es de 15e+3 mientras que el del segundo es de 4.6e+3. CRI y CUB tienen GDPs más altos que GTM también.
