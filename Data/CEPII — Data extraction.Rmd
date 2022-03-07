@@ -1,0 +1,44 @@
+# Trade costs
+
+$$
+t_{ij}= D_{ij} \cdot \exp(cont_{ij} + lang_{ij} + ccol_{ij} + landlock_{ij} + rta_{ij})
+$$
+
+Where $D_{ij}$ is distance measured by the great circle formula, $contig_{ij}$ denotes whether the two countries have a common border, $lang_{ij}$ wheter both countries share the same language, $ccol_{ij}$ both nations have a common colonizer, $landlock_{ij}$ whether one of the two is a landlocked country (including when both countries are landlocked) and $rta_{ij}$ whether the twocountries are members of a regional trade agreement.
+
+```{r}
+pacman::p_load(tidyverse, magrittr, here)
+```
+
+```{r}
+gravity_raw <- read_csv(here("Data", "CEPII raw", "Gravity_V202102.csv"))
+gravity_raw %>% glimpse
+```
+
+```{r}
+gravity <- 
+  gravity_raw %>% 
+  filter(between(year, 1995, 2020)) %>% 
+  select(year, iso3_o, iso3_d, 
+         # Distance
+         dist, distw, distcap, distwces,
+         # Geographic and cultural variables
+         cont = contig, 
+         lang = comlang_off, 
+         ccol = comcol,
+         crel = comrelig,
+         rta,
+         # Macro variables
+         gdp_o, gdp_d, gdpcap_o, gdpcap_d,
+         # Trade flows
+         tradeflow_comtrade_o,
+         tradeflow_comtrade_d,
+         manuf_tradeflow_baci)
+```
+
+```{r}
+gravity %>% 
+  write_csv(here("Data", "Main data frames", "gravity.csv"))
+```
+
+Source: <http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>
