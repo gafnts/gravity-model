@@ -19,7 +19,7 @@ gravity_raw <- read_csv(here("Data", "CEPII raw", "Gravity_V202102.csv"))
 ### Selecting transaction cost variables for observations in the country dataframe
 
 ```{r}
-transaction_cost <- 
+transaction_costs <- 
   gravity_raw %>% 
   filter(between(year, 1995, 2020), iso3_o == "GTM") %>% 
   select(year, 
@@ -38,7 +38,7 @@ partners <-
   read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/Main%20data%20frames/partners_names.csv") %>% 
   select(partner_iso)
 
-transaction_cost %<>% 
+transaction_costs %<>% 
   inner_join(partners)
 ```
 
@@ -47,8 +47,8 @@ The cost database seems to work just fine. Although there's one thing: It stops 
 ### Exporting transaction cost database
 
 ```{r}
-transaction_cost %>% 
-  write_csv(here("Data", "Main data frames", "transaction_cost.csv"))
+transaction_costs %>% 
+  write_csv(here("Data", "Main data frames", "transaction_costs.csv"))
 ```
 
 Database documentation: <http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>
