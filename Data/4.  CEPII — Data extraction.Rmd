@@ -1,4 +1,4 @@
-# Trade costs
+# Transaction costs
 
 $$
 t_{ij}= D_{ij} \cdot \exp(cont_{ij} + lang_{ij} + ccol_{ij} + crel_{ij} + rta_{ij})
@@ -10,9 +10,13 @@ Where $D_{ij}$ is distance measured by the great circle formula, $contig_{ij}$ d
 pacman::p_load(tidyverse, magrittr, here)
 ```
 
+### Importing CEPII gravity database
+
 ```{r}
 gravity_raw <- read_csv(here("Data", "CEPII raw", "Gravity_V202102.csv"))
 ```
+
+### Selecting transaction cost variables for observations in the country dataframe
 
 ```{r}
 transaction_cost <- 
@@ -39,6 +43,8 @@ transaction_cost %<>%
 ```
 
 The cost database seems to work just fine. Although there's one thing: It stops at 2019. Since all of the variables are time-invariant fixing it shouldn't be a problem latter.
+
+### Exporting transaction cost database
 
 ```{r}
 transaction_cost %>% 
