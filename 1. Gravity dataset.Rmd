@@ -20,6 +20,8 @@ partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"
 partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
 ```
 
+### Data wrangling
+
 ```{r}
 # Remember to fix transaction_costs tibble
 trade_flows %<>% 
@@ -68,19 +70,50 @@ gravity <-
 
 Note: It appears that some countries time series don't end in 2019. ARG, for example. Fix that.
 
-```{r}
-gravity %<>%
-  filter(between(year, 1995, 2015))
-```
-
-```{r}
-names <- 
-  gravity %>% 
-  distinct(partner_iso)
-```
+### Cleaning basic dataset
 
 I think a lot of data wragling needs to be done before we can estimate the actual model. But the last few hours where very productive! Going forward it's gonna be necessary to create a looped function that let me make sure all countries have the number of rows needed. It will be vital for more complex dataframes coming up.
 
 ```{r}
-gravity %>% filter(partner_iso == "ATG") %>% nrow()
+# Extract partners names
+names <- 
+  gravity %>% 
+  distinct(partner_iso) %>% 
+  as.list()
+
+countries <- 
+  names$partner_iso
+
+# How many observations are there per partner?
+rows <- 
+  tibble(countries = countries)
+
+for(i in countries) {
+  rows[[i]] <- gravity %>% filter(partner_iso == i) %>% nrow()
+}
+
+rows %<>% 
+  slice(1) %>% 
+  pivot_longer(cols = (2:length(rows))) %>% 
+  select(-countries)
+
+# Pull only the partners with complete observations (2019)
+complete <- 
+  rows %>% filter(value == 25) %>% pull(1)
 ```
+
+```{r}
+# Gravity db with only complete partners
+gravity %<>% filter(partner_iso %in% complete)
+
+# How many partners does the db have?
+gravity %>% distinct(partner_iso) %>% dim()
+```
+
+## 2 --- Incomplete gravity model estimation
+
+```{r}
+
+```
+
+\
