@@ -102,7 +102,7 @@ countries <-
 ### Writing tibble
 
 ```{r}
-write_rds(countries, file = paste0(here("Data", "Main data frames"), "/countries.rds"))
+write_csv(countries, file = paste0(here("Data", "Main data frames"), "/countries.csv"))
 ```
 
 ### Join example
@@ -113,7 +113,7 @@ trade %>% left_join(countries, by = c("partner_iso", "partner"))
 
 ## (c) Structural gravity variables
 
-### Import  dataframes
+### Import dataframes
 
 ```{r}
 partners <- 
