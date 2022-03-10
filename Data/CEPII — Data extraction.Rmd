@@ -1,10 +1,10 @@
 # Trade costs
 
 $$
-t_{ij}= D_{ij} \cdot \exp(cont_{ij} + lang_{ij} + ccol_{ij} + landlock_{ij} + rta_{ij})
+t_{ij}= D_{ij} \cdot \exp(cont_{ij} + lang_{ij} + ccol_{ij} + crel_{ij} + rta_{ij})
 $$
 
-Where $D_{ij}$ is distance measured by the great circle formula, $contig_{ij}$ denotes whether the two countries have a common border, $lang_{ij}$ wheter both countries share the same language, $ccol_{ij}$ both nations have a common colonizer, $landlock_{ij}$ whether one of the two is a landlocked country (including when both countries are landlocked) and $rta_{ij}$ whether the twocountries are members of a regional trade agreement.
+Where $D_{ij}$ is distance measured by the great circle formula, $contig_{ij}$ denotes whether the two countries have a common border, $lang_{ij}$ wheter both countries share the same language, $ccol_{ij}$ both nations have a common colonizer, $crel_{ij}$ is a similarity index between religious practices and $rta_{ij}$ whether the twocountries are members of a regional trade agreement.
 
 ```{r}
 pacman::p_load(tidyverse, magrittr, here)
@@ -15,29 +15,34 @@ gravity_raw <- read_csv(here("Data", "CEPII raw", "Gravity_V202102.csv"))
 ```
 
 ```{r}
-gravity <- 
+transaction_cost <- 
   gravity_raw %>% 
-  filter(between(year, 1995, 2020)) %>% 
-  select(year, iso3_o, iso3_d, 
+  filter(between(year, 1995, 2020), iso3_o == "GTM") %>% 
+  select(year, 
+         reporter_iso = iso3_o, 
+         partner_iso = iso3_d, 
          # Distance
          dist, distw, distcap, distwces,
          # Geographic and cultural variables
-         cont = contig, 
+         cont = contig,
          lang = comlang_off, 
          ccol = comcol,
          crel = comrelig,
-         rta,
-         # Macro variables
-         gdp_o, gdp_d, gdpcap_o, gdpcap_d,
-         # Trade flows
-         tradeflow_comtrade_o,
-         tradeflow_comtrade_d,
-         manuf_tradeflow_baci)
+         rta)
+
+partners <- 
+  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/Main%20data%20frames/countries.csv") %>% 
+  select(partner_iso)
+
+transaction_cost %<>% 
+  inner_join(partners)
 ```
+
+The cost database seems to work just fine. Although there's one thing: It stops at 2019. Since all of the variables are time-invariant fixing it shouldn't be a problem latter.
 
 ```{r}
-gravity %>% 
-  write_csv(here("Data", "Main data frames", "gravity.csv"))
+transaction_cost %>% 
+  write_csv(here("Data", "Main data frames", "transaction_cost.csv"))
 ```
 
-Source: <http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>
+Database documentation: <http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>
