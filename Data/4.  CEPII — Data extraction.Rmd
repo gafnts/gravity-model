@@ -35,7 +35,7 @@ transaction_cost <-
          rta)
 
 partners <- 
-  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/Main%20data%20frames/countries.csv") %>% 
+  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/Main%20data%20frames/partners_names.csv") %>% 
   select(partner_iso)
 
 transaction_cost %<>% 
