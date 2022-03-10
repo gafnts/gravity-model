@@ -4,7 +4,7 @@ pacman::p_load(tidyverse, here)
 
 # General data wrangling
 
-## (a) Trade data frame
+# 1 --- Trade flows database
 
 ### Loading exports and imports
 
@@ -50,10 +50,10 @@ trade <-
 ### Writing tibble
 
 ```{r}
-write_rds(trade, file = paste0(here("Data", "Main data frames"), "/trade.rds"))
+write_csv(trade, file = paste0(here("Data", "Main data frames"), "/trade_flows.csv"))
 ```
 
-## (b) Country names data frame
+# 2 --- Partners names dataframe
 
 ### Loading ISO codes from Github
 
@@ -73,7 +73,7 @@ codes <-
   ))
 ```
 
-### Joining with country names in the `trade` data frame
+### Joining with country names in the trade dataframe
 
 ```{r}
 names <- 
@@ -102,7 +102,7 @@ countries <-
 ### Writing tibble
 
 ```{r}
-write_csv(countries, file = paste0(here("Data", "Main data frames"), "/countries.csv"))
+write_csv(countries, file = paste0(here("Data", "Main data frames"), "/partners_names.csv"))
 ```
 
 ### Join example
@@ -111,7 +111,7 @@ write_csv(countries, file = paste0(here("Data", "Main data frames"), "/countries
 trade %>% left_join(countries, by = c("partner_iso", "partner"))
 ```
 
-## (c) Structural gravity variables
+# 3 --- Macro variables database
 
 ### Import dataframes
 
@@ -132,6 +132,6 @@ guatemala <-
 ### Writing tibbles
 
 ```{r}
-write_rds(partners, file = paste0(here("Data", "Main data frames"), "/partners.rds"))
-write_rds(guatemala, file = paste0(here("Data", "Main data frames"), "/guatemala.rds"))
+write_csv(partners, file = paste0(here("Data", "Main data frames"), "/partners_macro.csv"))
+write_csv(guatemala, file = paste0(here("Data", "Main data frames"), "/gtm_macro.csv"))
 ```
