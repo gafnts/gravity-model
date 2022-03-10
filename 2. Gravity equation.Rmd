@@ -1,11 +1,21 @@
-# Gravity equation
+# Gravity model estimation
 
 ```{r}
 pacman::p_load(tidyverse, magrittr, here, gravity)
 ```
 
+### Importing dataframes
+
 ```{r}
-gravity <- read_csv(here("Data", "Main data frames", "gravity.csv"))
+trade_flows <- read_csv(here("Data", "Main data frames", "trade_flows.csv"))
+transaction_cost <- read_csv(here("Data", "Main data frames", "transaction_cost.csv"))
+gtm_macro <- read_csv(here("Data", "Main data frames", "gtm_macro.csv"))
+partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"))
+partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
+```
+
+```{r}
+gravity %>% View
 ```
 
 ```{r}
