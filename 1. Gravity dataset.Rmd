@@ -1,0 +1,86 @@
+# Gravity dataset
+
+```{r}
+pacman::p_load(tidyverse, magrittr, here, gravity)
+```
+
+## 1 --- Basic dataset
+
+### Importing dataframes
+
+```{r}
+trade_flows <- read_csv(here("Data", "Main data frames", "trade_flows.csv"))
+transaction_costs <- read_csv(here("Data", "Main data frames", "transaction_costs.csv"))
+gtm_macro <- read_csv(here("Data", "Main data frames", "gtm_macro.csv"))
+partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"))
+partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
+```
+
+```{r}
+# Remember to fix transaction_costs tibble
+trade_flows %<>% 
+  filter(between(year, 1995, 2019))
+
+# Total trade flows by exports
+trade_flows %<>% 
+  filter(trade_flow == "Export") %>% 
+  group_by(year, reporter_iso, partner_iso) %>% 
+  summarise(trade_value = sum(trade_value_usd)) %>% 
+  ungroup()
+```
+
+```{r}
+gravity_raw <- 
+  trade_flows %>% 
+  left_join(transaction_costs) %>% 
+  arrange(partner_iso) %>% 
+  filter(!str_detect(partner_iso, "VEN|BOL")) %>% 
+  select(year:dist, cont:ccol, rta)
+```
+
+$$
+X_{ij}=G\frac{Y_{i}^{\beta_{1}}Y_{j}^{\beta_{2}}}{t_{ij}^{\beta_{3}}}.
+$$
+
+```{r}
+gtm_macro %<>% 
+  select(year, 
+         reporter_iso,
+         i_gdp = gdp,
+         i_gdp_pcap = gdp_pcap)
+
+gravity_raw %<>% 
+  left_join(gtm_macro)
+```
+
+```{r}
+partners_macro %<>% 
+  select(year, 
+         partner_iso,
+         j_gdp = gdp,
+         j_gdp_pcap = gdp_pcap)
+
+gravity <- 
+  gravity_raw %>% 
+  left_join(partners_macro)
+```
+
+At first glance, it appears that some countries time series don't end in 2019. ARG, for example.
+
+```{r}
+gravity %<>% 
+  filter(!str_detect(partner_iso, "ATG")) %>% 
+  filter(between(year, 1995, 2015))
+```
+
+```{r}
+names <- 
+  gravity %>% 
+  distinct(partner_iso)
+```
+
+```{r}
+gravity %>% filter(partner_iso == "ARG") %>% nrow()
+```
+
+Va. I think a lot of data wragling needs to be done before we can estimate the actual model. But the last few hours where very productive! Going forward its gonna be necessary to create a looped function that let me make sure all countries have the number of rows needed. It will be vital for more complex dataframes coming up.
