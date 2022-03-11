@@ -63,3 +63,47 @@ write(partners_wdi)
 guatemala_wdi <- search("GT")
 write(guatemala_wdi)
 ```
+
+## (c) Integrity check
+
+### Guatemala macro data
+
+```{r}
+guatemala_wdi %>% 
+  mutate(across(where(is.numeric), is.na)) %>% 
+  select(where(is.logical)) %>% 
+  summary()
+```
+
+### Commercial partners macro data
+
+```{r}
+# Extract partners names
+names <- 
+  partners_wdi %>% 
+  distinct(iso2c) %>% 
+  as.list()
+
+countries <- names$iso2c
+
+# How many observations are there per partner?
+rows <- tibble(countries = countries)
+
+for(i in countries) {
+  rows[[i]] <- partners_wdi %>% filter(iso2c == i) %>% nrow()
+}
+
+rows %<>% 
+  slice(1) %>% 
+  pivot_longer(cols = (2:length(rows))) %>% 
+  select(-countries)
+
+# Pull only the partners with complete observations
+complete <- rows %>% filter(value == 26) %>% pull(1)
+
+# Are we good?
+summary(countries)
+summary(complete)
+
+# Yes we are
+```
