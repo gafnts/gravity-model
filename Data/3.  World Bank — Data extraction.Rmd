@@ -1,4 +1,16 @@
-# World Bank Development Indicators
+# Macro variables
+
+Basic specifications:
+
+$$
+\begin{align*}
+ln F_{ij} &= c + \alpha ln (Y_i + Y_j) - \beta ln D_{ij} + \epsilon_{ij} \\
+ln F_{ij} &= c + \alpha ln (Y_i^{pc} + Y_j^{pc}) - \beta ln D_{ij} + \epsilon_{ij} \\
+ln F_{ij}^{manuf} &= c + \alpha ln |Y_i^{pc} - Y_j^{pc}| - \beta ln D_{ij} + \epsilon_{ij}
+\end{align*}
+$$
+
+Where $(Y)$ denotes the gross domestic product, $Y^{pc}$ is the output per capita and $|Y_i^{pc} - Y_j^{pc}|$ represents the Linder variable.
 
 ```{r}
 if (!require("pacman")) install.packages("pacman")
