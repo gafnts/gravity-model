@@ -27,13 +27,13 @@ trade_flows %<>%
   ungroup()
 ```
 
-Note that after adding the trade flows by year, there are only 766 observations, instead of the 780 that should be. Do these zeros reflect the lack of trade flows in specific years?
+Note that after adding the trade flows by year, there are only 766 observations, instead of the 806 that should be. Do these zeros reflect the lack of trade flows in specific years?
 
 ```{r}
 # These are the countries and years for which we don't have trade flows
 transaction_costs %>% anti_join(trade_flows) %>% View
 
-# Remove BOL and VEN from trade flows data frame
+# Remove VEN from trade flows data frame
 trade_flows %>% anti_join(transaction_costs) %>% View
 ```
 
