@@ -129,5 +129,3 @@ fit <- plm(log(trade_value) ~ log(i_gdp) + log(j_gdp) + log(dist),
 
 summary(fit)
 ```
-
-\
