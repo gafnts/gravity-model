@@ -1,0 +1,27 @@
+iso2c,country,year,gdp,gdp_pcap,population,iso3c,region,capital,longitude,latitude,income,lending
+GT,Guatemala,1995,14655404433.2771,1424.68254256258,10286786,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,1996,15674835615.3139,1487.60765839974,10536942,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,1997,17790026221.6139,1649.00160206099,10788362,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,1998,19395491992.9939,1755.84958223191,11046215,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,1999,18318412251.3642,1619.51073552531,11311078,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2000,19288827158.9035,1664.29895827045,11589761,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2001,18405203853.1036,1550.36036555447,11871565,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2002,20444205991.025,1682.99450068936,12147518,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2003,21576351798.9145,1737.87928692973,12415334,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2004,23577286226.6407,1859.098363351,12682108,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2005,26783543667.064,2068.50012859333,12948292,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2006,29744368110.9094,2251.08796275499,13213330,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2007,33567868322.6252,2490.74912665208,13477017,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2008,38503862830.6878,2802.46196190125,13739299,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2009,37125943564.9873,2651.81712283814,14000190,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2010,40676432028.5934,2852.54732650116,14259687,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2011,46876114650.4996,3228.0457411296,14521515,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2012,49593961141.7484,3355.03691881272,14781942,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2013,52996540703.5943,3522.77370621475,15043981,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2014,57852399963.7878,3779.64233613025,15306316,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2015,62186186575.7433,3994.63691288475,15567419,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2016,66053725049.0138,4173.30166619474,15827690,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2017,71654134378.5299,4454.04814983548,16087418,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2018,73208583758.9105,4478.42464550944,16346950,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2019,77020015201.3201,4638.63494319511,16604026,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD
+GT,Guatemala,2020,77604632170.5853,4603.33961670975,16858333,GTM,Latin America & Caribbean,Guatemala City,-90.5328,14.6248,Upper middle income,IBRD

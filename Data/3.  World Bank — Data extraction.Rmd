@@ -1,9 +1,9 @@
+# World Bank Development Indicators
+
 ```{r}
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse, here, WDI)
 ```
-
-# World Bank Development Indicators
 
 ### Names query
 
@@ -11,7 +11,7 @@ pacman::p_load(tidyverse, here, WDI)
 as_tibble(WDIsearch("exchange")) %>% print(n = Inf)
 ```
 
-## (a) Extraction functions
+## (a) Extraction function
 
 ### Search parameters
 
@@ -38,7 +38,7 @@ search <- function(country) {
 write <-
   function(data) {
     name <- deparse(substitute(data))
-    write_rds(data, file = paste0(here("Data", "World Bank raw"), "/", name, ".rds"))
+    write_csv(data, file = paste0(here("Data", "World Bank raw"), "/", name, ".csv"))
   }
 ```
 
@@ -48,7 +48,7 @@ write <-
 
 ```{r}
 partners <- 
-  read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/Main%20data%20frames/countries.rds?raw=true") %>% 
+  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/Main%20data%20frames/partners_names.csv") %>% 
   pull(partner_iso)
 ```
 
