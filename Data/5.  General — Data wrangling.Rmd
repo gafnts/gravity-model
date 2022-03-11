@@ -66,7 +66,7 @@ codes <-
          partner_iso = `alpha-3`,
          subregions = `sub-region`,
          int_region = `intermediate-region`) %>% 
-  mutate(name = case_when(
+  mutate(partner = case_when(
     partner == "Venezuela (Bolivarian Republic of)" ~ "Venezuela", 
     partner == "Bolivia (Plurinational State of)" ~ "Bolivia",
     TRUE ~ partner 

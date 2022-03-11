@@ -1,31 +1,33 @@
-partner,partner_iso,subregions,int_region,name
-Antigua and Barbuda,ATG,Latin America and the Caribbean,Caribbean,Antigua and Barbuda
-Argentina,ARG,Latin America and the Caribbean,South America,Argentina
-Bahamas,BHS,Latin America and the Caribbean,Caribbean,Bahamas
-Barbados,BRB,Latin America and the Caribbean,Caribbean,Barbados
-Belize,BLZ,Latin America and the Caribbean,Central America,Belize
-Brazil,BRA,Latin America and the Caribbean,South America,Brazil
-Chile,CHL,Latin America and the Caribbean,South America,Chile
-Colombia,COL,Latin America and the Caribbean,South America,Colombia
-Costa Rica,CRI,Latin America and the Caribbean,Central America,Costa Rica
-Cuba,CUB,Latin America and the Caribbean,Caribbean,Cuba
-Dominica,DMA,Latin America and the Caribbean,Caribbean,Dominica
-Dominican Republic,DOM,Latin America and the Caribbean,Caribbean,Dominican Republic
-Ecuador,ECU,Latin America and the Caribbean,South America,Ecuador
-El Salvador,SLV,Latin America and the Caribbean,Central America,El Salvador
-Grenada,GRD,Latin America and the Caribbean,Caribbean,Grenada
-Guyana,GUY,Latin America and the Caribbean,South America,Guyana
-Haiti,HTI,Latin America and the Caribbean,Caribbean,Haiti
-Honduras,HND,Latin America and the Caribbean,Central America,Honduras
-Jamaica,JAM,Latin America and the Caribbean,Caribbean,Jamaica
-Mexico,MEX,Latin America and the Caribbean,Central America,Mexico
-Nicaragua,NIC,Latin America and the Caribbean,Central America,Nicaragua
-Panama,PAN,Latin America and the Caribbean,Central America,Panama
-Paraguay,PRY,Latin America and the Caribbean,South America,Paraguay
-Peru,PER,Latin America and the Caribbean,South America,Peru
-Saint Kitts and Nevis,KNA,Latin America and the Caribbean,Caribbean,Saint Kitts and Nevis
-Saint Lucia,LCA,Latin America and the Caribbean,Caribbean,Saint Lucia
-Saint Vincent and the Grenadines,VCT,Latin America and the Caribbean,Caribbean,Saint Vincent and the Grenadines
-Suriname,SUR,Latin America and the Caribbean,South America,Suriname
-Trinidad and Tobago,TTO,Latin America and the Caribbean,Caribbean,Trinidad and Tobago
-Uruguay,URY,Latin America and the Caribbean,South America,Uruguay
+partner,partner_iso,subregions,int_region
+Antigua and Barbuda,ATG,Latin America and the Caribbean,Caribbean
+Argentina,ARG,Latin America and the Caribbean,South America
+Bahamas,BHS,Latin America and the Caribbean,Caribbean
+Barbados,BRB,Latin America and the Caribbean,Caribbean
+Belize,BLZ,Latin America and the Caribbean,Central America
+Bolivia,BOL,Latin America and the Caribbean,South America
+Brazil,BRA,Latin America and the Caribbean,South America
+Chile,CHL,Latin America and the Caribbean,South America
+Colombia,COL,Latin America and the Caribbean,South America
+Costa Rica,CRI,Latin America and the Caribbean,Central America
+Cuba,CUB,Latin America and the Caribbean,Caribbean
+Dominica,DMA,Latin America and the Caribbean,Caribbean
+Dominican Republic,DOM,Latin America and the Caribbean,Caribbean
+Ecuador,ECU,Latin America and the Caribbean,South America
+El Salvador,SLV,Latin America and the Caribbean,Central America
+Grenada,GRD,Latin America and the Caribbean,Caribbean
+Guyana,GUY,Latin America and the Caribbean,South America
+Haiti,HTI,Latin America and the Caribbean,Caribbean
+Honduras,HND,Latin America and the Caribbean,Central America
+Jamaica,JAM,Latin America and the Caribbean,Caribbean
+Mexico,MEX,Latin America and the Caribbean,Central America
+Nicaragua,NIC,Latin America and the Caribbean,Central America
+Panama,PAN,Latin America and the Caribbean,Central America
+Paraguay,PRY,Latin America and the Caribbean,South America
+Peru,PER,Latin America and the Caribbean,South America
+Saint Kitts and Nevis,KNA,Latin America and the Caribbean,Caribbean
+Saint Lucia,LCA,Latin America and the Caribbean,Caribbean
+Saint Vincent and the Grenadines,VCT,Latin America and the Caribbean,Caribbean
+Suriname,SUR,Latin America and the Caribbean,South America
+Trinidad and Tobago,TTO,Latin America and the Caribbean,Caribbean
+Uruguay,URY,Latin America and the Caribbean,South America
+Venezuela,VEN,Latin America and the Caribbean,South America
