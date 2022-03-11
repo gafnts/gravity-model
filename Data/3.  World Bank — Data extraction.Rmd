@@ -60,7 +60,7 @@ write <-
 
 ```{r}
 partners <- 
-  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/Main%20data%20frames/partners_names.csv") %>% 
+  read_csv(here("Data", "Main data frames", "partners_names.csv")) %>% 
   pull(partner_iso)
 ```
 

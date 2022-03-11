@@ -77,6 +77,32 @@ BB,Barbados,2017,4978000000,17391.6689084614,286229,BRB,Latin America & Caribbea
 BB,Barbados,2018,5086500000,17745.2553725928,286640,BRB,Latin America & Caribbean,Bridgetown,-59.6105,13.0935,High income,Not classified
 BB,Barbados,2019,5209000000,18148.4978451054,287021,BRB,Latin America & Caribbean,Bridgetown,-59.6105,13.0935,High income,Not classified
 BB,Barbados,2020,4418000000,15373.8547035017,287371,BRB,Latin America & Caribbean,Bridgetown,-59.6105,13.0935,High income,Not classified
+BO,Bolivia,1995,6715220507.05164,880.992686367672,7622334,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,1996,7396966657.47054,950.856386162623,7779268,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,1997,7925673448.41368,998.515953217447,7937453,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,1998,8497545598.08352,1049.49937364874,8096761,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,1999,8285075872.27307,1003.39223063895,8257066,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2000,8397912509.09679,997.581748874387,8418270,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2001,8141537937.61068,948.870211337892,8580244,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2002,7905485216.17852,904.225799882294,8742822,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2003,8082364868.39357,907.537415801528,8905820,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2004,8773451738.91129,967.406458598204,9069044,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2005,9549077869.10651,1034.31180039586,9232301,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2006,11451869164.7112,1218.87407027713,9395449,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2007,13120183156.7149,1372.62836843372,9558438,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2008,16674324634.2373,1715.2083925524,9721457,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2009,17339992165.2422,1754.20946375615,9884790,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2010,19649631314.0482,1955.46018156049,10048597,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2011,23963033430.5954,2346.33784403698,10212951,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2012,27084497482.8616,2609.880562178,10377677,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2013,30659338880.3786,2908.2003704458,10542375,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2014,32996188012.6821,3081.87882321413,10706517,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2015,33000198248.3362,3035.97165489786,10869732,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2016,33941126200.0606,3076.65643989367,11031822,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2017,37508642165.3366,3351.12434384125,11192853,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2018,40287647930.4761,3548.59078021377,11353140,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2019,40895322843.7851,3552.06814321502,11513102,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
+BO,Bolivia,2020,36572764862.8234,3133.09980321504,11673029,BOL,Latin America & Caribbean,La Paz,-66.1936,-13.9908,Lower middle income,IBRD
 BR,Brazil,1995,769333330368.987,4748.38820787605,162019889,BRA,Latin America & Caribbean,Brasilia,-47.9292,-15.7801,Upper middle income,IBRD
 BR,Brazil,1996,850426433004.077,5166.16393308148,164614682,BRA,Latin America & Caribbean,Brasilia,-47.9292,-15.7801,Upper middle income,IBRD
 BR,Brazil,1997,883206452795.124,5282.04946994988,167209046,BRA,Latin America & Caribbean,Brasilia,-47.9292,-15.7801,Upper middle income,IBRD
@@ -779,3 +805,29 @@ VC,St. Vincent and the Grenadines,2017,792177777.777778,7213.02585706279,109826,
 VC,St. Vincent and the Grenadines,2018,811300000,7361.4009618002,110210,VCT,Latin America & Caribbean,Kingstown,-61.2653,13.2035,Upper middle income,Blend
 VC,St. Vincent and the Grenadines,2019,825040740.740741,7460.15336179271,110593,VCT,Latin America & Caribbean,Kingstown,-61.2653,13.2035,Upper middle income,Blend
 VC,St. Vincent and the Grenadines,2020,807474074.074074,7278.01629673695,110947,VCT,Latin America & Caribbean,Kingstown,-61.2653,13.2035,Upper middle income,Blend
+VE,"Venezuela, RB",1995,77407726244.3439,3529.58912817882,21931087,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",1996,70543211119.099,3151.26927826974,22385650,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",1997,85843534588.6206,3758.84493439744,22837743,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",1998,91331203433.1629,3921.7184738401,23288567,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",1999,97976886247.3172,4127.10898147848,23739835,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2000,117140723529.412,4842.03660114822,24192449,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2001,122903960204.505,4986.67578837167,24646471,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2002,92893587733.6549,3700.87974006377,25100407,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2003,83620628582.1082,3272.61502369118,25551624,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2004,112453382329.615,4325.69675587558,25996594,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2005,145510008134.75,5504.97724046148,26432445,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2006,183477522123.894,6833.37891180263,26850190,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2007,230364012575.687,8454.46953571021,27247601,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2008,315953388510.678,11432.7459247258,27635827,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2009,329787628928.471,11765.0997566078,28031010,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2010,393192354510.653,13825.3571160818,28439942,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2011,316482190800.364,10955.5380141821,28887873,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2012,381286237847.667,12986.2226921492,29360827,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2013,371005379786.566,12457.7686017666,29781046,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2014,482359318767.703,16055.6453173826,30042973,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2015,NA,NA,30081827,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2016,NA,NA,29851249,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2017,NA,NA,29402480,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2018,NA,NA,28887117,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2019,NA,NA,28515829,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
+VE,"Venezuela, RB",2020,NA,NA,28435943,VEN,Latin America & Caribbean,Caracas,-69.8371,9.08165,Upper middle income,IBRD
