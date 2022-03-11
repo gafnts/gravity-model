@@ -117,14 +117,14 @@ trade %>% left_join(countries, by = c("partner_iso", "partner"))
 
 ```{r}
 partners <- 
-  read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/World%20Bank%20raw/partners_wdi.rds?raw=true") %>% 
+  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/World%20Bank%20raw/partners_wdi.csv") %>% 
   select(year:iso3c, capital:latitude) %>% 
   rename("partner_iso" = iso3c)
 ```
 
 ```{r}
 guatemala <- 
-  read_rds("https://github.com/gafnts/gravity-model/blob/main/Data/World%20Bank%20raw/guatemala_wdi.rds?raw=true") %>% 
+  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/World%20Bank%20raw/guatemala_wdi.csv") %>% 
   select(year:iso3c, capital:latitude) %>% 
   rename("reporter_iso" = iso3c)
 ```
