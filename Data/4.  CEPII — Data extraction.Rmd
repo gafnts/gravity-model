@@ -12,7 +12,7 @@ pacman::p_load(tidyverse, magrittr, here)
 
 ### Importing CEPII gravity database
 
-Documentation: [<http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>](http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf){.uri}
+Documentation: [\<http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>](http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf){.uri}
 
 ```{r}
 gravity_raw <- read_csv(here("Data", "CEPII raw", "Gravity_V202102.csv"))
@@ -37,14 +37,14 @@ transaction_costs <-
          rta)
 
 partners <- 
-  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/Main%20data%20frames/partners_names.csv") %>% 
+  read_csv(here("Data", "Main data frames", "partners_names.csv")) %>% 
   select(partner_iso)
 
 transaction_costs %<>% 
   inner_join(partners)
 ```
 
-### Adding year 2020 
+### Adding year 2020
 
 The cost database seems to work just fine. Although there's one thing: It stops at 2019. Since all of the variables are time-invariant, fixing it shouldn't be a problem.
 
@@ -53,7 +53,7 @@ transaction_costs %<>%
   group_by(partner_iso) %>%
   uncount((row_number() == max(row_number())) + 1) %>% 
   ungroup() %>% 
-  mutate(year_2 = rep(1995:2020, times = 30)) %>% 
+  mutate(year_2 = rep(1995:2020, times = 31)) %>% 
   select(year = year_2, reporter_iso:rta)
 ```
 
