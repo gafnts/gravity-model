@@ -19,18 +19,26 @@ partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"
 ### Data wrangling
 
 ```{r}
-# Remember to fix transaction_costs tibble
-trade_flows %<>% 
-  filter(between(year, 1995, 2019))
-
-# Aggregate total trade flows by exports
+# Total trade flows (by exports)
 trade_flows %<>% 
   filter(trade_flow == "Export") %>% 
   group_by(year, reporter_iso, partner_iso) %>% 
   summarise(trade_value = sum(trade_value_usd)) %>% 
   ungroup()
+```
 
-# Join trade flows with transaction costs
+Note that after adding the trade flows by year, there are only 766 observations, instead of the 780 that should be. Do these zeros reflect the lack of trade flows in specific years?
+
+```{r}
+# These are the countries and years for which we don't have trade flows
+transaction_costs %>% anti_join(trade_flows) %>% View
+
+# Remove BOL and VEN from trade flows data frame
+trade_flows %>% anti_join(transaction_costs) %>% View
+```
+
+```{r}
+# Join transaction costs with trade flows
 gravity_raw <- 
   trade_flows %>% 
   left_join(transaction_costs) %>% 
@@ -93,9 +101,9 @@ rows %<>%
   pivot_longer(cols = (2:length(rows))) %>% 
   select(-countries)
 
-# Pull only the partners with complete observations (2019)
+# Pull only the partners with complete observations
 complete <- 
-  rows %>% filter(value == 25) %>% pull(1)
+  rows %>% filter(value == 26) %>% pull(1)
 ```
 
 ```{r}
