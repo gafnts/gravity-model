@@ -12,16 +12,18 @@ pacman::p_load(tidyverse, magrittr, here)
 
 ### Importing CEPII gravity database
 
+Documentation: [<http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>](http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf){.uri}
+
 ```{r}
 gravity_raw <- read_csv(here("Data", "CEPII raw", "Gravity_V202102.csv"))
 ```
 
-### Selecting transaction cost variables for observations in the country dataframe
+### Selecting transaction cost variables
 
 ```{r}
 transaction_costs <- 
   gravity_raw %>% 
-  filter(between(year, 1995, 2020), iso3_o == "GTM") %>% 
+  filter(between(year, 1995, 2019), iso3_o == "GTM") %>% 
   select(year, 
          reporter_iso = iso3_o, 
          partner_iso = iso3_d, 
@@ -42,13 +44,56 @@ transaction_costs %<>%
   inner_join(partners)
 ```
 
-The cost database seems to work just fine. Although there's one thing: It stops at 2019. Since all of the variables are time-invariant fixing it shouldn't be a problem latter.
+### Adding year 2020 
 
-### Exporting transaction cost database
+The cost database seems to work just fine. Although there's one thing: It stops at 2019. Since all of the variables are time-invariant, fixing it shouldn't be a problem.
+
+```{r}
+transaction_costs %<>% 
+  group_by(partner_iso) %>%
+  uncount((row_number() == max(row_number())) + 1) %>% 
+  ungroup() %>% 
+  mutate(year_2 = rep(1995:2020, times = 30)) %>% 
+  select(year = year_2, reporter_iso:rta)
+```
+
+It wasn't.
+
+### Integrity check
+
+```{r}
+# Extract partners names
+names <- 
+  partners %>% 
+  as.list()
+
+countries <- names$partner_iso
+
+# How many observations are there per partner?
+rows <- tibble(countries = countries)
+
+for(i in countries) {
+  rows[[i]] <- transaction_costs %>% filter(partner_iso == i) %>% nrow()
+}
+
+rows %<>% 
+  slice(1) %>% 
+  pivot_longer(cols = (2:length(rows))) %>% 
+  select(-countries)
+
+# Pull only the partners with complete observations
+complete <- rows %>% filter(value == 26) %>% pull(1)
+
+# Are we good?
+summary(transaction_costs)
+summary(complete)
+
+# Yes we are
+```
+
+### Exporting transaction costs data
 
 ```{r}
 transaction_costs %>% 
   write_csv(here("Data", "Main data frames", "transaction_costs.csv"))
 ```
-
-Database documentation: <http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>
