@@ -114,6 +114,7 @@ rows %<>%
 complete <- rows %>% filter(value == 26) %>% pull(1)
 
 # Are we good?
+summary(partners_wdi)
 summary(countries)
 summary(complete)
 

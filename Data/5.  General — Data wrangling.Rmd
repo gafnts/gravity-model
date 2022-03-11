@@ -84,7 +84,9 @@ names <-
         
         # South America
         "Argentina", "Bolivia",  "Brazil", "Chile",
-        "Colombia", "Ecuador", "Venezuela", "Guyana",
+        "Colombia", "Ecuador", 
+        # "Venezuela", 
+        "Guyana",
         "Paraguay", "Peru", "Uruguay", "Suriname",
         
         # Caribbean
