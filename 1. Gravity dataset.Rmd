@@ -1,7 +1,7 @@
 # Gravity dataset
 
 ```{r}
-pacman::p_load(tidyverse, magrittr, here, gravity)
+pacman::p_load(tidyverse, magrittr, here)
 ```
 
 ## 1 --- Basic dataset
@@ -20,12 +20,33 @@ partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"
 
 ```{r}
 # Total trade flows (by exports)
-trade_flows %<>% 
+total_exports <- 
+  trade_flows %>% 
   filter(trade_flow == "Export") %>% 
-  group_by(year, reporter_iso, partner_iso) %>% 
+  group_by(year, partner_iso) %>% 
   summarise(trade_value = sum(trade_value_usd)) %>% 
   ungroup()
 ```
+
+### Data visualization
+
+```{r}
+total_exports %>% 
+  ggplot(aes(year, trade_value)) +
+  geom_line() +
+  facet_wrap(~ partner_iso, scales = "free")
+```
+
+**Observations:**
+
+There is no data available in the Comtrade database for KNA (1995-2000)\
+ATG (1995-2000), BOL (2015-2020), BRA (2015-2020)
+
+-   ARG, BOL, BRA and CHL are from the `sa_exports_fst` tibble. Curious, huh?
+
+-   Nor, KNA and ATG are countries with extremely low levels of output.
+
+**Notes:**
 
 Note that after adding the trade flows by year, there are only 766 observations, instead of the 806 that should be. Do these zeros reflect the lack of trade flows in specific years?
 
