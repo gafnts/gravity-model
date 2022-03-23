@@ -82,3 +82,10 @@ car_exports_trd <-
   get(partners = c("Bahamas", "Saint Kitts and Nevis", "Saint Vincent and the Grenadines", "Saint Lucia"),
       years = c(1995:2020))
 write(car_exports_trd)
+
+## Safety checks
+chl <-
+  get(partners = "Chile",
+      years = c(1995:2020))
+write(chl)
+
