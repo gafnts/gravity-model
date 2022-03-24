@@ -39,19 +39,25 @@ total_exports %>%
 
 **Observations:**
 
-There is no data available in the Comtrade database for KNA (1995-2000) and ATG (1995-2000).\
-Do I have to separate ARG/BOL from BRA/CHL in imports data extraction?
+Wouldn't be easier to just extract trade data country by country?\
+If that doesn't wotks, well... AG2.\
+There is no data available in the Comtrade database for KNA (1995-2000), ATG (1995-2000), PRY (1995), GRD (1996, 1997).\
+Incomplete series in imports: DMA, GRD, LCA, VCT\
+\
+**Remember to:**\
+Generate new data frames from `car_imports_snd` and `car_imports_trd` in imports data extraction.
 
 **Notes:**
 
-Note that after adding the trade flows by year, there are only 766 observations, instead of the 806 that should be. Do these zeros reflect the lack of trade flows in specific years?
+Note that after adding the trade flows by year, there are only 766 observations, instead of the 806 that should be. Do these zeros reflect the lack of trade flows in specific years?\
 
 ```{r}
-# These are the countries and years for which we don't have trade flows
-transaction_costs %>% anti_join(trade_flows) %>% View
+# These are the countries and years for which something's wrong in total_exports
+# The problem is there is TMI in those years, so comtrade defaults to just not extracting 'em
+transaction_costs %>% anti_join(total_exports) %>% View
 
 # Remove VEN from trade flows data frame
-trade_flows %>% anti_join(transaction_costs) %>% View
+total_exports %>% anti_join(transaction_costs) %>% View
 ```
 
 ```{r}
