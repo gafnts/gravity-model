@@ -53,7 +53,7 @@ transaction_costs %<>%
   group_by(partner_iso) %>%
   uncount((row_number() == max(row_number())) + 1) %>% 
   ungroup() %>% 
-  mutate(year_2 = rep(1995:2020, times = 31)) %>% 
+  mutate(year_2 = rep(1995:2020, times = 29)) %>% 
   select(year = year_2, reporter_iso:rta)
 ```
 
