@@ -74,11 +74,11 @@ car_imports_fst <-
 write(car_imports_fst)
 
 car_imports_snd <-
-  get(partners = c("Antigua and Barbuda", "Dominica", "Grenada", "Jamaica", "Barbados"),
+  get(partners = c("Dominica", "Grenada", "Jamaica", "Barbados"),
       years = c(1995:2020))
 write(car_imports_snd)
 
 car_imports_trd <-
-  get(partners = c("Bahamas", "Saint Kitts and Nevis", "Saint Vincent and the Grenadines", "Saint Lucia"),
+  get(partners = c("Bahamas", "Saint Vincent and the Grenadines", "Saint Lucia"),
       years = c(1995:2020))
 write(car_imports_trd)
