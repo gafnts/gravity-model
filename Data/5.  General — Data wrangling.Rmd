@@ -119,7 +119,7 @@ trade %>% left_join(countries, by = c("partner_iso", "partner"))
 
 ```{r}
 partners <- 
-  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/World%20Bank%20raw/partners_wdi.csv") %>% 
+  read_csv(here("Data", "World Bank raw", "partners_wdi.csv")) %>% 
   select(year:iso3c, capital:latitude) %>% 
   rename("partner_iso" = iso3c)
 ```
