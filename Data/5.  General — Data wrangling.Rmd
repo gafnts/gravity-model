@@ -28,21 +28,6 @@ imports_raw <-
 setwd(here())
 ```
 
-### Corrections
-
-```{r}
-arg_raw <- read_rds(here("Data", "Exports raw", "arg.rds"))
-chl_raw <- read_rds(here("Data", "Exports raw", "chl.rds"))
-```
-
-```{r}
-`%notin%` <- Negate(`%in%`)
-
-exports_raw %<>% 
-  filter(partner_iso %notin% c("ARG", "CHL")) %>% 
-  bind_rows(arg_raw, chl_raw)
-```
-
 ### Binding and cleaning
 
 ```{r}
