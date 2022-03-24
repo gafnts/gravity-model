@@ -13,7 +13,6 @@ $$
 Where $(Y)$ denotes the gross domestic product, $Y^{pc}$ is the output per capita and $|Y_i^{pc} - Y_j^{pc}|$ represents the Linder variable.
 
 ```{r}
-if (!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse, here, WDI)
 ```
 
