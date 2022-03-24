@@ -40,6 +40,7 @@ total_exports %>%
 **Observations:**
 
 There is no data available in the Comtrade database for KNA (1995-2000) and ATG (1995-2000).\
+Do I have to separate ARG/BOL from BRA/CHL in imports data extraction?
 
 **Notes:**
 
