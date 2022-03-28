@@ -31,9 +31,8 @@ total_exports %>%
   facet_wrap(~ partner_iso, scales = "free")
 ```
 
-Countries and years for which there are zero trade flows:
-
 ```{r}
+# Countries and years for which there are zero trade flows
 transaction_costs %>% anti_join(total_exports) %>% View
 ```
 
@@ -49,6 +48,7 @@ exports <-
   left_join(partners_macro, 
             by = c("year", "partner_iso")) %>% 
   select(year:gdp_pcap_i, "gdp_j" = gdp, "gdp_pcap_j" = gdp_pcap) %>% 
+  rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "exports" = trade_value) %>% 
   write_csv("exports.csv")
 ```
 
@@ -152,7 +152,7 @@ gravity %<>% filter(partner_iso %in% complete)
 gravity %>% distinct(partner_iso) %>% dim()
 ```
 
-## 2 ---  Badly specified gravity model estimation
+## 2 --- Badly specified gravity model estimation
 
 ```{r}
 pacman::p_load(panelr, plm, broom)
