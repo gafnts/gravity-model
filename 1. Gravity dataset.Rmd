@@ -1,12 +1,8 @@
-# Gravity dataset
+# Gravity datasets
 
 ```{r}
 pacman::p_load(tidyverse, magrittr, here)
 ```
-
-## 1 --- Basic dataset
-
-### Importing dataframes
 
 ```{r}
 trade_flows <- read_csv(here("Data", "Main data frames", "trade_flows.csv"))
@@ -16,19 +12,17 @@ partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"
 partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
 ```
 
-### Data wrangling
+## 1 --- Total exports dataset
 
 ```{r}
-# Total trade flows (by exports)
 total_exports <- 
   trade_flows %>% 
   filter(trade_flow == "Export") %>% 
   group_by(year, partner_iso) %>% 
   summarise(trade_value = sum(trade_value_usd)) %>% 
-  ungroup()
+  ungroup() %>% 
+  arrange(partner_iso)
 ```
-
-### Data visualization
 
 ```{r}
 total_exports %>% 
@@ -37,28 +31,54 @@ total_exports %>%
   facet_wrap(~ partner_iso, scales = "free")
 ```
 
-**Observations:**
-
-Wouldn't be easier to just extract trade data country by country?\
-If that doesn't wotks, well... AG2.\
-There is no data available in the Comtrade database for KNA (1995-2000), ATG (1995-2000), PRY (1995), GRD (1996, 1997).\
-Incomplete series in imports: DMA, GRD, LCA, VCT\
-\
-**Remember to:**\
-Generate new data frames from `car_imports_snd` and `car_imports_trd` in imports data extraction.
-
-**Notes:**
-
-Note that after adding the trade flows by year, there are only 766 observations, instead of the 806 that should be. Do these zeros reflect the lack of trade flows in specific years?\
+Countries and years for which there are zero trade flows:
 
 ```{r}
-# These are the countries and years for which something's wrong in total_exports
-# The problem is there is TMI in those years, so comtrade defaults to just not extracting 'em
 transaction_costs %>% anti_join(total_exports) %>% View
+```
+
+```{r}
+exports <- 
+  transaction_costs %>% 
+  left_join(total_exports) %>% 
+  select(year:partner_iso, trade_value, everything()) %>% 
+  mutate(across(where(is.numeric), ~ replace(., is.na(.), 0)))
+
+exports %>% write_csv(here("exports.csv"))
+```
+
+## 2 --- Total imports dataset
+
+```{r}
+total_imports <- 
+  trade_flows %>% 
+  filter(trade_flow == "Import") %>% 
+  group_by(year, partner_iso) %>% 
+  summarise(trade_value = sum(trade_value_usd)) %>% 
+  ungroup() %>% 
+  arrange(partner_iso)
+```
+
+```{r}
+total_imports %>% 
+  ggplot(aes(year, trade_value)) +
+  geom_line() +
+  facet_wrap(~ partner_iso, scales = "free")
+```
+
+**Imports:**
+
+Generate new data frames from `car_imports_snd` and `car_imports_trd` in imports data extraction.
+
+```{r}
+# Countries and years for which there are zero trade flows in total_exports
+transaction_costs %>% anti_join(total_imports) %>% View
 
 # Remove VEN from trade flows data frame
-total_exports %>% anti_join(transaction_costs) %>% View
+total_imports %>% anti_join(transaction_costs) %>% View
 ```
+
+## Other things
 
 ```{r}
 # Join transaction costs with trade flows
