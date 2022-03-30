@@ -1,4 +1,4 @@
-# Gravity datasets
+# Gravity data sets
 
 ```{r}
 pacman::p_load(tidyverse, magrittr, here)
@@ -12,7 +12,9 @@ partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"
 partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
 ```
 
-## 1 --- Total exports dataset
+## 1 --- Gravity (total flows)
+
+### Exports
 
 ```{r}
 total_exports <- 
@@ -48,11 +50,10 @@ exports <-
   left_join(partners_macro, 
             by = c("year", "partner_iso")) %>% 
   select(year:gdp_pcap_i, "gdp_j" = gdp, "gdp_pcap_j" = gdp_pcap) %>% 
-  rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "exports" = trade_value) %>% 
-  write_csv("exports.csv")
+  rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "exports" = trade_value)
 ```
 
-## 2 --- Total imports dataset
+### Imports
 
 ```{r}
 total_imports <- 
@@ -72,17 +73,14 @@ total_imports %>%
 ```
 
 ```{r}
-# Countries and years for which there are zero trade flows in total_exports
+# There are 80 zeros in the total_import data set
 transaction_costs %>% anti_join(total_imports) %>% View
-
-# Remove VEN from trade flows data frame
-total_imports %>% anti_join(transaction_costs) %>% View
 ```
 
 ```{r}
 imports <- 
   transaction_costs %>% 
-  left_join(total_exports) %>% 
+  left_join(total_imports) %>% 
   select(year:partner_iso, trade_value, everything()) %>% 
   mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
   left_join(gtm_macro, 
@@ -91,57 +89,32 @@ imports <-
   left_join(partners_macro, 
             by = c("year", "partner_iso")) %>% 
   select(year:gdp_pcap_i, "gdp_j" = gdp, "gdp_pcap_j" = gdp_pcap) %>% 
-  rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "exports" = trade_value) %>% 
-  write_csv("exports.csv")
+  rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "imports" = trade_value)
 ```
 
-## Other things
+### Final data set
 
 ```{r}
-# Clean macro data for country i
-gtm_macro %<>% 
-  select(year, 
-         reporter_iso,
-         i_gdp = gdp,
-         i_gdp_pcap = gdp_pcap)
-
-# Join with gravity raw
-exports %<>% 
-  left_join(gtm_macro)
-
-# Clean macro data for countries j
-partners_macro %<>% 
-  select(year, 
-         partner_iso,
-         j_gdp = gdp,
-         j_gdp_pcap = gdp_pcap)
-
-# Join with gravity raw
 gravity <- 
   exports %>% 
-  left_join(partners_macro)
+  select(exports) %>%
+  bind_cols(imports) %>% 
+  select(year:iso_j, exports, imports, everything()) %>% 
+  write_csv("gravity.csv")
 ```
 
-### Cleaning basic dataset
-
-I think a lot of data wragling needs to be done before we can estimate the actual model. But the last few hours where very productive! Going forward it's gonna be necessary to create a looped function that let me make sure all countries have the number of rows needed. It will be vital for more complex dataframes coming up.
+## Safety check
 
 ```{r}
 # Extract partners names
-names <- 
-  gravity %>% 
-  distinct(partner_iso) %>% 
-  as.list()
-
-countries <- 
-  names$partner_iso
+names <- gravity %>% distinct(iso_j) %>% as.list()
+countries <- names$iso_j
 
 # How many observations are there per partner?
-rows <- 
-  tibble(countries = countries)
+rows <- tibble(countries = countries)
 
 for(i in countries) {
-  rows[[i]] <- gravity %>% filter(partner_iso == i) %>% nrow()
+  rows[[i]] <- gravity %>% filter(iso_j == i) %>% nrow()
 }
 
 rows %<>% 
@@ -150,8 +123,7 @@ rows %<>%
   select(-countries)
 
 # Pull only the partners with complete observations
-complete <- 
-  rows %>% filter(value == 26) %>% pull(1)
+complete <- rows %>% filter(value == 26) %>% pull(1)
 
 setequal(countries, complete)
 ```
