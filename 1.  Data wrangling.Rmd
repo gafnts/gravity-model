@@ -12,7 +12,7 @@ partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"
 partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
 ```
 
-## 1 --- Gravity (total flows)
+## 1 --- Total flows
 
 ### Exports
 
@@ -103,7 +103,7 @@ gravity <-
   write_csv("gravity.csv")
 ```
 
-## Safety check
+### Safety check
 
 ```{r}
 # Extract partners names
@@ -112,49 +112,12 @@ countries <- names$iso_j
 
 # How many observations are there per partner?
 rows <- tibble(countries = countries)
-
-for(i in countries) {
-  rows[[i]] <- gravity %>% filter(iso_j == i) %>% nrow()
-}
-
-rows %<>% 
-  slice(1) %>% 
-  pivot_longer(cols = (2:length(rows))) %>% 
-  select(-countries)
+for(i in countries) {rows[[i]] <- gravity %>% filter(iso_j == i) %>% nrow()}
+rows %<>% slice(1) %>% pivot_longer(cols = (2:length(rows))) %>% select(-countries)
 
 # Pull only the partners with complete observations
 complete <- rows %>% filter(value == 26) %>% pull(1)
 
+# Are the two vector equal?
 setequal(countries, complete)
-```
-
-```{r}
-# Gravity db with only complete partners
-gravity %<>% filter(partner_iso %in% complete)
-
-# How many partners does the db have?
-gravity %>% distinct(partner_iso) %>% dim()
-```
-
-## 2 --- Badly specified gravity model estimation
-
-```{r}
-pacman::p_load(panelr, plm, broom)
-```
-
-$$
-X_{ij}=G\frac{Y_{i}^{\beta_{1}}Y_{j}^{\beta_{2}}}{t_{ij}^{\beta_{3}}}.
-$$
-
-```{r}
-panel <- panel_data(gravity %>% filter(trade_value > 0), id = partner_iso, wave = year)
-```
-
-```{r}
-fit <- plm(log(trade_value) ~ log(i_gdp) + log(j_gdp) + log(dist),
-           data = panel,
-           index = c("partner_iso", "year"),
-           model = "pooling")
-
-summary(fit)
 ```
