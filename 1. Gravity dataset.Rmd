@@ -71,9 +71,7 @@ total_imports %>%
   facet_wrap(~ partner_iso, scales = "free")
 ```
 
-**Imports:**
-
-Generate new data frames from `car_imports_snd` and `car_imports_trd` in imports data extraction.
+Generate new data frames from `car_imports_trd` in imports data extraction.
 
 ```{r}
 # Countries and years for which there are zero trade flows in total_exports
@@ -81,6 +79,22 @@ transaction_costs %>% anti_join(total_imports) %>% View
 
 # Remove VEN from trade flows data frame
 total_imports %>% anti_join(transaction_costs) %>% View
+```
+
+```{r}
+imports <- 
+  transaction_costs %>% 
+  left_join(total_exports) %>% 
+  select(year:partner_iso, trade_value, everything()) %>% 
+  mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+  left_join(gtm_macro, 
+            by = c("year", "reporter_iso")) %>% 
+  select(year:rta, "gdp_i" = gdp, "gdp_pcap_i" = gdp_pcap) %>% 
+  left_join(partners_macro, 
+            by = c("year", "partner_iso")) %>% 
+  select(year:gdp_pcap_i, "gdp_j" = gdp, "gdp_pcap_j" = gdp_pcap) %>% 
+  rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "exports" = trade_value) %>% 
+  write_csv("exports.csv")
 ```
 
 ## Other things
