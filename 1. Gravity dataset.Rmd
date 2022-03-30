@@ -71,8 +71,6 @@ total_imports %>%
   facet_wrap(~ partner_iso, scales = "free")
 ```
 
-Generate new data frames from `car_imports_trd` in imports data extraction.
-
 ```{r}
 # Countries and years for which there are zero trade flows in total_exports
 transaction_costs %>% anti_join(total_imports) %>% View
