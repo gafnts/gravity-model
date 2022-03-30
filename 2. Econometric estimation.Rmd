@@ -1,0 +1,38 @@
+# Econometric estimation
+
+```{r}
+pacman::p_load(tidyverse, magrittr, here, panelr, plm, broom)
+```
+
+```{r}
+gravity <- read_csv("gravity.csv")
+```
+
+## Simple gravity estimation
+
+$$
+X_{ij}=G\frac{Y_{i}^{\beta_{1}}Y_{j}^{\beta_{2}}}{t_{ij}^{\beta_{3}}}.
+$$
+
+```{r}
+exports <- panel_data(gravity %>% filter(exports > 0), id = iso_j, wave = year)
+imports <- panel_data(gravity %>% filter(imports > 0), id = iso_j, wave = year)
+```
+
+```{r}
+exports_fit <- plm(log(exports) ~ log(gdp_i) + log(gdp_j) + log(dist),
+                   data = exports,
+                   index = c("iso_j", "year"),
+                   model = "pooling")
+
+summary(exports_fit)
+```
+
+```{r}
+imports_fit <- plm(log(imports) ~ log(gdp_i) + log(gdp_j) + log(dist),
+                   data = imports,
+                   index = c("iso_j", "year"),
+                   model = "pooling")
+
+summary(imports_fit)
+```
