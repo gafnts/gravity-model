@@ -39,6 +39,8 @@ summary(imports_fit)
 
 ## Poisson Pseudo Maximum Likelihood
 
+PPML can handle zero trade flows, so the data wrangling process needs to account for log forms while preventing that the zeros go to infinity.
+
 ```{r}
 gravity_test <- 
   gravity |> 
