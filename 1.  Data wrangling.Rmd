@@ -1,28 +1,64 @@
 # Gravity data sets
 
 ```{r}
-pacman::p_load(tidyverse, magrittr, here)
+pacman::p_load(tidyverse, magrittr, here, plotly)
 ```
 
 ```{r}
+partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
+
 trade_flows <- read_csv(here("Data", "Main data frames", "trade_flows.csv"))
 transaction_costs <- read_csv(here("Data", "Main data frames", "transaction_costs.csv"))
-gtm_macro <- read_csv(here("Data", "Main data frames", "gtm_macro.csv"))
-partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"))
-partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
+
+gtm_macro <- 
+  read_csv(here("Data", "Main data frames", "gtm_macro.csv")) |> 
+  select(!c(status, lastupdated, capital, longitude, latitude)) |> 
+  relocate(year, reporter_iso, everything())
+
+partners_macro <- 
+  read_csv(here("Data", "Main data frames", "partners_macro.csv")) |> 
+  select(!c(status, lastupdated, capital, longitude, latitude)) |> 
+  relocate(year, partner_iso, everything())
+```
+
+```{r}
+ggplotly(
+  partners_macro |> 
+  ggplot(aes(x = year, y = exchange, color = partner_iso)) + 
+  geom_line()
+)
+
+ggplotly(
+  macro |> 
+  ggplot(aes(x = year, y = exchange_j, color = partner_iso)) + 
+  geom_line()
+)
 ```
 
 ## 1 --- Gravity variables
 
 $$
-G_{ij,t} = GDP_{i,t} + GDP_{j,t} \\
+TGDP_{ij,t} = GDP_{i,t} + GDP_{j,t} \\
 RFE_{ij, t} = \Bigg| ln\Bigg(\frac{GDP_{i, t}}{N_{i, t}}\Bigg) - ln\Bigg(\frac{GDP_{j, t}}{N_{j, t}}\Bigg) \Bigg| \\
 SIM_{ij, t} = 1 - \Big(\frac{ln(GDP_{i, t})}{ln(GDP_{i, t}+GDP_{j, t})}\Big)^2 - \Big(\frac{ln(GDP_{j, t})}{ln(GDP_{i, t}+GDP_{j, t})}\Big)^2 \\
 RER_{ij, t} = \bigg(\frac{LC_{i, t}}{LC_{j, t}}\bigg)\bigg(\frac{P_{j, t}}{P_{i, t}}\bigg)
 $$
 
 ```{r}
-
+macro <- 
+  gtm_macro |> 
+  left_join(partners_macro, by = "year", suffix = c("_i", "_j")) |> 
+  arrange(partner_iso, year) |> 
+  group_by(partner_iso) |> 
+  mutate(
+    tgdp = gdp_i + gdp_j,
+    rfe = abs(log(gdp_i/population_i) - log(gdp_j/population_j)),
+    sim = 1 - ((log(gdp_i)/log(gdp_i + gdp_j))^2 - (log(gdp_j)/log(gdp_i + gdp_j))^2),
+    rer = (exchange_i/exchange_j) * (deflator_j/deflator_i),
+    rer_1 = (exchange_i/exchange_j),
+    rer_2 = (deflator_j/deflator_i),
+    rer_3 = rer_1 * rer_2
+  )
 ```
 
 ## 2 --- Total flows
@@ -31,15 +67,15 @@ $$
 
 ```{r}
 total_exports <- 
-  trade_flows %>% 
-  group_by(year, partner_iso) %>% 
-  summarise(trade_value = sum(trade_value_usd)) %>% 
-  ungroup() %>% 
+  trade_flows |> 
+  group_by(year, partner_iso) |> 
+  summarise(trade_value = sum(trade_value_usd)) |> 
+  ungroup() |> 
   arrange(partner_iso)
 ```
 
 ```{r}
-total_exports %>% 
+total_exports |> 
   ggplot(aes(year, trade_value)) +
   geom_line() +
   facet_wrap(~ partner_iso, scales = "free")
@@ -47,21 +83,17 @@ total_exports %>%
 
 ```{r}
 # Countries and years for which there are zero trade flows
-transaction_costs %>% anti_join(total_exports) %>% View
+transaction_costs |> anti_join(total_exports) |> View
 ```
 
 ```{r}
 exports <- 
-  transaction_costs %>% 
-  left_join(total_exports) %>% 
-  select(year:partner_iso, trade_value, everything()) %>% 
-  mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
-  left_join(gtm_macro, 
-            by = c("year", "reporter_iso")) %>% 
-  select(year:rta, "gdp_i" = gdp, "gdp_pcap_i" = gdp_pcap) %>% 
-  left_join(partners_macro, 
-            by = c("year", "partner_iso")) %>% 
-  select(year:gdp_pcap_i, "gdp_j" = gdp, "gdp_pcap_j" = gdp_pcap) %>% 
+  transaction_costs |> 
+  left_join(total_exports) |> 
+  select(year:partner_iso, trade_value, everything()) |> 
+  mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) |> 
+  left_join(macro,
+            by = c("year", "reporter_iso", "partner_iso")) |> 
   rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "exports" = trade_value)
 ```
 
@@ -69,16 +101,16 @@ exports <-
 
 ```{r}
 total_imports <- 
-  trade_flows %>% 
-  filter(trade_flow == "Import") %>% 
-  group_by(year, partner_iso) %>% 
-  summarise(trade_value = sum(trade_value_usd)) %>% 
-  ungroup() %>% 
+  trade_flows |> 
+  filter(trade_flow == "Import") |> 
+  group_by(year, partner_iso) |> 
+  summarise(trade_value = sum(trade_value_usd)) |> 
+  ungroup() |> 
   arrange(partner_iso)
 ```
 
 ```{r}
-total_imports %>% 
+total_imports |> 
   ggplot(aes(year, trade_value)) +
   geom_line() +
   facet_wrap(~ partner_iso, scales = "free")
@@ -86,21 +118,21 @@ total_imports %>%
 
 ```{r}
 # There are 80 zeros in the total_import data set
-transaction_costs %>% anti_join(total_imports) %>% View
+transaction_costs |> anti_join(total_imports) |> View
 ```
 
 ```{r}
 imports <- 
-  transaction_costs %>% 
-  left_join(total_imports) %>% 
-  select(year:partner_iso, trade_value, everything()) %>% 
-  mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) %>% 
+  transaction_costs |> 
+  left_join(total_imports) |> 
+  select(year:partner_iso, trade_value, everything()) |> 
+  mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) |> 
   left_join(gtm_macro, 
-            by = c("year", "reporter_iso")) %>% 
-  select(year:rta, "gdp_i" = gdp, "gdp_pcap_i" = gdp_pcap) %>% 
+            by = c("year", "reporter_iso")) |> 
+  select(year:rta, "gdp_i" = gdp, "gdp_pcap_i" = gdp_pcap) |> 
   left_join(partners_macro, 
-            by = c("year", "partner_iso")) %>% 
-  select(year:gdp_pcap_i, "gdp_j" = gdp, "gdp_pcap_j" = gdp_pcap) %>% 
+            by = c("year", "partner_iso")) |> 
+  select(year:gdp_pcap_i, "gdp_j" = gdp, "gdp_pcap_j" = gdp_pcap) |> 
   rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "imports" = trade_value)
 ```
 
@@ -108,10 +140,10 @@ imports <-
 
 ```{r}
 gravity <- 
-  exports %>% 
-  select(exports) %>%
-  bind_cols(imports) %>% 
-  select(year:iso_j, exports, imports, everything()) %>% 
+  exports |> 
+  select(exports) |>
+  bind_cols(imports) |> 
+  select(year:iso_j, exports, imports, everything()) |> 
   write_csv("gravity.csv")
 ```
 
@@ -119,16 +151,16 @@ gravity <-
 
 ```{r}
 # Extract partners names
-names <- gravity %>% distinct(iso_j) %>% as.list()
+names <- gravity |> distinct(iso_j) |> as.list()
 countries <- names$iso_j
 
 # How many observations are there per partner?
 rows <- tibble(countries = countries)
-for(i in countries) {rows[[i]] <- gravity %>% filter(iso_j == i) %>% nrow()}
-rows %<>% slice(1) %>% pivot_longer(cols = (2:length(rows))) %>% select(-countries)
+for(i in countries) {rows[[i]] <- gravity |> filter(iso_j == i) |> nrow()}
+rows %<>% slice(1) |> pivot_longer(cols = (2:length(rows))) |> select(-countries)
 
 # Pull only the partners with complete observations
-complete <- rows %>% filter(value == 26) %>% pull(1)
+complete <- rows |> filter(value == 26) |> pull(1)
 
 # Are the two vector equal?
 setequal(countries, complete)
