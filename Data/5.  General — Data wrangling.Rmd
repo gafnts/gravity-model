@@ -126,7 +126,7 @@ partners <-
 
 ```{r}
 guatemala <- 
-  read_csv("https://raw.githubusercontent.com/gafnts/gravity-model/main/Data/World%20Bank%20raw/guatemala_wdi.csv") %>% 
+  read_csv(here("Data", "World Bank raw", "guatemala_wdi.csv")) %>% 
   select(year:iso3c, capital:latitude) %>% 
   rename("reporter_iso" = iso3c)
 ```
