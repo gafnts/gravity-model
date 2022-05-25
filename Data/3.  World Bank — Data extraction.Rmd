@@ -28,7 +28,7 @@ search <- function(country) {
     country = country,
     start = 1995,
     end = 2020,
-    extra = TRUE
+    extra = FALSE
   ) %>% 
     as_tibble()
 }
@@ -67,6 +67,16 @@ write(guatemala_wdi)
 ```
 
 ## (c) Integrity check
+
+```{r}
+library(plotly)
+
+ggplotly(
+  partners_wdi |> 
+  ggplot(aes(x = year, y = exchange, color = iso3c)) + 
+  geom_line()
+)
+```
 
 ### Guatemala macro data
 
