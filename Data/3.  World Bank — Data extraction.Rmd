@@ -1,17 +1,5 @@
 # Macro variables
 
-Basic specifications:
-
-$$
-\begin{align*}
-ln F_{ij} &= c + \alpha ln (Y_i + Y_j) - \beta ln D_{ij} + \epsilon_{ij} \\
-ln F_{ij} &= c + \alpha ln (Y_i^{pc} + Y_j^{pc}) - \beta ln D_{ij} + \epsilon_{ij} \\
-ln F_{ij}^{manuf} &= c + \alpha ln |Y_i^{pc} - Y_j^{pc}| - \beta ln D_{ij} + \epsilon_{ij}
-\end{align*}
-$$
-
-Where $(Y)$ denotes the gross domestic product, $Y^{pc}$ is the output per capita and $|Y_i^{pc} - Y_j^{pc}|$ represents the Linder variable.
-
 ```{r}
 pacman::p_load(tidyverse, here, WDI)
 ```
@@ -32,7 +20,10 @@ search <- function(country) {
     indicator = c(
       gdp = "NY.GDP.MKTP.CD", # (current US$)
       gdp_pcap = "NY.GDP.PCAP.CD", # (current US$)
-      population = "SP.POP.TOTL"
+      expend = "NE.DAB.TOTL.CD", # (current US$)
+      population = "SP.POP.TOTL",
+      exchange = "PA.NUS.FCRF",
+      deflator = "NY.GDP.DEFL.ZS"
     ),
     country = country,
     start = 1995,
