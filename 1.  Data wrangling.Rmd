@@ -12,14 +12,26 @@ partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"
 partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
 ```
 
-## 1 --- Total flows
+## 1 --- Gravity variables
+
+$$
+G_{ij,t} = GDP_{i,t} + GDP_{j,t} \\
+RFE_{ij, t} = \Bigg| ln\Bigg(\frac{GDP_{i, t}}{N_{i, t}}\Bigg) - ln\Bigg(\frac{GDP_{j, t}}{N_{j, t}}\Bigg) \Bigg| \\
+SIM_{ij, t} = 1 - \Big(\frac{ln(GDP_{i, t})}{ln(GDP_{i, t}+GDP_{j, t})}\Big)^2 - \Big(\frac{ln(GDP_{j, t})}{ln(GDP_{i, t}+GDP_{j, t})}\Big)^2 \\
+RER_{ij, t} = \bigg(\frac{LC_{i, t}}{LC_{j, t}}\bigg)\bigg(\frac{P_{j, t}}{P_{i, t}}\bigg)
+$$
+
+```{r}
+
+```
+
+## 2 --- Total flows
 
 ### Exports
 
 ```{r}
 total_exports <- 
   trade_flows %>% 
-  filter(trade_flow == "Export") %>% 
   group_by(year, partner_iso) %>% 
   summarise(trade_value = sum(trade_value_usd)) %>% 
   ungroup() %>% 
