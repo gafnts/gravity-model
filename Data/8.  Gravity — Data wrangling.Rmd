@@ -1,7 +1,7 @@
 # Gravity dataset
 
 ```{r}
-pacman::p_load(tidyverse, magrittr, here, plotly)
+pacman::p_load(tidyverse, here)
 ```
 
 ```{r}
