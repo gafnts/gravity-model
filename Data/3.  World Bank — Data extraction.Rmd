@@ -20,7 +20,7 @@ search <- function(country) {
     indicator = c(
       gdp = "NY.GDP.MKTP.CD", # (current US$)
       gdp_pcap = "NY.GDP.PCAP.CD", # (current US$)
-      expend = "NE.DAB.TOTL.CD", # (current US$)
+      # expend = "NE.DAB.TOTL.CD", # (current US$)
       population = "SP.POP.TOTL",
       exchange = "PA.NUS.FCRF",
       deflator = "NY.GDP.DEFL.ZS"
@@ -28,7 +28,7 @@ search <- function(country) {
     country = country,
     start = 1995,
     end = 2020,
-    extra = FALSE
+    extra = TRUE
   ) %>% 
     as_tibble()
 }
@@ -57,7 +57,13 @@ partners <-
 ### Extraction
 
 ```{r}
-partners_wdi <- search(partners)
+partners_wdi <- tibble()
+
+for (partner in partners) {
+  retrieve <- search(partner)
+  partners_wdi <- bind_rows(partners_wdi, retrieve)
+}
+
 write(partners_wdi)
 ```
 
