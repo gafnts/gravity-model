@@ -90,7 +90,9 @@ names <-
         "Paraguay", "Peru", "Uruguay", "Suriname",
         
         # Caribbean
-        "Dominican Republic", "Cuba", "Haiti", "Trinidad and Tobago",
+        "Dominican Republic", 
+        #"Cuba", 
+        "Haiti", "Trinidad and Tobago",
         "Dominica", "Grenada", "Jamaica", "Barbados",
         "Bahamas", "Saint Vincent and the Grenadines", 
         "Saint Lucia")
