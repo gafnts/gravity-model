@@ -131,6 +131,22 @@ partners <-
   relocate(year, partner_iso, everything())
 ```
 
+Adding exchange rate for HND based on: <https://fred.stlouisfed.org/series/FXRATEHNA618NUPN>
+
+(Penn World Table 7.1)
+
+```{r}
+hnd <- tibble(year = 1995:1999,
+              partner_iso = "HND",
+              exchange = c(9.470986667, 11.7053025,
+                           13.00347417, 13.385015,
+                           14.21316833))
+
+partners <- 
+  partners |> 
+  rows_update(hnd, by = c("year", "partner_iso"))
+```
+
 ```{r}
 guatemala <- 
   read_csv(here("Data", "World Bank raw", "guatemala_wdi.csv")) |> 
