@@ -1,4 +1,4 @@
-# Partners dataframe
+# Partners dataset
 
 ```{r}
 pacman::p_load(tidyverse, here)
