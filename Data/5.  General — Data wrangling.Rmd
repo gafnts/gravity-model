@@ -128,7 +128,7 @@ partners <-
   rename("partner_iso" = iso3c) |> 
   filter(partner_iso %in% iso) |> 
   select(!c(status, lastupdated, capital, longitude, latitude)) |> 
-  relocate(year, reporter_iso, everything())
+  relocate(year, partner_iso, everything())
 ```
 
 ```{r}
