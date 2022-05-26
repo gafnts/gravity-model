@@ -5,14 +5,13 @@ pacman::p_load(tidyverse, magrittr, here, plotly)
 ```
 
 ```{r}
-partners_names <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
-trade_flows <- read_csv(here("Data", "Main data frames", "trade_flows.csv"))
-transaction_costs <- read_csv(here("Data", "Main data frames", "transaction_costs.csv"))
 gtm_macro <- read_csv(here("Data", "Main data frames", "gtm_macro.csv"))
 partners_macro <- read_csv(here("Data", "Main data frames", "partners_macro.csv"))
+trade_flows <- read_csv(here("Data", "Main data frames", "trade_flows.csv"))
+transaction_costs <- read_csv(here("Data", "Main data frames", "transaction_costs.csv"))
 ```
 
-## 1 --- Gravity variables
+## Gravity variables
 
 $$
 TGDP_{ij,t} = GDP_{i,t} + GDP_{j,t} \\
@@ -36,7 +35,7 @@ macro <-
   ungroup()
 ```
 
-## 2 --- Total flows
+## Gravity dataset
 
 ### Exports
 
@@ -61,8 +60,7 @@ exports <-
   left_join(total_exports) |> 
   select(year:partner_iso, trade_value, everything()) |> 
   mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) |> 
-  left_join(macro,
-            by = c("year", "reporter_iso", "partner_iso")) |> 
+  left_join(macro, by = c("year", "reporter_iso", "partner_iso")) |> 
   rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "exports" = trade_value)
 ```
 
@@ -89,12 +87,11 @@ imports <-
   left_join(total_imports) |> 
   select(year:partner_iso, trade_value, everything()) |> 
   mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) |> 
-  left_join(macro,
-            by = c("year", "reporter_iso", "partner_iso")) |> 
+  left_join(macro, by = c("year", "reporter_iso", "partner_iso")) |> 
   rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "imports" = trade_value)
 ```
 
-## 3 --- Final data set
+### Gravity
 
 ```{r}
 gravity <- 
