@@ -1,16 +1,10 @@
-# Macro variables
+# Macro variables extraction
 
 ```{r}
 pacman::p_load(tidyverse, here, WDI)
 ```
 
-### Names query
-
-```{r}
-# as_tibble(WDIsearch("exchange")) %>% print(n = Inf)
-```
-
-## (a) Extraction function
+## Extraction function
 
 ### Search parameters
 
@@ -29,12 +23,12 @@ search <- function(country) {
     start = 1995,
     end = 2020,
     extra = TRUE
-  ) %>% 
+  ) |> 
     as_tibble()
 }
 ```
 
-### Export
+### Export function
 
 ```{r}
 write <-
@@ -44,17 +38,17 @@ write <-
   }
 ```
 
-## (b) Data extraction
+## Data extraction
 
-### Countries in the main dataset
+### Countries in the partners dataset
 
 ```{r}
 partners <- 
-  read_csv(here("Data", "Main data frames", "partners_names.csv")) %>% 
+  read_csv(here("Data", "Main data frames", "partners_names.csv")) |> 
   pull(partner_iso)
 ```
 
-### Extraction
+### Partners
 
 ```{r}
 partners_wdi <- tibble()
@@ -66,6 +60,8 @@ for (partner in partners) {
 
 write(partners_wdi)
 ```
+
+### Guatemala
 
 ```{r}
 guatemala_wdi <- search("GT")

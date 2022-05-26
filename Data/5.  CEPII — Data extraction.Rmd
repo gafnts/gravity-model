@@ -1,4 +1,18 @@
-# Transaction costs
+# Transaction costs dataset
+
+```{r}
+pacman::p_load(tidyverse, here)
+```
+
+## CEPII database
+
+Documentation: <http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf>
+
+```{r}
+gravity_raw <- read_csv(here("Data", "CEPII raw", "Gravity_V202102.csv"))
+```
+
+## Transaction cost variables
 
 $$
 t_{ij}= D_{ij} \cdot \exp(cont_{ij} + lang_{ij} + ccol_{ij} + crel_{ij} + rta_{ij})
@@ -7,23 +21,9 @@ $$
 Where $D_{ij}$ is distance measured by the great circle formula, $contig_{ij}$ denotes whether the two countries have a common border, $lang_{ij}$ wheter both countries share the same language, $ccol_{ij}$ both nations have a common colonizer, $crel_{ij}$ is a similarity index between religious practices and $rta_{ij}$ whether the twocountries are members of a regional trade agreement.
 
 ```{r}
-pacman::p_load(tidyverse, magrittr, here)
-```
-
-### CEPII database
-
-Documentation: [\<http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf\>](http://www.cepii.fr/DATA_DOWNLOAD/gravity/doc/Gravity_documentation.pdf){.uri}
-
-```{r}
-gravity_raw <- read_csv(here("Data", "CEPII raw", "Gravity_V202102.csv"))
-```
-
-### Selecting transaction cost variables
-
-```{r}
-transaction_costs <- 
-  gravity_raw %>% 
-  filter(between(year, 1995, 2019), iso3_o == "GTM") %>% 
+costs_raw <- 
+  gravity_raw |> 
+  filter(between(year, 1995, 2019), iso3_o == "GTM") |> 
   select(year, 
          reporter_iso = iso3_o, 
          partner_iso = iso3_d, 
@@ -35,29 +35,35 @@ transaction_costs <-
          ccol = comcol,
          crel = comrelig,
          rta)
+```
 
+### Filtering partners
+
+```{r}
 partners <- 
-  read_csv(here("Data", "Main data frames", "partners_names.csv")) %>% 
+  read_csv(here("Data", "Main data frames", "partners_names.csv")) |> 
   select(partner_iso)
 
-transaction_costs %<>% 
+costs <- 
+  costs_raw |> 
   inner_join(partners)
 ```
 
-### Adding year 2020
+### Adding 2020
 
 ```{r}
-transaction_costs %<>% 
-  group_by(partner_iso) %>%
-  uncount((row_number() == max(row_number())) + 1) %>% 
-  ungroup() %>% 
-  mutate(year_2 = rep(1995:2020, times = 28)) %>% 
+transaction_costs <- 
+  costs |> 
+  group_by(partner_iso) |>
+  uncount((row_number() == max(row_number())) + 1) |> 
+  ungroup() |> 
+  mutate(year_2 = rep(1995:2020, times = 28)) |> 
   select(year = year_2, reporter_iso:rta)
 ```
 
-### Exporting transaction costs data
+### Writing tibble
 
 ```{r}
-transaction_costs %>% 
+transaction_costs |> 
   write_csv(here("Data", "Main data frames", "transaction_costs.csv"))
 ```

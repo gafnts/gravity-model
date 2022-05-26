@@ -4,7 +4,7 @@
 pacman::p_load(tidyverse, here)
 ```
 
-## Country codes
+### Country codes
 
 ```{r}
 codes <-
@@ -19,7 +19,7 @@ codes <-
   ))
 ```
 
-## Defining trade partners
+### Defining trade partners
 
 United Nations geoscheme: <https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>
 
@@ -47,6 +47,12 @@ names <-
 countries <- 
   codes |> 
   inner_join(names, by = "partner") |> 
-  arrange(partner, int_region) |> 
+  arrange(partner, int_region)
+```
+
+### Writing tibble
+
+```{r}
+countries |> 
   write_csv(file = paste0(here("Data", "Main data frames"), "/partners_names.csv"))
 ```
