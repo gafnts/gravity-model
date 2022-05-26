@@ -53,71 +53,13 @@ trade <-
 write_csv(trade, file = paste0(here("Data", "Main data frames"), "/trade_flows.csv"))
 ```
 
-## 2 --- Partner names dataframe
-
-### Loading ISO codes from Github
-
-UN geoscheme: <https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>
-
-```{r}
-codes <-
-  read_csv("https://git.io/v564u") %>%
-  select(partner = name,
-         partner_iso = `alpha-3`,
-         subregions = `sub-region`,
-         int_region = `intermediate-region`) %>% 
-  mutate(partner = case_when(
-    partner == "Venezuela (Bolivarian Republic of)" ~ "Venezuela", 
-    partner == "Bolivia (Plurinational State of)" ~ "Bolivia",
-    TRUE ~ partner 
-  ))
-```
-
-### Joining with country names in the trade dataframe
-
-```{r}
-names <- 
-  tribble(~partner,
-        # Central America and Mexico
-        "Belize", "Costa Rica", "Panama", "Honduras",
-        "Nicaragua", "El Salvador", "Mexico",
-        
-        # South America
-        "Argentina", "Bolivia",  "Brazil", "Chile",
-        "Colombia", "Ecuador", 
-        # "Venezuela", 
-        "Guyana",
-        "Paraguay", "Peru", "Uruguay", "Suriname",
-        
-        # Caribbean
-        "Dominican Republic", 
-        #"Cuba", 
-        "Haiti", "Trinidad and Tobago",
-        "Dominica", "Grenada", "Jamaica", "Barbados",
-        "Bahamas", "Saint Vincent and the Grenadines", 
-        "Saint Lucia")
-
-countries <- 
-  codes %>% 
-  inner_join(names, by = "partner") %>% 
-  arrange(partner, int_region)
-```
-
-### Writing tibble
-
-```{r}
-write_csv(countries, file = paste0(here("Data", "Main data frames"), "/partners_names.csv"))
-```
-
-### Join example
-
-```{r}
-trade %>% left_join(countries, by = c("partner_iso", "partner"))
-```
-
-## 3 --- Macro variables database
+## 2 --- Macro variables database
 
 ### Import dataframes
+
+```{r}
+countries <- read_csv(here("Data", "Main data frames", "partners_names.csv"))
+```
 
 ```{r}
 iso <- countries |> pull(partner_iso)
