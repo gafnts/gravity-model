@@ -1,7 +1,7 @@
 # Trade flows dataset
 
 ```{r}
-pacman::p_load(tidyverse, magrittr, here)
+pacman::p_load(tidyverse, here)
 ```
 
 ### Loading exports and imports

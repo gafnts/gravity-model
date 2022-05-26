@@ -1,5 +1,9 @@
 # Macro variables dataset
 
+```{r}
+pacman::p_load(tidyverse, here)
+```
+
 ### Partners
 
 ```{r}
