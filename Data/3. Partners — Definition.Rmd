@@ -4,22 +4,24 @@
 pacman::p_load(tidyverse, here)
 ```
 
-### Loading ISO codes from Github
-
-UN geoscheme: <https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>
+## Country codes
 
 ```{r}
 codes <-
-  read_csv("https://git.io/v564u") %>%
+  read_csv("https://git.io/v564u") |> 
   select(partner = name,
          partner_iso = `alpha-3`,
          subregions = `sub-region`,
-         int_region = `intermediate-region`) %>% 
+         int_region = `intermediate-region`)|> 
   mutate(partner = case_when(
     partner == "Bolivia (Plurinational State of)" ~ "Bolivia",
     TRUE ~ partner 
   ))
 ```
+
+## Defining trade partners
+
+United Nations geoscheme: <https://en.wikipedia.org/wiki/United_Nations_geoscheme#Americas>
 
 ```{r}
 names <- 
@@ -33,17 +35,18 @@ names <-
         "Colombia", "Ecuador", "Guyana", "Paraguay", 
         "Peru", "Uruguay", "Suriname",
         
-        # Caribbean (-Antigua and Barbuda, Cuba, Saint Kitts and Nevis)
+        # Caribbean independent countries
+        # (-Antigua and Barbuda, Cuba, Saint Kitts and Nevis)
         "Bahamas", "Barbados", "Dominica", "Dominican Republic",
         "Grenada", "Haiti", "Jamaica", "Saint Lucia", 
-        "Saint Vincent and the Grenadines", "Trinidad and Tobago")
-
-countries <- 
-  codes %>% 
-  inner_join(names, by = "partner") %>% 
-  arrange(partner, int_region)
+        "Saint Vincent and the Grenadines", "Trinidad and Tobago"
+        )
 ```
 
 ```{r}
-write_csv(countries, file = paste0(here("Data", "Main data frames"), "/partners_names.csv"))
+countries <- 
+  codes |> 
+  inner_join(names, by = "partner") |> 
+  arrange(partner, int_region) |> 
+  write_csv(file = paste0(here("Data", "Main data frames"), "/partners_names.csv"))
 ```
