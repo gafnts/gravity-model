@@ -7,7 +7,7 @@ pacman::p_load(tidyverse, here, WDI)
 ### Names query
 
 ```{r}
-as_tibble(WDIsearch("exchange")) %>% print(n = Inf)
+# as_tibble(WDIsearch("exchange")) %>% print(n = Inf)
 ```
 
 ## (a) Extraction function
