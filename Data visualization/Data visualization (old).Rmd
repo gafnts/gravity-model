@@ -140,17 +140,3 @@ lm <- gl_index %>%
 
 summary(lm(data = lm, gl_index ~ SI))
 ```
-
-#### Comments: 
-
-Para comenzar, es importante revisar los pasos del procedimiento: ver qué países se pierden (y por qué razones) durante el procesamiento de datos. En general es buena idea entender con qué países no tuvimos flujos comerciales durante los años del estudio.
-
-Este primer plot muestra que existe una ligera relación lineal entre similaridad y flujos intraindustriales durante el 2022. Sin embargo, el coeficiente de similaridad, aunque considerable (0.65) se muestra poco significativo (p value = 0.07). El R-squared es de 0.12 y también poco significativo (0.07).
-
-Lo cual es bastante interesante, pues muestra que aunque existen países con una alta similaridad en ingresos (Uruguay, República Dominicana, Cuba), Guatemala no tiene virtualmente flujos intraindustriales con los mismos.
-
-Por otro lado, parece ser que hay un clúster de países (Salvador, Honduras, Perú, Costa Rica y Ecuador, Panamá) que tienen tanto una alta similaridad de ingresos como un alto comercio intraindustrial.
-
-Lo que me hace pensar que en esta misma gráfica se puede hacer un análisis clúster.
-
-Sería importante entender por qué URY es tan similar en ingreso a GMT, cuando el GDP (current USD) del primero es de 15e+3 mientras que el del segundo es de 4.6e+3. CRI y CUB tienen GDPs más altos que GTM también.
