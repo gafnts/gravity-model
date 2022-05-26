@@ -1,4 +1,4 @@
-# Gravity data sets
+# Gravity dataset
 
 ```{r}
 pacman::p_load(tidyverse, magrittr, here, plotly)
@@ -51,15 +51,8 @@ total_exports <-
 ```
 
 ```{r}
-total_exports |> 
-  ggplot(aes(year, trade_value)) +
-  geom_line() +
-  facet_wrap(~ partner_iso, scales = "free")
-```
-
-```{r}
 # Countries and years for which there are zero trade flows
-transaction_costs |> anti_join(total_exports) |> View()
+transaction_costs |> anti_join(total_exports) |> print(n = Inf)
 ```
 
 ```{r}
@@ -86,15 +79,8 @@ total_imports <-
 ```
 
 ```{r}
-total_imports |> 
-  ggplot(aes(year, trade_value)) +
-  geom_line() +
-  facet_wrap(~ partner_iso, scales = "free")
-```
-
-```{r}
 # There are 80 zeros in the total_import data set
-transaction_costs |> anti_join(total_imports) |> View()
+transaction_costs |> anti_join(total_imports) |> print(n = Inf)
 ```
 
 ```{r}
