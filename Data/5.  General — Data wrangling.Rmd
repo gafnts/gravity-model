@@ -120,17 +120,24 @@ trade %>% left_join(countries, by = c("partner_iso", "partner"))
 ### Import dataframes
 
 ```{r}
+iso <- countries |> pull(partner_iso)
+
 partners <- 
-  read_csv(here("Data", "World Bank raw", "partners_wdi.csv")) %>% 
-  select(year:iso3c, capital:latitude) %>% 
-  rename("partner_iso" = iso3c)
+  read_csv(here("Data", "World Bank raw", "partners_wdi.csv")) |> 
+  select(year:iso3c, capital:latitude) |> 
+  rename("partner_iso" = iso3c) |> 
+  filter(partner_iso %in% iso) |> 
+  select(!c(status, lastupdated, capital, longitude, latitude)) |> 
+  relocate(year, reporter_iso, everything())
 ```
 
 ```{r}
 guatemala <- 
-  read_csv(here("Data", "World Bank raw", "guatemala_wdi.csv")) %>% 
-  select(year:iso3c, capital:latitude) %>% 
-  rename("reporter_iso" = iso3c)
+  read_csv(here("Data", "World Bank raw", "guatemala_wdi.csv")) |> 
+  select(year:iso3c, capital:latitude) |> 
+  rename("reporter_iso" = iso3c) |> 
+  select(!c(status, lastupdated, capital, longitude, latitude)) |> 
+  relocate(year, reporter_iso, everything())
 ```
 
 ### Writing tibbles
