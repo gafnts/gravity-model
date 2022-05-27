@@ -1,0 +1,61 @@
+# Partner profile
+
+```{r}
+pacman::p_load(tidyverse, here, patchwork)
+```
+
+#### Gravity dataset
+
+```{r}
+gravity <- read_csv(here("gravity.csv"))
+```
+
+#### Profile function
+
+```{r}
+vars <- c("exports", "imports", "gdp_j", "population_j", "exchange_j", "deflator_j",
+          "dist", "cont", "lang", "ccol", "crel", "rta")
+```
+
+```{r}
+profile <- function (partner, vars) {
+    
+    plot <- function (partner, var) {
+      gravity |> 
+        filter(iso_j == partner) |> 
+        ggplot(aes(year, get(var))) +
+          geom_col() +
+          labs(title = var) +
+          theme(axis.title = element_blank())
+      }
+    
+    p1 <- plot(partner, vars[1])
+    p2 <- plot(partner, vars[2])
+    p3 <- plot(partner, vars[3])
+    p4 <- plot(partner, vars[4])
+    p5 <- plot(partner, vars[5])
+    p6 <- plot(partner, vars[6])
+    p7 <- plot(partner, vars[7])
+    p8 <- plot(partner, vars[8])
+    p9 <- plot(partner, vars[9])
+    p10 <- plot(partner, vars[10])
+    p11 <- plot(partner, vars[11])
+    p12 <- plot(partner, vars[12])
+    
+    (p1 + p2 + p3) / (p4 + p5 + p6) + (p7 + p8 + p9) / (p10 + p11 + p12) + 
+      plot_annotation(title = partner)
+  }
+```
+
+#### Exporting profiles
+
+```{r}
+partners <- gravity |> distinct(iso_j) |> pull(iso_j)
+
+for (partner in partners) {
+    profile(partner, vars)
+    ggsave(here("Data visualization", "Partner profiles", 
+                paste(partner, "_plot.png", sep = "")), 
+           width = 1920 * 2.5, height = 1080 * 2.5, dpi = 300, units = "px")
+}
+```
