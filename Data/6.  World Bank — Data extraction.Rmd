@@ -17,7 +17,7 @@ search <- function(country) {
       # expend = "NE.DAB.TOTL.CD", # (current US$)
       population = "SP.POP.TOTL",
       exchange = "PA.NUS.FCRF",
-      deflator = "NY.GDP.DEFL.ZS"
+      deflator = "NY.GDP.DEFL.KD.ZG"
     ),
     country = country,
     start = 1995,
