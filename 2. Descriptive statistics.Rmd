@@ -1,5 +1,0 @@
-# Descriptive statistics
-
-```{r}
-pacman::p_load(tidyverse, here)
-```

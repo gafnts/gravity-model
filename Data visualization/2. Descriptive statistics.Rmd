@@ -1,0 +1,11 @@
+# Descriptive statistics
+
+```{r}
+pacman::p_load(tidyverse, here)
+```
+
+#### Gravity dataset
+
+```{r}
+gravity <- read_csv(here("gravity.csv"))
+```
