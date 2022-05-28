@@ -59,3 +59,41 @@ for (partner in partners) {
            width = 1920 * 2.5, height = 1080 * 2.5, dpi = 300, units = "px")
 }
 ```
+
+#### Guatemala's profile
+
+```{r}
+profile_gtm <- function (partner, flows, vars) {
+  
+    x <- function (partner, flow) {
+      gravity |> 
+        filter(iso_i == partner) |> 
+        ggplot(aes(year, get(flow))) + 
+          geom_col() +
+          labs(title = flow) +
+          theme(axis.title = element_blank())
+    }
+    
+    plot <- function (partner, var) {
+      gravity |> 
+        filter(iso_i == partner & iso_j == "ARG") |> 
+        ggplot(aes(year, get(var))) +
+          geom_col() +
+          labs(title = var) +
+          theme(axis.title = element_blank())
+      }
+    
+    p1 <- x(partner, flows[1])
+    p2 <- x(partner, flows[2])
+    p3 <- plot(partner, vars[1])
+    p4 <- plot(partner, vars[2])
+    p5 <- plot(partner, vars[3])
+    p6 <- plot(partner, vars[4])
+    
+    (p1 + p2 + p3) / (p4 + p5 + p6) + 
+      plot_annotation(title = partner)
+}
+
+profile_gtm("GTM", flows = c("exports", "imports"), 
+            vars = c("gdp_i", "population_i", "exchange_i", "deflator_i"))
+```
