@@ -1,7 +1,7 @@
 # Econometric estimation
 
 ```{r}
-pacman::p_load(tidyverse, tidymodels, gravity, here, panelr, plm, nlme)
+pacman::p_load(tidyverse, broom, gravity, here, panelr, plm, nlme)
 gravity <- read_csv("gravity.csv")
 ```
 
@@ -20,6 +20,8 @@ formula_imports <-
   log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta
 ```
 
+#### Functions
+
 ```{r}
 add_name <- 
   function(data, tidy, id) {
@@ -32,6 +34,28 @@ add_name <-
         relocate(estimator)
     }
   }
+
+tidy_it <- 
+  function(data, id) {
+  model_tidy <- 
+    data |> 
+    tidy() |> 
+    add_name(tidy = TRUE, 
+             id = id)
+  
+  return(model_tidy)
+}
+
+glance_it <- 
+  function(data, id) {
+  model_glance <- 
+    data |> 
+    glance() |> 
+    add_name(tidy = FALSE, 
+             id = id)
+  
+  return(model_glance)
+}
 ```
 
 #### Random effects estimator
@@ -46,29 +70,17 @@ exports_ree |> summary()
 ```
 
 ```{r}
-exports_ree_tidy <- 
-  exports_ree |> 
-  tidy() |> 
-  add_name(tidy = TRUE, 
-           id = "Random effects")
-
-exports_ree_glance <- 
-  exports_ree |> 
-  glance() |> 
-  add_name(tidy = FALSE, 
-           id = "Random effects")
-```
-
-```{r}
 imports_ree <- 
   plm(formula_imports,
       data = imports,
       model = "random")
 
-imports_ree_tidy <- imports_ree |> tidy()
-imports_ree_glance <- imports_ree |> glance()
-
 imports_ree |> summary()
+```
+
+```{r}
+exports_ree_tidy <- exports_ree |> tidy_it("Random effects")
+exports_ree_glance <- exports_ree |> glance_it("Random effects")
 ```
 
 #### Fixed effects estimator
