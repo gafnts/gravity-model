@@ -1,7 +1,7 @@
 # Econometric estimation
 
 ```{r}
-pacman::p_load(tidyverse, broom, gravity, here, panelr, plm, nlme)
+pacman::p_load(tidyverse, here, broom, panelr, plm, nlme)
 gravity <- read_csv("gravity.csv")
 ```
 
@@ -79,8 +79,11 @@ imports_ree |> summary()
 ```
 
 ```{r}
-exports_ree_tidy <- exports_ree |> tidy_it("Random effects")
-exports_ree_glance <- exports_ree |> glance_it("Random effects")
+exports_ree_tidy <- exports_ree |> tidy_it("Random effects (exports)")
+exports_ree_glance <- exports_ree |> glance_it("Random effects (exports)")
+
+imports_ree_tidy <- imports_ree |> tidy_it("Random effects (imports)")
+imports_ree_glance <- imports_ree |> glance_it("Random effects (imports)")
 ```
 
 #### Fixed effects estimator
@@ -91,9 +94,6 @@ exports_fee <-
       data = exports,
       model = "within")
 
-exports_fee_tidy <- exports_fee |> tidy()
-exports_fee_glance <- exports_fee |> glance()
-
 exports_fee |> summary()
 ```
 
@@ -103,32 +103,15 @@ imports_fee <-
       data = imports,
       model = "within")
 
-imports_fee_tidy <- imports_fee |> tidy()
-imports_fee_glance <- imports_fee |> glance()
-
 imports_fee |> summary()
 ```
 
-#### AR(1) estimator
-
 ```{r}
-exports_ar <- 
-  lme(formula_exports,
-      data = exports,
-      random = ~1|iso_j,
-      correlation = corAR1(0, form = ~year|iso_j))
+exports_fee_tidy <- exports_fee |> tidy_it("Fixed effects (exports)")
+exports_fee_glance <- exports_fee |> glance_it("Fixed effects (exports)")
 
-exports_ar |> summary()
-```
-
-```{r}
-imports_ar <- 
-  lme(formula_imports,
-      data = imports,
-      random = ~1|iso_j,
-      correlation = corAR1(0, form = ~year|iso_j))
-
-imports_ar |> summary()
+imports_fee_tidy <- imports_fee |> tidy_it("Fixed effects (imports)")
+imports_fee_glance <- imports_fee |> glance_it("Fixed effects (imports)")
 ```
 
 #### Poisson pseudo maximum likelihood estimator
@@ -149,6 +132,14 @@ imports_ppml <-
       data = imports)
 
 imports_ppml |> summary()
+```
+
+```{r}
+exports_ppml_tidy <- exports_ppml |> tidy_it("PPML (exports)")
+exports_ppml_glance <- exports_ppml |> glance_it("PPML (exports)")
+
+imports_ppml_tidy <- imports_ppml |> tidy_it("PPML (imports)")
+imports_ppml_glance <- imports_ppml |> glance_it("PPML (imports)")
 ```
 
 #### Poisson pseudo maximum likelihood with fixed effects estimator
@@ -179,4 +170,50 @@ imports_ppml_fixed <-
       data = imports)
 
 imports_ppml_fixed |> summary()
+```
+
+```{r}
+exports_ppml_fixed_tidy <- exports_ppml_fixed |> tidy_it("PPML FE (exports)")
+exports_ppml_fixed_glance <- exports_ppml_fixed |> glance_it("PPML FE (exports)")
+
+imports_ppml_fixed_tidy <- imports_ppml_fixed |> tidy_it("PPML FE (imports)")
+imports_ppml_fixed_glance <- imports_ppml_fixed |> glance_it("PPML FE (imports)")
+```
+
+#### AR(1) estimator
+
+```{r}
+exports_ar <- 
+  lme(formula_exports,
+      data = exports,
+      random = ~1|iso_j,
+      correlation = corAR1(0, form = ~year|iso_j))
+
+exports_ar |> summary()
+```
+
+```{r}
+imports_ar <- 
+  lme(formula_imports,
+      data = imports,
+      random = ~1|iso_j,
+      correlation = corAR1(0, form = ~year|iso_j))
+
+imports_ar |> summary()
+```
+
+#### Writting results
+
+```{r}
+exports_ree_tidy |> 
+  bind_rows(exports_fee_tidy) |> 
+  bind_rows(exports_ppml_tidy) |> 
+  bind_rows(exports_ppml_fixed_tidy |> slice(1:10)) |> 
+  write_csv(here("Econometrics", "Results", "exports.csv"))
+
+imports_ree_tidy |> 
+  bind_rows(imports_fee_tidy) |> 
+  bind_rows(imports_ppml_tidy) |> 
+  bind_rows(imports_ppml_fixed_tidy |> slice(1:10)) |> 
+  write_csv(here("Econometrics", "Results", "imports.csv"))
 ```
