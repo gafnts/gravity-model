@@ -1,0 +1,17 @@
+# Econometric estimation
+
+```{r}
+pacman::p_load(tidyverse, tidymodels, gravity, here, panelr, plm)
+gravity <- read_csv("gravity.csv")
+```
+
+```{r}
+exports <- panel_data(gravity %>% filter(exports > 0), id = iso_j, wave = year)
+imports <- panel_data(gravity %>% filter(imports > 0), id = iso_j, wave = year)
+```
+
+#### Random effects estimator
+
+```{r}
+
+```
