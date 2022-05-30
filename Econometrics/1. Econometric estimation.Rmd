@@ -14,10 +14,12 @@ imports <- panel_data(gravity %>% filter(imports > 0), id = iso_j, wave = year)
 
 ```{r}
 formula_exports <- 
-  log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta
+  log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  ccol + crel + rta
 
 formula_imports <- 
-  log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta
+  log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  ccol + crel + rta
 ```
 
 #### Functions
@@ -147,11 +149,11 @@ imports_ppml_glance <- imports_ppml |> glance_it("PPML (imports)")
 ```{r}
 formula_exports_fixed <- 
   log(exports) ~ log(tgdp) + rfe + sim + log(dist) + 
-  log(rer) + cont + lang + rta + factor(year)
+  log(rer) + cont + lang + ccol + crel + rta + factor(year)
 
 formula_imports_fixed <- 
   log(imports) ~ log(tgdp) + rfe + sim + log(dist) + 
-  log(rer) + cont + lang + rta + factor(year)
+  log(rer) + cont + lang + ccol + crel + rta + factor(year)
 ```
 
 ```{r}
@@ -208,12 +210,12 @@ imports_ar |> summary()
 exports_ree_tidy |> 
   bind_rows(exports_fee_tidy) |> 
   bind_rows(exports_ppml_tidy) |> 
-  bind_rows(exports_ppml_fixed_tidy |> slice(1:10)) |> 
+  bind_rows(exports_ppml_fixed_tidy |> slice(1:12)) |> 
   write_csv(here("Econometrics", "Results", "exports.csv"))
 
 imports_ree_tidy |> 
   bind_rows(imports_fee_tidy) |> 
   bind_rows(imports_ppml_tidy) |> 
-  bind_rows(imports_ppml_fixed_tidy |> slice(1:10)) |> 
+  bind_rows(imports_ppml_fixed_tidy |> slice(1:12)) |> 
   write_csv(here("Econometrics", "Results", "imports.csv"))
 ```
