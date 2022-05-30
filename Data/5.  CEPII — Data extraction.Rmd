@@ -32,7 +32,7 @@ costs_raw <-
          # Geographic and cultural variables
          cont = contig,
          lang = comlang_off, 
-         ccol = comcol,
+         ccol = sibling_ever,
          crel = comrelig,
          rta)
 ```
