@@ -97,49 +97,19 @@ imports_ar |> summary()
 #### Poisson pseudo maximum likelihood estimator
 
 ```{r}
-exports_features <- 
-  exports |> 
-  mutate(exports = log(exports),
-         tgdp = log(tgdp),
-         dist = log(dist),
-         rer = log(rer)) |> 
-  filter(exports >= 0 | tgdp >= 0 | dist >= 0 | rer >= 0)
-
 exports_ppml <- 
   glm(formula_exports,
       family = quasipoisson(link = "log"),
-      data = exports_features)
-
-robust_coefficients <- lmtest::coeftest(exports_ppml, 
-                                        vcov = sandwich::vcovHC(exports_ppml, 
-                                                                type = "HC1"))
-
-exports_ppml$coefficients <- 
-  robust_coefficients[1:length(rownames(robust_coefficients))]
+      data = exports)
 
 exports_ppml |> summary()
 ```
 
 ```{r}
-imports_features <- 
-  imports |> 
-  mutate(imports = log(imports),
-         tgdp = log(tgdp),
-         dist = log(dist),
-         rer = log(rer)) |> 
-  filter(imports >= 0 | tgdp >= 0 | dist >= 0 | rer >= 0)
-
 imports_ppml <- 
   glm(formula_imports,
       family = quasipoisson(link = "log"),
-      data = imports_features)
-
-robust_coefficients <- lmtest::coeftest(imports_ppml, 
-                                        vcov = sandwich::vcovHC(imports_ppml, 
-                                                                type = "HC1"))
-
-imports_ppml$coefficients <- 
-  robust_coefficients[1:length(rownames(robust_coefficients))]
+      data = imports)
 
 imports_ppml |> summary()
 ```
@@ -160,7 +130,7 @@ formula_imports_fixed <-
 exports_ppml_fixed <- 
   glm(formula_exports_fixed,
       family = quasipoisson(link = "log"),
-      data = exports_features)
+      data = exports)
 
 exports_ppml_fixed |> summary()
 ```
@@ -169,7 +139,7 @@ exports_ppml_fixed |> summary()
 imports_ppml_fixed <- 
   glm(formula_imports_fixed,
       family = quasipoisson(link = "log"),
-      data = imports_features)
+      data = imports)
 
 imports_ppml_fixed |> summary()
 ```
