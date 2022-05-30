@@ -13,6 +13,11 @@ imports <- panel_data(gravity %>% filter(imports > 0), id = iso_j, wave = year)
 ```
 
 ```{r}
+exports <- gravity |> mutate(exports = 1 + exports) |> panel_data(id = iso_j, wave = year)
+imports <- gravity |> mutate(imports = 1 + imports) |> panel_data(id = iso_j, wave = year)
+```
+
+```{r}
 formula_exports <- 
   log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
