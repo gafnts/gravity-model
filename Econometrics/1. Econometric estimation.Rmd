@@ -1,9 +1,11 @@
 # Econometric estimation
 
 ```{r}
-pacman::p_load(tidyverse, tidymodels, gravity, here, panelr, plm)
+pacman::p_load(tidyverse, tidymodels, gravity, here, panelr, plm, nlme)
 gravity <- read_csv("gravity.csv")
 ```
+
+#### Zero's treatment
 
 ```{r}
 exports <- panel_data(gravity %>% filter(exports > 0), id = iso_j, wave = year)
@@ -13,5 +15,97 @@ imports <- panel_data(gravity %>% filter(imports > 0), id = iso_j, wave = year)
 #### Random effects estimator
 
 ```{r}
+exports_ree <- 
+  plm(log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta,
+      data = exports,
+      model = "random")
 
+exports_ree_tidy <- exports_ree |> tidy()
+exports_ree_glance <- exports_ree |> glance()
+
+exports_ree |> summary()
+```
+
+```{r}
+imports_ree <- 
+  plm(log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta,
+      data = imports,
+      model = "random")
+
+imports_ree_tidy <- imports_ree |> tidy()
+imports_ree_glance <- imports_ree |> glance()
+
+imports_ree |> summary()
+```
+
+#### Fixed effects estimator
+
+```{r}
+exports_fee <- 
+  plm(log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta,
+      data = exports,
+      model = "within")
+
+exports_fee_tidy <- exports_fee |> tidy()
+exports_fee_glance <- exports_fee |> glance()
+
+exports_fee |> summary()
+```
+
+```{r}
+imports_fee <- 
+  plm(log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta,
+      data = imports,
+      model = "within")
+
+imports_fee_tidy <- imports_fee |> tidy()
+imports_fee_glance <- imports_fee |> glance()
+
+imports_fee |> summary()
+```
+
+#### AR(1)
+
+```{r}
+exports_ar <- 
+  lme(log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta,
+      data = exports,
+      random = ~1|iso_j,
+      correlation = corAR1(0, form = ~year|iso_j))
+
+exports_ar |> summary()
+```
+
+```{r}
+imports_ar <- 
+  lme(log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta,
+      data = imports,
+      random = ~1|iso_j,
+      correlation = corAR1(0, form = ~year|iso_j))
+
+imports_ar |> summary()
+```
+
+#### Pseudo Poisson ML
+
+```{r}
+exports <- panel_data(gravity %>% select(!imports), id = iso_j, wave = year)
+imports <- panel_data(gravity %>% select(!exports), id = iso_j, wave = year)
+```
+
+```{r}
+exports_ppml <- 
+  glm(log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta,
+      family = quasipoisson(link = "log"),
+      data = exports)
+
+robust_coefficients <- lmtest::coeftest(model_ppml, 
+                                        vcov = sandwich::vcovHC(model_ppml, 
+                                                                type = "HC1"))
+
+model_ppml$coefficients <- 
+  robust_coefficients[1:length(rownames(robust_coefficients))]
+
+model_ppml |> 
+  summary()
 ```
