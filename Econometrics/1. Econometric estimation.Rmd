@@ -20,6 +20,20 @@ formula_imports <-
   log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + rta
 ```
 
+```{r}
+add_name <- 
+  function(data, tidy, id) {
+    if (tidy == TRUE) {
+      data |> 
+        add_row(term = id, .before = 1)
+    } else {
+      data |> 
+        mutate(estimator = id) |> 
+        relocate(estimator)
+    }
+  }
+```
+
 #### Random effects estimator
 
 ```{r}
@@ -28,10 +42,21 @@ exports_ree <-
       data = exports,
       model = "random")
 
-exports_ree_tidy <- exports_ree |> tidy()
-exports_ree_glance <- exports_ree |> glance()
-
 exports_ree |> summary()
+```
+
+```{r}
+exports_ree_tidy <- 
+  exports_ree |> 
+  tidy() |> 
+  add_name(tidy = TRUE, 
+           id = "Random effects")
+
+exports_ree_glance <- 
+  exports_ree |> 
+  glance() |> 
+  add_name(tidy = FALSE, 
+           id = "Random effects")
 ```
 
 ```{r}
