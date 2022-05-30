@@ -7,5 +7,84 @@ pacman::p_load(tidyverse, here)
 #### Gravity dataset
 
 ```{r}
-gravity <- read_csv(here("gravity.csv"))
+gravity <- read_csv(here("gravity.csv")) |> 
+  select(year, exports, imports, dist,
+         "gdp" = gdp_j, "population" = population_j, 
+         "exchange" = exchange_j, "deflator" = deflator_j, 
+         tgdp, rfe, sim, rer) 
+```
+
+#### Table
+
+```{r}
+stats_longer <- 
+  gravity |> 
+  # mutate(across(where(is.numeric), ~ log(.x))) |> 
+  pivot_longer(-year, names_to = "Variable", values_to = "value") |> 
+  arrange(Variable, year) |> 
+  group_by(Variable)
+
+descriptive <- 
+  stats_longer %>% 
+  summarise(Media = round(mean(value), 2),
+            Mediana = round(median(value), 2),
+            Mínimo = round(min(value), 2),
+            Máximo = round(max(value), 2),
+            `Desv. Est.` = round(sd(value), 2),
+            Asimetría = round(e1071::skewness(value), 2),
+            Curtosis = round(e1071::kurtosis(value), 2))
+
+obs <- 
+  stats_longer %>% 
+  count(Variable) %>% 
+  rename(`Obs.` = n)
+
+descriptive_stats <- 
+  descriptive %>% 
+  left_join(obs) %>% 
+  as.data.frame()
+```
+
+```{r}
+descriptive_stats |> 
+  write_csv(here("Data visualization", "Descriptive statistics", "descriptive_stats.csv"))
+```
+
+#### Plots
+
+```{r}
+# Histogram
+stats_longer |> 
+  mutate(value = log(value)) |> 
+  ggplot(aes(value)) +
+  geom_histogram(aes(y = ..density..),
+                 color = 1, fill = "white",
+                 bins = 50) +
+  geom_density(lwd = .55, color = 2,
+               fill = 2, alpha = .15) +
+  # scale_x_log10() +
+  facet_wrap(~Variable, scales = "free") +
+  theme_linedraw() +
+  theme(
+    axis.title = element_blank()
+  )
+```
+
+```{r}
+# Correlation matrix
+gravity |> 
+  select(where(is.numeric)) |> 
+  cor() |> 
+  ggcorrplot::ggcorrplot(method = "circle")
+```
+
+```{r}
+# Scatterplot matrix
+gravity |> 
+  select(where(is.numeric)) |> 
+  GGally::ggpairs()
+```
+
+```{r}
+# Overlap trade and country similatiry
 ```
