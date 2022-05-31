@@ -36,6 +36,18 @@ partners <-
   rows_update(hnd, by = c("year", "partner_iso"))
 ```
 
+Adding implicit price deflator for CAN based on: <https://fred.stlouisfed.org/series/CANGDPDEFQISMEI>
+
+```{r}
+can <- tibble(year = 1995:1996,
+              partner_iso = "CAN",
+              deflator = c(68.05195, 69.23677))
+
+partners <- 
+  partners |> 
+  rows_update(can, by = c("year", "partner_iso"))
+```
+
 ### Guatemala
 
 ```{r}
