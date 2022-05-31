@@ -119,12 +119,13 @@ imports_fee_glance <- imports_fee |> glance_it("Fixed effects (imports)")
 #### Poisson pseudo maximum likelihood estimator
 
 ```{r}
-exports <- 
+# Feature engineering
+exports_ppml <- 
   gravity |> 
   mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
   panel_data(id = iso_j, wave = year)
 
-imports <- 
+imports_ppml <- 
   gravity |> 
   mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
   panel_data(id = iso_j, wave = year)
@@ -132,45 +133,46 @@ imports <-
 
 ```{r}
 # Just checking 
-imports |> 
+imports_log |> 
   select(year, iso_j, imports) |> 
   filter(if_any(where(is.numeric), ~ .x <= 0))
 ```
 
 ```{r}
-formula_exports <- 
+# Declaring formulas
+formula_exports_ppml <- 
   exports ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
 
-formula_imports <- 
+formula_imports_ppml <- 
   imports ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
 ```
 
 ```{r}
-exports_ppml <- 
-  glm(formula_exports,
+ppml_exports <- 
+  glm(formula_exports_ppml,
       family = quasipoisson(link = "log"),
-      data = exports)
+      data = exports_ppml)
 
-exports_ppml |> summary()
+ppml_exports |> summary()
 ```
 
 ```{r}
-imports_ppml <- 
-  glm(formula_imports,
+ppml_imports <- 
+  glm(formula_imports_ppml,
       family = quasipoisson(link = "log"),
-      data = imports)
+      data = imports_ppml)
 
-imports_ppml |> summary()
+ppml_imports |> summary()
 ```
 
 ```{r}
-exports_ppml_tidy <- exports_ppml |> tidy_it("PPML (exports)")
-exports_ppml_glance <- exports_ppml |> glance_it("PPML (exports)")
+ppml_exports_tidy <- ppml_exports |> tidy_it("PPML (exports)")
+ppml_exports_glance <- ppml_exports |> glance_it("PPML (exports)")
 
-imports_ppml_tidy <- imports_ppml |> tidy_it("PPML (imports)")
-imports_ppml_glance <- imports_ppml |> glance_it("PPML (imports)")
+ppml_imports_tidy <- ppml_imports |> tidy_it("PPML (imports)")
+ppml_imports_glance <- ppml_imports |> glance_it("PPML (imports)")
 ```
 
 #### Writting results
@@ -178,11 +180,11 @@ imports_ppml_glance <- imports_ppml |> glance_it("PPML (imports)")
 ```{r}
 exports_ree_tidy |> 
   bind_rows(exports_fee_tidy) |> 
-  bind_rows(exports_ppml_tidy) |> 
+  bind_rows(ppml_exports_tidy) |> 
   write_csv(here("Econometrics", "Results", "exports.csv"))
 
 imports_ree_tidy |> 
   bind_rows(imports_fee_tidy) |> 
-  bind_rows(imports_ppml_tidy) |> 
+  bind_rows(ppml_imports_tidy) |> 
   write_csv(here("Econometrics", "Results", "imports.csv"))
 ```
