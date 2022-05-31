@@ -77,7 +77,7 @@ total_imports <-
 ```
 
 ```{r}
-# There are 80 zeros in the total_import data set
+# Zeros in the total_import data set
 transaction_costs |> anti_join(total_imports) |> print(n = Inf)
 ```
 
@@ -89,6 +89,18 @@ imports <-
   mutate(across(where(is.numeric), ~ replace(., is.na(.), 0))) |> 
   left_join(macro, by = c("year", "reporter_iso", "partner_iso")) |> 
   rename("iso_i" = reporter_iso, "iso_j" = partner_iso, "imports" = trade_value)
+```
+
+```{r}
+# Correcting 0's due to errors in the Comtrade API
+can <- tibble(year = c(1999, 2000, 2002, 2005, 2008, 2013, 2018),
+              iso_j = "CAN",
+              imports = c(118894015, 120584218, 69796525, 190471222,
+                          174517492, 86239715, 102364873))
+
+imports <- 
+  imports |> 
+  rows_update(can, by = c("year", "iso_j"))
 ```
 
 ### Gravity
