@@ -5,28 +5,6 @@ pacman::p_load(tidyverse, here, broom, panelr, plm, nlme)
 gravity <- read_csv("gravity.csv")
 ```
 
-#### Params
-
-```{r}
-exports <- panel_data(gravity %>% filter(exports > 0), id = iso_j, wave = year)
-imports <- panel_data(gravity %>% filter(imports > 0), id = iso_j, wave = year)
-```
-
-```{r}
-exports <- gravity |> mutate(exports = 1 + exports) |> panel_data(id = iso_j, wave = year)
-imports <- gravity |> mutate(imports = 1 + imports) |> panel_data(id = iso_j, wave = year)
-```
-
-```{r}
-formula_exports <- 
-  log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
-  ccol + crel + rta
-
-formula_imports <- 
-  log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
-  ccol + crel + rta
-```
-
 #### Functions
 
 ```{r}
@@ -63,6 +41,23 @@ glance_it <-
   
   return(model_glance)
 }
+```
+
+#### Params
+
+```{r}
+exports <- gravity |> mutate(exports = 1 + exports) |> panel_data(id = iso_j, wave = year)
+imports <- gravity |> mutate(imports = 1 + imports) |> panel_data(id = iso_j, wave = year)
+```
+
+```{r}
+formula_exports <- 
+  log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  ccol + crel + rta
+
+formula_imports <- 
+  log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  ccol + crel + rta
 ```
 
 #### Random effects estimator
@@ -124,6 +119,35 @@ imports_fee_glance <- imports_fee |> glance_it("Fixed effects (imports)")
 #### Poisson pseudo maximum likelihood estimator
 
 ```{r}
+exports <- 
+  gravity |> 
+  mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
+  panel_data(id = iso_j, wave = year)
+
+imports <- 
+  gravity |> 
+  mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
+  panel_data(id = iso_j, wave = year)
+```
+
+```{r}
+# Just checking 
+imports |> 
+  select(year, iso_j, imports) |> 
+  filter(if_any(where(is.numeric), ~ .x <= 0))
+```
+
+```{r}
+formula_exports <- 
+  exports ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  ccol + crel + rta
+
+formula_imports <- 
+  imports ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  ccol + crel + rta
+```
+
+```{r}
 exports_ppml <- 
   glm(formula_exports,
       family = quasipoisson(link = "log"),
@@ -149,78 +173,16 @@ imports_ppml_tidy <- imports_ppml |> tidy_it("PPML (imports)")
 imports_ppml_glance <- imports_ppml |> glance_it("PPML (imports)")
 ```
 
-#### Poisson pseudo maximum likelihood with fixed effects estimator
-
-```{r}
-formula_exports_fixed <- 
-  log(exports) ~ log(tgdp) + rfe + sim + log(dist) + 
-  log(rer) + cont + lang + ccol + crel + rta + factor(year)
-
-formula_imports_fixed <- 
-  log(imports) ~ log(tgdp) + rfe + sim + log(dist) + 
-  log(rer) + cont + lang + ccol + crel + rta + factor(year)
-```
-
-```{r}
-exports_ppml_fixed <- 
-  glm(formula_exports_fixed,
-      family = quasipoisson(link = "log"),
-      data = exports)
-
-exports_ppml_fixed |> summary()
-```
-
-```{r}
-imports_ppml_fixed <- 
-  glm(formula_imports_fixed,
-      family = quasipoisson(link = "log"),
-      data = imports)
-
-imports_ppml_fixed |> summary()
-```
-
-```{r}
-exports_ppml_fixed_tidy <- exports_ppml_fixed |> tidy_it("PPML FE (exports)")
-exports_ppml_fixed_glance <- exports_ppml_fixed |> glance_it("PPML FE (exports)")
-
-imports_ppml_fixed_tidy <- imports_ppml_fixed |> tidy_it("PPML FE (imports)")
-imports_ppml_fixed_glance <- imports_ppml_fixed |> glance_it("PPML FE (imports)")
-```
-
-#### AR(1) estimator
-
-```{r}
-exports_ar <- 
-  lme(formula_exports,
-      data = exports,
-      random = ~1|iso_j,
-      correlation = corAR1(0, form = ~year|iso_j))
-
-exports_ar |> summary()
-```
-
-```{r}
-imports_ar <- 
-  lme(formula_imports,
-      data = imports,
-      random = ~1|iso_j,
-      correlation = corAR1(0, form = ~year|iso_j))
-
-imports_ar |> summary()
-```
-
 #### Writting results
 
 ```{r}
 exports_ree_tidy |> 
   bind_rows(exports_fee_tidy) |> 
   bind_rows(exports_ppml_tidy) |> 
-  bind_rows(exports_ppml_fixed_tidy |> slice(1:12)) |> 
   write_csv(here("Econometrics", "Results", "exports.csv"))
 
 imports_ree_tidy |> 
   bind_rows(imports_fee_tidy) |> 
   bind_rows(imports_ppml_tidy) |> 
-  bind_rows(imports_ppml_fixed_tidy |> slice(1:12)) |> 
   write_csv(here("Econometrics", "Results", "imports.csv"))
 ```
