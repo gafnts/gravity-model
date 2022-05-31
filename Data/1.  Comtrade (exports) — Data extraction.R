@@ -40,6 +40,12 @@ write <-
 
 # (c) Data extraction ----
 
+## North America
+na_exports_fst <- 
+  get(partners = c("USA", "Canada"),
+      years = c(1995:2020))
+write(na_exports_fst)
+
 ## Central America and Mexico
 ca_exports_fst <-
   get(partners = c("Belize", "Costa Rica", "Panama", "Honduras"),
