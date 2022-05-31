@@ -26,9 +26,12 @@ United Nations geoscheme: <https://en.wikipedia.org/wiki/United_Nations_geoschem
 ```{r}
 names <- 
   tribble(~partner,
+        # North America
+        "United States of America", "Canada", "Mexico",
+        
         # Central America and Mexico
-        "Belize", "Costa Rica", "Panama", "Honduras",
-        "Nicaragua", "El Salvador", "Mexico",
+        "Belize", "Costa Rica", "Panama", 
+        "Honduras", "Nicaragua", "El Salvador", 
         
         # South America (-Venezuela)
         "Argentina", "Bolivia",  "Brazil", "Chile",
