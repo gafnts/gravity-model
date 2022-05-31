@@ -8,8 +8,6 @@ pacman::p_load(tidyverse, here, WDI)
 
 ### Search parameters
 
-Note: Including aggregate expenditure implies loosing Grenada, St. Lucia, St. Vincent and the Grenadines, Trinidad and Tobago, Guyana, Dominica, and Suriname.
-
 ```{r}
 search <- function(country) {
   data <- WDI(
