@@ -42,9 +42,14 @@ write <-
 
 ## North America
 na_imports_fst <- 
-  get(partners = c("USA", "Canada"),
+  get(partners = c("USA"),
       years = c(1995:2020))
 write(na_imports_fst)
+
+na_imports_snd <- 
+  get(partners = c("Canada"),
+      years = c(1995:2020))
+write(na_imports_snd)
 
 ## Central America and Mexico
 ca_imports_fst <-
