@@ -142,70 +142,45 @@ ppml_imports |> summary()
 ```{r}
 # Exports
 stargazer(exports_ols, exports_ree, exports_fee, ppml_exports,
-          align = TRUE, type = "text",
           column.labels = c("OLS", "REE", "FEE", "PPML"),
+          covariate.labels = c("Suma bilateral del producto interno bruto",
+                               "Diferencia en la proporción relativa de factores",
+                               "Similitud en el tamaño de las economías",
+                               "Distancia entre principales centros urbanos",
+                               "Tipo de cambio efectivo real",
+                               "Fronteras en común",
+                               "Lenguaje en común", 
+                               "Colonizador en común",
+                               "Índice de similitud en creencias religiosas",
+                               "Acuerdos comerciales regionales",
+                               "Constante"),
+          type = "text",
+          dep.var.caption = "",
+          dep.var.labels.include = FALSE,
+          model.names = FALSE,
+          model.numbers = FALSE,
           out = here("Econometrics", "Results", "exports.html"))
 ```
 
-### Other functions
-
 ```{r}
-format <- function(model, name) {
-  model |> 
-  coeftest(vcov = vcovHC, type = "HC1", cluster = "group") |> 
-  tidy() |> 
-  select(term, estimate, std.error, p.value) |> 
-  pivot_longer(!c(term, p.value)) |> 
-  mutate(` ` = case_when(
-    p.value >= 0.05 & p.value < 0.1 ~ ".",
-    p.value >= 0.01 & p.value < 0.05 ~ "*",
-    p.value >= 0.001 & p.value < 0.01 ~ "**",
-    p.value < 0.001 ~ "***",
-    TRUE ~ ""
-  )) |> 
-  select(term, name, value, ` `) |> 
-  mutate(value = as.character(round(value, 3)),
-         value = ifelse(name == "std.error", paste0("(", value, ")"), value),
-         term = if_else(row_number() %% 2 == 0, "", term),
-         ` ` = if_else(row_number() %% 2 == 0, "", ` `)) |> 
-  select(!name) |> 
-  rename("Variable" = term,
-         !!name := value)
-}
-```
-
-```{r}
-add_name <- 
-  function(data, tidy, id) {
-    if (tidy == TRUE) {
-      data |> 
-        add_row(term = id, .before = 1)
-    } else {
-      data |> 
-        mutate(estimator = id) |> 
-        relocate(estimator)
-    }
-  }
-
-tidy_it <- 
-  function(data, id) {
-  model_tidy <- 
-    data |> 
-    tidy() |> 
-    add_name(tidy = TRUE, 
-             id = id)
-  
-  return(model_tidy)
-}
-
-glance_it <- 
-  function(data, id) {
-  model_glance <- 
-    data |> 
-    glance() |> 
-    add_name(tidy = FALSE, 
-             id = id)
-  
-  return(model_glance)
-}
+# Imports
+stargazer(imports_ols, imports_ree, imports_fee, ppml_imports,
+          column.labels = c("OLS", "REE", "FEE", "PPML"),
+          covariate.labels = c("Suma bilateral del producto interno bruto",
+                               "Diferencia en la proporción relativa de factores",
+                               "Similitud en el tamaño de las economías",
+                               "Distancia entre principales centros urbanos",
+                               "Tipo de cambio efectivo real",
+                               "Fronteras en común",
+                               "Lenguaje en común", 
+                               "Colonizador en común",
+                               "Índice de similitud en creencias religiosas",
+                               "Acuerdos comerciales regionales",
+                               "Constante"),
+          type = "text",
+          dep.var.caption = "",
+          dep.var.labels.include = FALSE,
+          model.names = FALSE,
+          model.numbers = FALSE,
+          out = here("Econometrics", "Results", "imports.html"))
 ```
