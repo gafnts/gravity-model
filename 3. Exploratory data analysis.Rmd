@@ -1,0 +1,5 @@
+# Exploratory data anaylisis
+
+```{r}
+pacman::p_load(tidyverse, here)
+```
