@@ -1,7 +1,7 @@
 # Econometric estimation
 
 ```{r}
-pacman::p_load(tidyverse, here, broom, panelr, plm, nlme)
+pacman::p_load(tidyverse, here, broom, panelr, plm, nlme, lmtest)
 gravity <- read_csv("gravity.csv")
 ```
 
@@ -207,6 +207,30 @@ ppml_exports_glance <- ppml_exports |> glance_it("PPML (exports)")
 
 ppml_imports_tidy <- ppml_imports |> tidy_it("PPML (imports)")
 ppml_imports_glance <- ppml_imports |> glance_it("PPML (imports)")
+```
+
+### Results
+
+```{r}
+exports_ree |> summary()
+```
+
+```{r}
+exports_ree |> 
+  coeftest(vcov = vcovHC, type = "HC1", cluster = "group") |> 
+  tidy() |> 
+  select(term, estimate, std.error, p.value) |> 
+  pivot_longer(!c(term, p.value)) |> 
+  mutate(` ` = case_when(
+    p.value >= 0.05 & p.value < 0.1 ~ ".",
+    p.value >= 0.01 & p.value < 0.05 ~ "*",
+    p.value >= 0.001 & p.value < 0.01 ~ "**",
+    p.value < 0.001 ~ "***",
+    TRUE ~ ""
+  )) |> 
+  select(term, name, value, ` `) |> 
+  mutate(value = as.character(round(value, 3)),
+         value = ifelse(name == "std.error", paste0("(", value, ")"), value))
 ```
 
 ### Writting results
