@@ -116,6 +116,36 @@ imports_fee_tidy <- imports_fee |> tidy_it("Fixed effects (imports)")
 imports_fee_glance <- imports_fee |> glance_it("Fixed effects (imports)")
 ```
 
+### Fixed effects estimator (twoway)
+
+```{r}
+exports_fee_tw <- 
+  plm(formula_exports,
+      data = exports,
+      model = "within",
+      effect = "twoways")
+
+exports_fee_tw |> summary()
+```
+
+```{r}
+imports_fee_tw <- 
+  plm(formula_imports,
+      data = imports,
+      model = "within",
+      effect = "twoways")
+
+imports_fee_tw |> summary()
+```
+
+```{r}
+exports_fee_tw_tidy <- exports_fee_tw |> tidy_it("Fixed time effects (exports)")
+exports_fee_tw_glance <- exports_fee_tw |> glance_it("Fixed time effects (exports)")
+
+imports_fee_tw_tidy <- imports_fee_tw |> tidy_it("Fixed time effects (imports)")
+imports_fee_tw_glance <- imports_fee_tw |> glance_it("Fixed time effects (imports)")
+```
+
 ### Poisson pseudo maximum likelihood estimator
 
 #### Params
@@ -135,7 +165,7 @@ imports_ppml <-
 
 ```{r}
 # Just checking 
-imports_log |> 
+imports_ppml |> 
   select(year, iso_j, imports) |> 
   filter(if_any(where(is.numeric), ~ .x <= 0))
 ```
