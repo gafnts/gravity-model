@@ -12,12 +12,11 @@ pacman::p_load(tidyverse, here, WDI)
 search <- function(country) {
   data <- WDI(
     indicator = c(
-      gdp = "NY.GDP.MKTP.CD", # (current US$)
-      gdp_pcap = "NY.GDP.PCAP.CD", # (current US$)
-      # expend = "NE.DAB.TOTL.CD", # (current US$)
+      gdp = "NY.GDP.MKTP.CD", 
+      gdp_pcap = "NY.GDP.PCAP.CD",
       population = "SP.POP.TOTL",
       exchange = "PA.NUS.FCRF",
-      deflator = "NY.GDP.DEFL.ZS"
+      deflator = "NY.GDP.DEFL.ZS.AD"
     ),
     country = country,
     start = 1995,
@@ -40,17 +39,13 @@ write <-
 
 ## Data extraction
 
-### Countries in the partners dataset
+### Partners
 
 ```{r}
 partners <- 
   read_csv(here("Data", "Main data frames", "partners_names.csv")) |> 
   pull(partner_iso)
-```
 
-### Partners
-
-```{r}
 partners_wdi <- tibble()
 
 for (partner in partners) {
