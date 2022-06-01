@@ -14,7 +14,7 @@ transaction_costs <- read_csv(here("Data", "Main data frames", "transaction_cost
 ## Gravity variables
 
 $$
-TGDP_{ij,t} = GDP_{i,t} + GDP_{j,t} \\
+TGDP_{ij,t} = ln(GDP_{i,t} + GDP_{j,t}) \\
 RFE_{ij, t} = \Bigg| ln\Bigg(\frac{GDP_{i, t}}{N_{i, t}}\Bigg) - ln\Bigg(\frac{GDP_{j, t}}{N_{j, t}}\Bigg) \Bigg| \\
 SIM_{ij, t} = 1 - \Big(\frac{ln(GDP_{i, t})}{ln(GDP_{i, t}+GDP_{j, t})}\Big)^2 - \Big(\frac{ln(GDP_{j, t})}{ln(GDP_{i, t}+GDP_{j, t})}\Big)^2 \\
 RER_{ij, t} = \bigg(\frac{LC_{i, t}}{LC_{j, t}}\bigg)\bigg(\frac{P_{j, t}}{P_{i, t}}\bigg)
@@ -27,7 +27,7 @@ macro <-
   arrange(partner_iso, year) |> 
   group_by(partner_iso) |> 
   mutate(
-    tgdp = gdp_i + gdp_j,
+    tgdp = log(gdp_i + gdp_j),
     rfe = abs(log(gdp_i/population_i) - log(gdp_j/population_j)),
     sim = 1 - ((log(gdp_i)/log(gdp_i + gdp_j))^2 - (log(gdp_j)/log(gdp_i + gdp_j))^2),
     rer = (exchange_i/exchange_j) * (deflator_j/deflator_i)

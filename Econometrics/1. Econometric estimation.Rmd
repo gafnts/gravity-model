@@ -52,15 +52,15 @@ imports <- gravity |> mutate(imports = 1 + imports) |> panel_data(id = iso_j, wa
 
 ```{r}
 formula_exports <- 
-  log(exports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  log(exports) ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
 
 formula_imports <- 
-  log(imports) ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  log(imports) ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
 ```
 
-#### Random effects estimator
+### Random effects estimator
 
 ```{r}
 exports_ree <- 
@@ -88,7 +88,7 @@ imports_ree_tidy <- imports_ree |> tidy_it("Random effects (imports)")
 imports_ree_glance <- imports_ree |> glance_it("Random effects (imports)")
 ```
 
-#### Fixed effects estimator
+### Fixed effects estimator
 
 ```{r}
 exports_fee <- 
@@ -116,7 +116,9 @@ imports_fee_tidy <- imports_fee |> tidy_it("Fixed effects (imports)")
 imports_fee_glance <- imports_fee |> glance_it("Fixed effects (imports)")
 ```
 
-#### Poisson pseudo maximum likelihood estimator
+### Poisson pseudo maximum likelihood estimator
+
+#### Params
 
 ```{r}
 # Feature engineering
@@ -141,13 +143,15 @@ imports_log |>
 ```{r}
 # Declaring formulas
 formula_exports_ppml <- 
-  exports ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  exports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
 
 formula_imports_ppml <- 
-  imports ~ log(tgdp) + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  imports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
 ```
+
+#### Estimation
 
 ```{r}
 ppml_exports <- 
@@ -175,7 +179,7 @@ ppml_imports_tidy <- ppml_imports |> tidy_it("PPML (imports)")
 ppml_imports_glance <- ppml_imports |> glance_it("PPML (imports)")
 ```
 
-#### Writting results
+### Writting results
 
 ```{r}
 exports_ree_tidy |> 
