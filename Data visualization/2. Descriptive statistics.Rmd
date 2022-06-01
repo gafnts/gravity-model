@@ -1,31 +1,37 @@
 # Descriptive statistics
 
 ```{r}
-pacman::p_load(tidyverse, here)
+pacman::p_load(tidyverse, here, RColorBrewer)
 ```
 
 #### Gravity dataset
 
 ```{r}
-gravity <- read_csv(here("gravity.csv")) |> 
-  select(year, exports, imports, dist,
-         "gdp" = gdp_j, "population" = population_j, 
-         "exchange" = exchange_j, "deflator" = deflator_j, 
-         tgdp, rfe, sim, rer) 
+gravity <- 
+  read_csv(here("gravity.csv")) |> 
+  select(year, exports, imports, tgdp, rfe, sim, 
+         dist, rer, cont, lang, ccol, crel, rta) |> 
+  mutate(exports = ifelse(log(exports) <= 0, 0, log(exports)),
+         imports = ifelse(log(imports) <= 0, 0, log(imports)),
+         dist = log(dist),
+         rer = log(rer))
 ```
 
-#### Table
+#### Descriptive statistics table
 
 ```{r}
-stats_longer <- 
+gravity_longer <- 
   gravity |> 
-  # mutate(across(where(is.numeric), ~ log(.x))) |> 
-  pivot_longer(-year, names_to = "Variable", values_to = "value") |> 
+  pivot_longer(!year, names_to = "Variable", values_to = "value")  |> 
+  mutate(Variable = fct_relevel(factor(Variable),
+                                "exports", "imports", "tgdp", "rfe",
+                                "sim", "dist", "rer", "cont", "lang",
+                                "ccol", "crel", "rta")) |> 
   arrange(Variable, year) |> 
   group_by(Variable)
 
 descriptive <- 
-  stats_longer %>% 
+  gravity_longer |> 
   summarise(Media = round(mean(value), 2),
             Mediana = round(median(value), 2),
             Mínimo = round(min(value), 2),
@@ -35,56 +41,84 @@ descriptive <-
             Curtosis = round(e1071::kurtosis(value), 2))
 
 obs <- 
-  stats_longer %>% 
-  count(Variable) %>% 
+  gravity_longer |> 
+  count(Variable) |> 
   rename(`Obs.` = n)
 
 descriptive_stats <- 
-  descriptive %>% 
-  left_join(obs) %>% 
+  descriptive |> 
+  left_join(obs) |> 
   as.data.frame()
 ```
 
 ```{r}
 descriptive_stats |> 
-  write_csv(here("Data visualization", "Descriptive statistics", "descriptive_stats.csv"))
+  write_csv(here("Data visualization", 
+                 "Descriptive statistics", "descriptive_stats.csv"))
 ```
 
-#### Plots
+#### Histograms
 
 ```{r}
-# Histogram
-stats_longer |> 
-  mutate(value = log(value)) |> 
+gravity_longer |> 
   ggplot(aes(value)) +
   geom_histogram(aes(y = ..density..),
                  color = 1, fill = "white",
-                 bins = 50) +
-  geom_density(lwd = .55, color = 2,
-               fill = 2, alpha = .15) +
-  # scale_x_log10() +
+                 lwd = .25, bins = 50) +
+  geom_density(lwd = .45, color = "#F28157",
+               fill = "#F28157", alpha = .15) +
   facet_wrap(~Variable, scales = "free") +
-  theme_linedraw() +
   theme(
-    axis.title = element_blank()
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    panel.background = element_rect(color = "gray15", fill = "white"),
+    panel.grid = element_blank(),
+    strip.background = element_rect(color = "gray15", fill = "gray15"),
+    strip.text = element_text(color = "white")
   )
 ```
+
+```{r}
+ggsave(here("Data Visualization", "histograms.png"), 
+       width = 11, height = 8.5, dpi = 300, units = "in")
+```
+
+#### Correlation matrix
 
 ```{r}
 # Correlation matrix
 gravity |> 
   select(where(is.numeric)) |> 
   cor() |> 
-  ggcorrplot::ggcorrplot(method = "circle")
+  ggcorrplot::ggcorrplot(show.diag = FALSE,
+                         outline.color = "black",
+                         lab = TRUE,
+                         type = "lower",
+                         color = c("#91C4D9", "white", "#F28157"))  +
+  theme(
+    axis.text = element_text(color = "black"),
+    legend.key.height = unit(6.9, "line"),
+    legend.title = element_blank(),
+    panel.background = element_rect(color = "gray10", fill = "white"),
+    plot.background = element_rect(color= "white", fill = "white"),
+    panel.grid = element_blank()
+  )
 ```
 
 ```{r}
-# Scatterplot matrix
+ggsave(here("Data Visualization", "correlation matrix.png"), 
+       width = 8.5, height = 8.5, dpi = 300, units = "in")
+```
+
+#### Trade flows
+
+```{r}
+gravity <- 
+  read_csv(here("gravity.csv")) |> 
+  select(year, iso_j, exports, imports)
+```
+
+```{r}
 gravity |> 
-  select(where(is.numeric)) |> 
-  GGally::ggpairs()
-```
-
-```{r}
-# Overlap trade and country similatiry
+  pivot_longer(!c(year, iso_j), names_to = "Variable", values_to = "value")
 ```
