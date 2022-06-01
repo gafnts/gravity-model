@@ -1,46 +1,8 @@
 # Econometric estimation
 
 ```{r}
-pacman::p_load(tidyverse, here, broom, panelr, plm, nlme, lmtest)
+pacman::p_load(tidyverse, here, broom, panelr, plm, nlme, lmtest, stargazer)
 gravity <- read_csv("gravity.csv")
-```
-
-#### Functions
-
-```{r}
-add_name <- 
-  function(data, tidy, id) {
-    if (tidy == TRUE) {
-      data |> 
-        add_row(term = id, .before = 1)
-    } else {
-      data |> 
-        mutate(estimator = id) |> 
-        relocate(estimator)
-    }
-  }
-
-tidy_it <- 
-  function(data, id) {
-  model_tidy <- 
-    data |> 
-    tidy() |> 
-    add_name(tidy = TRUE, 
-             id = id)
-  
-  return(model_tidy)
-}
-
-glance_it <- 
-  function(data, id) {
-  model_glance <- 
-    data |> 
-    glance() |> 
-    add_name(tidy = FALSE, 
-             id = id)
-  
-  return(model_glance)
-}
 ```
 
 #### Params
@@ -58,6 +20,26 @@ formula_exports <-
 formula_imports <- 
   log(imports) ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
+```
+
+### Pooled estimator
+
+```{r}
+exports_ols <- 
+  plm(formula_exports,
+      data = exports,
+      model = "pooling")
+
+exports_ols |> summary()
+```
+
+```{r}
+imports_ols <- 
+  plm(formula_imports,
+      data = imports,
+      model = "pooling")
+
+imports_ols |> summary()
 ```
 
 ### Random effects estimator
@@ -80,14 +62,6 @@ imports_ree <-
 imports_ree |> summary()
 ```
 
-```{r}
-exports_ree_tidy <- exports_ree |> tidy_it("Random effects (exports)")
-exports_ree_glance <- exports_ree |> glance_it("Random effects (exports)")
-
-imports_ree_tidy <- imports_ree |> tidy_it("Random effects (imports)")
-imports_ree_glance <- imports_ree |> glance_it("Random effects (imports)")
-```
-
 ### Fixed effects estimator
 
 ```{r}
@@ -106,44 +80,6 @@ imports_fee <-
       model = "within")
 
 imports_fee |> summary()
-```
-
-```{r}
-exports_fee_tidy <- exports_fee |> tidy_it("Fixed effects (exports)")
-exports_fee_glance <- exports_fee |> glance_it("Fixed effects (exports)")
-
-imports_fee_tidy <- imports_fee |> tidy_it("Fixed effects (imports)")
-imports_fee_glance <- imports_fee |> glance_it("Fixed effects (imports)")
-```
-
-### Fixed effects estimator (twoway)
-
-```{r}
-exports_fee_tw <- 
-  plm(formula_exports,
-      data = exports,
-      model = "within",
-      effect = "twoways")
-
-exports_fee_tw |> summary()
-```
-
-```{r}
-imports_fee_tw <- 
-  plm(formula_imports,
-      data = imports,
-      model = "within",
-      effect = "twoways")
-
-imports_fee_tw |> summary()
-```
-
-```{r}
-exports_fee_tw_tidy <- exports_fee_tw |> tidy_it("Fixed time effects (exports)")
-exports_fee_tw_glance <- exports_fee_tw |> glance_it("Fixed time effects (exports)")
-
-imports_fee_tw_tidy <- imports_fee_tw |> tidy_it("Fixed time effects (imports)")
-imports_fee_tw_glance <- imports_fee_tw |> glance_it("Fixed time effects (imports)")
 ```
 
 ### Poisson pseudo maximum likelihood estimator
@@ -201,15 +137,17 @@ ppml_imports <-
 ppml_imports |> summary()
 ```
 
-```{r}
-ppml_exports_tidy <- ppml_exports |> tidy_it("PPML (exports)")
-ppml_exports_glance <- ppml_exports |> glance_it("PPML (exports)")
+### Results
 
-ppml_imports_tidy <- ppml_imports |> tidy_it("PPML (imports)")
-ppml_imports_glance <- ppml_imports |> glance_it("PPML (imports)")
+```{r}
+# Exports
+stargazer(exports_ols, exports_ree, exports_fee, ppml_exports,
+          align = TRUE, type = "text",
+          column.labels = c("OLS", "REE", "FEE", "PPML"),
+          out = here("Econometrics", "Results", "exports.html"))
 ```
 
-### Results
+### Other functions
 
 ```{r}
 format <- function(model, name) {
@@ -232,47 +170,42 @@ format <- function(model, name) {
          ` ` = if_else(row_number() %% 2 == 0, "", ` `)) |> 
   select(!name) |> 
   rename("Variable" = term,
-         name = value)
+         !!name := value)
 }
 ```
 
 ```{r}
-format(exports_ree, "Efectos aleatorios")
-```
+add_name <- 
+  function(data, tidy, id) {
+    if (tidy == TRUE) {
+      data |> 
+        add_row(term = id, .before = 1)
+    } else {
+      data |> 
+        mutate(estimator = id) |> 
+        relocate(estimator)
+    }
+  }
 
-```{r}
-exports_ree |> 
-  coeftest(vcov = vcovHC, type = "HC1", cluster = "group") |> 
-  tidy() |> 
-  select(term, estimate, std.error, p.value) |> 
-  pivot_longer(!c(term, p.value)) |> 
-  mutate(` ` = case_when(
-    p.value >= 0.05 & p.value < 0.1 ~ ".",
-    p.value >= 0.01 & p.value < 0.05 ~ "*",
-    p.value >= 0.001 & p.value < 0.01 ~ "**",
-    p.value < 0.001 ~ "***",
-    TRUE ~ ""
-  )) |> 
-  select(term, name, value, ` `) |> 
-  mutate(value = as.character(round(value, 3)),
-         value = ifelse(name == "std.error", paste0("(", value, ")"), value),
-         term = if_else(row_number() %% 2 == 0, "", term),
-         ` ` = if_else(row_number() %% 2 == 0, "", ` `)) |> 
-  select(!name) |> 
-  rename("Variable" = term,
-         "Efectos aleatorios" = value)
-```
+tidy_it <- 
+  function(data, id) {
+  model_tidy <- 
+    data |> 
+    tidy() |> 
+    add_name(tidy = TRUE, 
+             id = id)
+  
+  return(model_tidy)
+}
 
-### Writting results
-
-```{r}
-exports_ree_tidy |> 
-  bind_rows(exports_fee_tidy) |> 
-  bind_rows(ppml_exports_tidy) |> 
-  write_csv(here("Econometrics", "Results", "exports.csv"))
-
-imports_ree_tidy |> 
-  bind_rows(imports_fee_tidy) |> 
-  bind_rows(ppml_imports_tidy) |> 
-  write_csv(here("Econometrics", "Results", "imports.csv"))
+glance_it <- 
+  function(data, id) {
+  model_glance <- 
+    data |> 
+    glance() |> 
+    add_name(tidy = FALSE, 
+             id = id)
+  
+  return(model_glance)
+}
 ```
