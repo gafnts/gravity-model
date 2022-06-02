@@ -1,0 +1,41 @@
+# Coefficients evolution over time
+
+```{r}
+pacman::p_load(tidyverse, broom, here, panelr, plm, nlme, lmtest)
+gravity <- read_csv("gravity.csv")
+```
+
+```{r}
+# Feature engineering
+exports_ppml <- 
+  gravity |> 
+  mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
+  panel_data(id = iso_j, wave = year)
+
+imports_ppml <- 
+  gravity |> 
+  mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
+  panel_data(id = iso_j, wave = year)
+
+# Declaring formulas
+formula_exports_ppml <- 
+  exports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  ccol + crel + rta
+
+formula_imports_ppml <- 
+  imports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
+  ccol + crel + rta
+```
+
+```{r}
+
+```
+
+```{r}
+ppml_exports <- 
+  glm(formula_exports_ppml,
+      family = quasipoisson(link = "log"),
+      data = exports_ppml)
+
+ppml_exports |> summary()
+```
