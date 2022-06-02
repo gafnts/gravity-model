@@ -1,5 +1,54 @@
 # Exploratory data anaylisis
 
 ```{r}
-pacman::p_load(tidyverse, here)
+pacman::p_load(tidyverse, here, sf, viridis)
+```
+
+```{r}
+gravity <- read_csv(here("gravity.csv"))
+codes <- read_csv("https://git.io/v564u") |> select(country = name, iso_j = `alpha-3`)
+mapdata <- map_data("world") %>% as_tibble() |> rename(country = region)
+```
+
+```{r}
+exports <- 
+  gravity |> 
+  group_by(iso_j) |> 
+  mutate(exports = mean(log(exports))) |> 
+  filter(year == 2020) |> 
+  select(iso_j, exports) |> 
+  left_join(codes) |> 
+  relocate(country) |> 
+  rename(iso = iso_j) |> 
+  ungroup() |> 
+  mutate(country = case_when(
+    country == "United States of America" ~ "USA",
+    country == "Bolivia (Plurinational State of)" ~ "Bolivia",
+    country == "Trinidad and Tobago" ~ "Trinidad",
+    country == "Saint Vincent and the Grenadines" ~ "Saint Vincent",
+    TRUE ~ country
+  ))
+
+exports_map <- exports |> right_join(mapdata)
+```
+
+```{r}
+exports_map %>%
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = exports), color = "white", size = .1) +
+  coord_cartesian(ylim = c(-55, 85)) +
+  scale_fill_gradientn(colours = c("#91C4D9", "gray80", 2),
+                       values = scales::rescale(c(-0.1, -0.05, 0, 0.05, 0.1)),
+                       na.value = "gray70") +
+  theme(
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank(),
+    legend.position = "bottom",
+    legend.key.width = unit(6.9, "line"),
+    legend.title = element_blank(),
+    panel.background = element_rect(fill = "gray95"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
 ```
