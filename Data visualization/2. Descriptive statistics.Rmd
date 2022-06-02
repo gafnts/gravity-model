@@ -1,7 +1,7 @@
 # Descriptive statistics
 
 ```{r}
-pacman::p_load(tidyverse, here, RColorBrewer)
+pacman::p_load(tidyverse, here)
 ```
 
 #### Gravity dataset
@@ -53,8 +53,7 @@ descriptive_stats <-
 
 ```{r}
 descriptive_stats |> 
-  write_csv(here("Data visualization", 
-                 "Descriptive statistics", "descriptive_stats.csv"))
+  write_csv(here("Data visualization", "Tables", "descriptive_stats.csv"))
 ```
 
 #### Histograms
@@ -65,8 +64,8 @@ gravity_longer |>
   geom_histogram(aes(y = ..density..),
                  color = 1, fill = "white",
                  lwd = .25, bins = 50) +
-  geom_density(lwd = .45, color = "#F28157",
-               fill = "#F28157", alpha = .15) +
+  geom_density(lwd = .45, color = 2,
+               fill = 2, alpha = .15) +
   facet_wrap(~Variable, scales = "free") +
   theme(
     axis.title = element_blank(),
@@ -79,7 +78,7 @@ gravity_longer |>
 ```
 
 ```{r}
-ggsave(here("Data Visualization", "histograms.png"), 
+ggsave(here("Data visualization", "Plots", "histograms.png"), 
        width = 11, height = 8.5, dpi = 300, units = "in")
 ```
 
@@ -106,6 +105,6 @@ gravity |>
 ```
 
 ```{r}
-ggsave(here("Data Visualization", "correlation matrix.png"), 
+ggsave(here("Data visualization", "Plots", "correlation matrix.png"), 
        width = 8.5, height = 8.5, dpi = 300, units = "in")
 ```
