@@ -69,18 +69,43 @@ for (date in dates) {
 ```
 
 ```{r}
-spline_plot <- function(data, term, spline) {
+spline_plot <- function(data, term, spline, name) {
  data |> 
   filter(term == !!term) |> 
   ggplot(aes(year, estimate)) +
   geom_point() +
-  geom_smooth(method = lm, formula = y ~ splines::bs(x, spline)) 
+  geom_smooth(color = 2, fill = 2, alpha = .1,
+              method = lm, formula = y ~ splines::bs(x, spline)) +
+  ggtitle(paste0(name)) +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_text(color = "black"),
+    legend.key.height = unit(6.9, "line"),
+    panel.background = element_rect(color = "gray10", fill = "white"),
+    plot.background = element_rect(color= "white", fill = "white"),
+    panel.grid = element_blank()
+  )
 }
 ```
 
 ```{r}
-p1 <- spline_plot(exports, "rfe", 7)
-p2 <- spline_plot(exports, "sim", 7)
+p1 <- spline_plot(exports, "rfe", 3, "RFE en exportaciones a lo largo del tiempo")
+p2 <- spline_plot(exports, "sim", 3, "SIM en exportaciones a lo largo del tiempo")
+p1 + p2
+```
 
-p1
+```{r}
+ggsave(here("Econometrics", "Results", "RFE and SIM (exports).png"), 
+       width = 12.5, height = 6, dpi = 300, units = "in")
+```
+
+```{r}
+p3 <- spline_plot(imports, "rfe", 3, "RFE en importaciones a lo largo del tiempo")
+p4 <- spline_plot(imports, "sim", 3, "SIM en importaciones a lo largo del tiempo")
+p3 + p4
+```
+
+```{r}
+ggsave(here("Econometrics", "Results", "RFE and SIM (imports).png"), 
+       width = 12.5, height = 6, dpi = 300, units = "in")
 ```
