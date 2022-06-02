@@ -65,7 +65,7 @@ gravity_longer |>
                  color = 1, fill = "white",
                  lwd = .25, bins = 50) +
   geom_density(lwd = .45, color = 2,
-               fill = 2, alpha = .15) +
+               fill = 2, alpha = .25) +
   facet_wrap(~Variable, scales = "free") +
   theme(
     axis.title = element_blank(),
@@ -73,7 +73,8 @@ gravity_longer |>
     panel.background = element_rect(color = "gray15", fill = "white"),
     panel.grid = element_blank(),
     strip.background = element_rect(color = "gray15", fill = "gray15"),
-    strip.text = element_text(color = "white")
+    strip.text = element_text(color = "white"),
+    plot.margin = unit(c(1,1,1,1), "cm")
   )
 ```
 
@@ -90,10 +91,10 @@ gravity |>
   select(where(is.numeric)) |> 
   cor() |> 
   ggcorrplot::ggcorrplot(show.diag = FALSE,
-                         outline.color = "black",
+                         outline.color = FALSE,
                          lab = TRUE,
                          type = "lower",
-                         color = c("#91C4D9", "white", "#F28157"))  +
+                         color = c("#91C4D9", "white", 2))  +
   theme(
     axis.text = element_text(color = "black"),
     legend.key.height = unit(6.9, "line"),
