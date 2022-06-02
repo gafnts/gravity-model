@@ -1,0 +1,10 @@
+# Bootstrapping coefficients
+
+```{r}
+pacman::p_load(tidyverse, tidymodels, here, panelr, plm, patchwork)
+gravity <- read_csv("gravity.csv")
+```
+
+```{r}
+
+```
