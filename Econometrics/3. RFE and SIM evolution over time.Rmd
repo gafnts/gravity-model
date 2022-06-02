@@ -1,9 +1,8 @@
 # Coefficients evolution over time
 
 ```{r}
-pacman::p_load(tidyverse, broom, here, janitor, panelr, plm, nlme, lmtest)
+pacman::p_load(tidyverse, broom, here, janitor, panelr, plm, lmtest, patchwork)
 gravity <- read_csv("gravity.csv")
-
 ```
 
 ```{r}
@@ -67,4 +66,21 @@ for (date in dates) {
   extraction <- extract(imports_data, imports_formula, date)
   imports <- bind_rows(imports, extraction)
 }
+```
+
+```{r}
+spline_plot <- function(data, term, spline) {
+ data |> 
+  filter(term == !!term) |> 
+  ggplot(aes(year, estimate)) +
+  geom_point() +
+  geom_smooth(method = lm, formula = y ~ splines::bs(x, spline)) 
+}
+```
+
+```{r}
+p1 <- spline_plot(exports, "rfe", 7)
+p2 <- spline_plot(exports, "sim", 7)
+
+p1
 ```
