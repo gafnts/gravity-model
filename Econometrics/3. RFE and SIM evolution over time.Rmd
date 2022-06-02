@@ -95,7 +95,7 @@ p1 + p2
 ```
 
 ```{r}
-ggsave(here("Econometrics", "Results", "RFE and SIM (exports).png"), 
+ggsave(here("Econometrics", "Results", "RFE and SIM over time (exports).png"), 
        width = 12.5, height = 6, dpi = 300, units = "in")
 ```
 
@@ -106,6 +106,6 @@ p3 + p4
 ```
 
 ```{r}
-ggsave(here("Econometrics", "Results", "RFE and SIM (imports).png"), 
+ggsave(here("Econometrics", "Results", "RFE and SIM over time (imports).png"), 
        width = 12.5, height = 6, dpi = 300, units = "in")
 ```
