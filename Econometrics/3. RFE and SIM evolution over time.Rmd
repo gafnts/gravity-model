@@ -1,41 +1,70 @@
 # Coefficients evolution over time
 
 ```{r}
-pacman::p_load(tidyverse, broom, here, panelr, plm, nlme, lmtest)
+pacman::p_load(tidyverse, broom, here, janitor, panelr, plm, nlme, lmtest)
 gravity <- read_csv("gravity.csv")
+
 ```
 
 ```{r}
 # Feature engineering
-exports_ppml <- 
+exports_data <- 
   gravity |> 
   mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
   panel_data(id = iso_j, wave = year)
 
-imports_ppml <- 
+imports_data <- 
   gravity |> 
   mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
   panel_data(id = iso_j, wave = year)
+```
 
+```{r}
 # Declaring formulas
-formula_exports_ppml <- 
+exports_formula <- 
   exports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
 
-formula_imports_ppml <- 
+imports_formula <- 
   imports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
   ccol + crel + rta
 ```
 
 ```{r}
-
+extract <- function(data, formula, date) {
+  filtered_data <- data |> filter(year == date)
+  
+  model <-
+    glm(formula,
+        family = quasipoisson(link = "log"),
+        data = filtered_data)
+  
+  tidy <- model |> tidy() |> mutate(year = date) |> relocate(year) |> select(!4:6)
+  
+  std <- 
+    coeftest(model, vcov = vcovHC, type = "HC1", cluster = "group")[, 2] |> 
+    as_tibble() |> 
+    rename(std.error = value)
+  
+  result <- tidy |> bind_cols(std)
+  return(result)
+}
 ```
 
 ```{r}
-ppml_exports <- 
-  glm(formula_exports_ppml,
-      family = quasipoisson(link = "log"),
-      data = exports_ppml)
+dates <- c(1995:2020)
 
-ppml_exports |> summary()
+exports <- tibble()
+
+for (date in dates) {
+  extraction <- extract(exports_data, exports_formula, date)
+  exports <- bind_rows(exports, extraction)
+}
+
+imports <- tibble()
+
+for (date in dates) {
+  extraction <- extract(imports_data, imports_formula, date)
+  imports <- bind_rows(imports, extraction)
+}
 ```
