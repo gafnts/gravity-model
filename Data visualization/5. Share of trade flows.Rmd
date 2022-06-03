@@ -1,0 +1,17 @@
+# Commercial balance analysis
+
+```{r}
+pacman::p_load(tidyverse, here, comtradr, patchwork)
+```
+
+```{r}
+total_raw <- 
+  ct_search(
+    reporters = "Guatemala",
+    partners = "World",
+    trade_direction = "all",
+    freq = "annual",
+    commod_codes = "TOTAL",
+    type = "goods"
+    )
+```
