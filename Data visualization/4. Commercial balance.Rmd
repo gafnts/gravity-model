@@ -37,18 +37,69 @@ gravity <-
   summarise(exports = sum(exports),
             imports = sum(imports))
 
-balance <- 
+balance_raw <- 
   total |> 
   left_join(gravity) |> 
   mutate(balance_total = exports_total - imports_total,
-         balance = exports - imports)
+         balance = exports - imports,
+         across(2:7, ~ .x / 1e6))
+```
+
+```{r}
+balance <- 
+  balance_raw |> 
+  pivot_longer(!year) |> 
+  mutate(id = ifelse(str_detect(name, "_total"), "Mundo", "América")) |> 
+  pivot_wider(names_from = name, values_from = value) |> 
+  mutate(id = fct_relevel(id, "Mundo", "América"))
 ```
 
 ```{r}
 balance |> 
   ggplot() +
-  geom_line(aes(year, exports_total), data = balance) +
-  geom_line(aes(year, imports_total), data = balance) +
-  geom_col(aes(year, balance_total), data = balance) +
-  theme(axis.title = element_blank())
+  # World
+  geom_line(aes(year, exports_total), 
+            data = balance |> filter(id == "Mundo"),
+            color = 2) +
+  geom_point(aes(year, exports_total), 
+            data = balance |> filter(id == "Mundo"),
+            color = 2) +
+  geom_line(aes(year, imports_total), 
+            data = balance |> filter(id == "Mundo"),
+            color = "#91C4D9") +
+  geom_point(aes(year, imports_total), 
+            data = balance |> filter(id == "Mundo"),
+            color = "#91C4D9") +
+  geom_col(aes(year, balance_total), 
+           data = balance |> filter(id == "Mundo"),
+           fill = "gray15") +
+  # America
+  geom_line(aes(year, exports), 
+            data = balance |> filter(id == "América"),
+            color = 2) +
+  geom_point(aes(year, exports), 
+            data = balance |> filter(id == "América"),
+            color = 2) +
+  geom_line(aes(year, imports), 
+            data = balance |> filter(id == "América"),
+            color = "#91C4D9") +
+  geom_point(aes(year, imports), 
+            data = balance |> filter(id == "América"),
+            color = "#91C4D9") +
+  geom_col(aes(year, balance), 
+           data = balance |> filter(id == "América"),
+           fill = "gray15") +
+  facet_wrap(vars(id))  +
+  scale_y_continuous(breaks = seq(-10000, 20000, by = 2000),
+                     label = scales::comma) +
+  scale_x_continuous(breaks = seq(1995, 2020, by = 5)) +
+  theme(
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    panel.background = element_rect(color = "gray15", fill = "white"),
+    panel.grid = element_blank(),
+    strip.background = element_rect(color = "gray15", fill = "gray15"),
+    strip.text = element_text(color = "white"),
+    plot.margin = unit(c(1,1,1,1), "cm")
+  )
 ```
