@@ -41,7 +41,6 @@ total <-
   filter(trade_flow != "Re-Import") |> 
   arrange(year) |> 
   pivot_wider(names_from = trade_flow, values_from = trade_value_usd) |> 
-  select(!4) |> 
   rename(imports_total = Import, exports_total = Export) |> 
   filter(between(year, 1995, 2020)) |> 
   relocate(year, exports_total)
@@ -87,7 +86,7 @@ flows <-
 ```{r}
 flows |> 
   ggplot(aes(year, value, fill = name)) +
-  geom_stream(type = "ridge", extra_span = .1, true_range = "both") +
+  geom_area() +
   facet_wrap(vars(id)) +
   scale_y_continuous(breaks = seq(-10000, 20000, by = 2000),
                      label = scales::comma) +
