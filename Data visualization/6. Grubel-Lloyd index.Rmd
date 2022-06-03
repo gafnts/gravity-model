@@ -68,6 +68,8 @@ index <-
 ```{r}
 index |> 
   ggplot(aes(sim, gl)) +
-  geom_label(aes(label = iso_j),
-             position = position_jitter())
+  geom_point() +
+  geom_smooth(method = lm, formula = y ~ splines::bs(x, 4), se = FALSE) +
+  geom_text(aes(label = iso_j),
+            nudge_x = .02) 
 ```
