@@ -2,35 +2,51 @@
 
 ```{r}
 pacman::p_load(tidyverse, here, comtradr, ggstream)
+gravity <- read_csv(here("gravity.csv")) |> select(year, iso_j, exports, imports)
 ```
 
-```{r}
-gravity <- read_csv(here("gravity.csv")) |> select(year, iso_j, exports, imports)
+#### Extraction from UN Comtrade API
 
-total_raw <- 
+```{r}
+query <- function(year) {
   ct_search(
     reporters = "Guatemala",
     partners = "World",
     trade_direction = "all",
+    start_date = year,
+    end_date = year,
     freq = "annual",
     commod_codes = "TOTAL",
     type = "goods"
-    )
+    ) |> 
+    as_tibble() |> 
+    select(year, trade_flow, trade_value_usd) |> 
+    mutate(trade_flow = as.character(trade_flow))
+}
+
+years <- c(1995:2020)
+total_raw <- tibble()
+
+for (year in years) {
+  extraction <- query(year)
+  total_raw <- bind_rows(total_raw, extraction)
+}
 ```
+
+#### Data wringling
 
 ```{r}
 total <- 
-  total_raw |> 
-  as_tibble() |> 
+  total_raw |>
+  filter(trade_flow != "Re-Import") |> 
   arrange(year) |> 
-  select(year, trade_flow, trade_value_usd) |> 
   pivot_wider(names_from = trade_flow, values_from = trade_value_usd) |> 
   select(!4) |> 
   rename(imports_total = Import, exports_total = Export) |> 
   filter(between(year, 1995, 2020)) |> 
   relocate(year, exports_total)
 
-america <- 
+ america <- 
   gravity |> 
   group_by(year) |> 
   # filter(iso_j != "USA") |> 
@@ -66,10 +82,12 @@ flows <-
   mutate(name = fct_relevel(name, "Total", "América", "Estados Unidos  "))
 ```
 
+#### Data visualization
+
 ```{r}
 flows |> 
   ggplot(aes(year, value, fill = name)) +
-  geom_stream(type = "ridge", extra_span = .1) +
+  geom_stream(type = "ridge", extra_span = .1, true_range = "both") +
   facet_wrap(vars(id)) +
   scale_y_continuous(breaks = seq(-10000, 20000, by = 2000),
                      label = scales::comma) +
