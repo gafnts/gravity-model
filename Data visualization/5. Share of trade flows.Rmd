@@ -1,10 +1,12 @@
-# Commercial balance analysis
+# Share of trade flows
 
 ```{r}
-pacman::p_load(tidyverse, here, comtradr, patchwork)
+pacman::p_load(tidyverse, here, comtradr, ggstream)
 ```
 
 ```{r}
+gravity <- read_csv(here("gravity.csv")) |> select(year, iso_j, exports, imports)
+
 total_raw <- 
   ct_search(
     reporters = "Guatemala",
@@ -14,4 +16,58 @@ total_raw <-
     commod_codes = "TOTAL",
     type = "goods"
     )
+```
+
+```{r}
+total <- 
+  total_raw |> 
+  as_tibble() |> 
+  arrange(year) |> 
+  select(year, trade_flow, trade_value_usd) |> 
+  pivot_wider(names_from = trade_flow, values_from = trade_value_usd) |> 
+  select(!4) |> 
+  rename(imports_total = Import, exports_total = Export) |> 
+  filter(between(year, 1995, 2020)) |> 
+  relocate(year, exports_total)
+
+america <- 
+  gravity |> 
+  group_by(year) |> 
+  # filter(iso_j != "USA") |> 
+  summarise(exports_america = sum(exports),
+            imports_america = sum(imports))
+
+usa <- 
+  gravity |> 
+  group_by(year) |> 
+  filter(iso_j == "USA") |> 
+  summarise(exports_usa = sum(exports),
+            imports_usa = sum(imports))
+
+
+flows <- 
+  total |> 
+  left_join(america) |> 
+  left_join(usa) |> 
+  mutate(across(2:7, ~ .x / 1e6),
+         exports_total = exports_total - exports_america,
+         exports_america = exports_america - exports_usa,
+         imports_total = imports_total - imports_america,
+         imports_america = imports_america - imports_usa) |> 
+  pivot_longer(!year) |> 
+  mutate(id = ifelse(str_detect(name, "exports"), "exports", "imports"),
+         name = case_when(
+           str_detect(name, "_total") ~ "total",
+           str_detect(name, "_america") ~ "america",
+           str_detect(name, "_usa") ~ "usa"
+         )) |> 
+  relocate(year, id)
+```
+
+```{r}
+flows |> 
+  ggplot(aes(year)) +
+  geom_stream(aes(y = value, fill = name),
+              data = flows |> filter(str_detect(name, "exports_")),
+              type = "ridge")
 ```
