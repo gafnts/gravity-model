@@ -4,14 +4,13 @@
 pacman::p_load(tidyverse, here, sf, patchwork)
 ```
 
-### Export/Import maps
-
-(a) Filter 0's before applying logs
-
-(b) Make title font bigger
+### Export/Import map
 
 ```{r}
-gravity <- read_csv(here("gravity.csv"))
+gravity <- read_csv(here("gravity.csv"))|> 
+  mutate(exports = ifelse(log(exports) <= 0, 0, log(exports)),
+         imports = ifelse(log(imports) <= 0, 0, log(imports)))
+
 codes <- read_csv("https://git.io/v564u") |> select(country = name, iso_j = `alpha-3`)
 mapdata <- map_data("world") %>% as_tibble() |> rename(country = region)
 ```
@@ -20,8 +19,8 @@ mapdata <- map_data("world") %>% as_tibble() |> rename(country = region)
 gravity_map <- 
   gravity |> 
   group_by(iso_j) |> 
-  mutate(exports = mean(log(exports)),
-         imports = mean(log(imports))) |> 
+  mutate(exports = mean(exports),
+         imports = mean(imports)) |> 
   filter(year == 2020) |> 
   select(iso_j, exports, imports) |> 
   left_join(codes) |> 
