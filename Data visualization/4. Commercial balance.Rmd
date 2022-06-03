@@ -30,15 +30,25 @@ total <-
 ```
 
 ```{r}
-gravity <- read_csv(here("gravity.csv")) |> 
+gravity <- 
+  read_csv(here("gravity.csv")) |> 
   select(year, iso_j, exports, imports) |> 
   group_by(year) |> 
   summarise(exports = sum(exports),
             imports = sum(imports))
 
-balance_raw <- total |> left_join(gravity)
+balance <- 
+  total |> 
+  left_join(gravity) |> 
+  mutate(balance_total = exports_total - imports_total,
+         balance = exports - imports)
 ```
 
 ```{r}
-
+balance |> 
+  ggplot() +
+  geom_line(aes(year, exports_total), data = balance) +
+  geom_line(aes(year, imports_total), data = balance) +
+  geom_col(aes(year, balance_total), data = balance) +
+  theme(axis.title = element_blank())
 ```
