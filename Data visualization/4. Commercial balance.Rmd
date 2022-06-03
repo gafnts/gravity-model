@@ -1,0 +1,44 @@
+# Commercial balance analysis
+
+```{r}
+pacman::p_load(tidyverse, here, comtradr, patchwork)
+```
+
+#### Total trade flows
+
+```{r}
+total_raw <- 
+  ct_search(
+    reporters = "Guatemala",
+    partners = "World",
+    trade_direction = "all",
+    freq = "annual",
+    commod_codes = "TOTAL",
+    type = "goods"
+    )
+
+total <- 
+  total_raw |> 
+  as_tibble() |> 
+  arrange(year) |> 
+  select(year, trade_flow, trade_value_usd) |> 
+  pivot_wider(names_from = trade_flow, values_from = trade_value_usd) |> 
+  select(!4) |> 
+  rename(imports_total = Import, exports_total = Export) |> 
+  filter(between(year, 1995, 2020)) |> 
+  relocate(year, exports_total)
+```
+
+```{r}
+gravity <- read_csv(here("gravity.csv")) |> 
+  select(year, iso_j, exports, imports) |> 
+  group_by(year) |> 
+  summarise(exports = sum(exports),
+            imports = sum(imports))
+
+balance_raw <- total |> left_join(gravity)
+```
+
+```{r}
+
+```
