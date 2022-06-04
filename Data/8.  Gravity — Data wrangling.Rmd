@@ -29,7 +29,7 @@ macro <-
   mutate(
     tgdp = log(gdp_i + gdp_j),
     rfe = abs(log(gdp_i/population_i) - log(gdp_j/population_j)),
-    sim = 1 - (((log(gdp_i)/log(gdp_i + gdp_j))^2) - ((log(gdp_j)/log(gdp_i + gdp_j))^2)),
+    sim = 1 - (((log(gdp_i)/log(gdp_i + gdp_j))^2 - (log(gdp_j)/(log(gdp_i + gdp_j))^2))),
     rer = (exchange_i/exchange_j) * (deflator_j/deflator_i)
   ) |> 
   ungroup()
