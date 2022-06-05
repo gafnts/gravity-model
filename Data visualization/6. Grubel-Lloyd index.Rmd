@@ -41,6 +41,36 @@ gl |>
   geom_line()
 ```
 
+```{r}
+gl_partner_ts <- 
+  trade_flows |> 
+  pivot_wider(names_from = trade_flow, values_from = value) |> 
+  mutate(across(where(is.numeric), ~ replace_na(., 0))) |> 
+  group_by(year, partner_iso, commodity) |> 
+  summarise(export = sum(Export),
+            import = sum(Import)) |> 
+  mutate(gl = 1 - (abs(export - import) / (export + import))) |> 
+  select(year, partner_iso, commodity, gl) |> 
+  group_by(partner_iso, year) |> 
+  summarise(gl = mean(gl))
+```
+
+```{r}
+gl_partner_ts |> 
+  ggplot(aes(year, gl, fill = partner_iso)) +
+  geom_line(color = "gray") +
+  geom_line(data = gl_partner_ts |> filter(partner_iso == "SLV"),
+            aes(year, gl, color = "SLV"), size = 1) +
+  geom_line(data = gl_partner_ts |> filter(partner_iso == "USA"),
+            aes(year, gl, color = "USA"), size = 1) +
+  geom_line(data = gl_partner_ts |> filter(partner_iso == "CRI"),
+            aes(year, gl, color = "CRI"), size = 1) +
+  geom_line(data = gl_partner_ts |> filter(partner_iso == "HND"),
+            aes(year, gl, color = "HND"), size = 1) +
+  geom_line(data = gl_partner_ts |> filter(partner_iso == "PAN"),
+            aes(year, gl, color = "PAN"), size = 1)
+```
+
 #### GL index and SIM index
 
 ```{r}
@@ -69,9 +99,25 @@ index <-
 
 ```{r}
 index |> 
-  ggplot(aes(sim, gl)) +
+  ggplot(aes(sim, gl))  +
+  geom_smooth(method = lm, formula = y ~ splines::ns(x, 2), se = TRUE,
+              color = 2, fill = 2, alpha = .1) +
   geom_point(position = position_jitter()) +
-  geom_smooth(method = lm, formula = y ~ splines::ns(x, 4), se = TRUE) +
-  geom_text(aes(label = iso_j),
-            nudge_y = .005)
+  geom_text(aes(label = iso_j), nudge_y = .005) +
+  theme(
+    text = element_text(color = "gray15"),
+    axis.title = element_blank(),
+    axis.text = element_text(color = "gray15"),
+    axis.ticks = element_blank(),
+    legend.title = element_blank(),
+    legend.position = c(0.15, .92),
+    legend.direction = "horizontal", 
+    legend.key = element_rect(fill = "white"),
+    legend.background = element_rect(color = "gray15", size = 0.25),
+    panel.background = element_rect(color = "gray15", fill = "white"),
+    panel.grid = element_blank(),
+    strip.background = element_rect(color = "gray15", fill = "gray15"),
+    strip.text = element_text(color = "white"),
+    plot.margin = unit(c(1,1,1,1), "cm")
+  )
 ```
