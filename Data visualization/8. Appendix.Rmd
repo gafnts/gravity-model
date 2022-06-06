@@ -18,9 +18,10 @@ gravity |>
   transmute(year, iso = factor(iso_j), flows = factor(flows), value) |> 
   filter(flows == "exports") |> 
   ggplot(aes(year, value)) +
-  geom_col(fill = 2) +
+  geom_col(fill = "gray30") +
+  scale_y_continuous(labels = scales::scientific) +
   facet_wrap(~iso, scales = "free",
-             nrow = 6, ncol = 5)  +
+             nrow = 8, ncol = 4)  +
   theme(
     axis.title = element_blank(),
     axis.ticks = element_blank(),
@@ -28,13 +29,13 @@ gravity |>
     panel.grid = element_blank(),
     strip.background = element_rect(color = "gray15", fill = "gray15"),
     strip.text = element_text(color = "white"),
-    plot.margin = unit(c(1,1,1,1), "cm")
+    plot.margin = unit(c(.5,0.1,.5,0.1), "cm")
   )
 ```
 
 ```{r}
 ggsave(here("Data visualization", "Plots", "exports.png"), 
-       width = 11, height = 8.5, dpi = 300, units = "in")
+       width = 8.5, height = 11, dpi = 300, units = "in")
 ```
 
 ```{r}
@@ -43,9 +44,10 @@ gravity |>
   transmute(year, iso = factor(iso_j), flows = factor(flows), value) |> 
   filter(flows == "imports") |> 
   ggplot(aes(year, value)) +
-  geom_col(fill = 2) +
+  geom_col(fill = "gray30") +
+  scale_y_continuous(labels = scales::scientific) +
   facet_wrap(~iso, scales = "free",
-             nrow = 6, ncol = 5)  +
+             nrow = 8, ncol = 4)  +
   theme(
     axis.title = element_blank(),
     axis.ticks = element_blank(),
@@ -53,11 +55,11 @@ gravity |>
     panel.grid = element_blank(),
     strip.background = element_rect(color = "gray15", fill = "gray15"),
     strip.text = element_text(color = "white"),
-    plot.margin = unit(c(1,1,1,1), "cm")
+    plot.margin = unit(c(.5,0.1,.5,0.1), "cm")
   )
 ```
 
 ```{r}
 ggsave(here("Data visualization", "Plots", "imports.png"), 
-       width = 11, height = 8.5, dpi = 300, units = "in")
+       width = 8.5, height = 11, dpi = 300, units = "in")
 ```
