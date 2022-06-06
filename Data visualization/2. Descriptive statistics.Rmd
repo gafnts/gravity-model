@@ -9,12 +9,10 @@ pacman::p_load(tidyverse, here)
 ```{r}
 gravity <- 
   read_csv(here("gravity.csv")) |> 
-  select(year, exports, imports, tgdp, rfe, sim, 
-         dist, rer, cont, lang, ccol, crel, rta) |> 
   mutate(exports = ifelse(log(exports) <= 0, 0, log(exports)),
          imports = ifelse(log(imports) <= 0, 0, log(imports)),
-         dist = log(dist),
-         rer = log(rer))
+         dist = log(dist)) |> 
+  select(where(is.numeric))
 ```
 
 #### Descriptive statistics table
@@ -25,8 +23,8 @@ gravity_longer <-
   pivot_longer(!year, names_to = "Variable", values_to = "value")  |> 
   mutate(Variable = fct_relevel(factor(Variable),
                                 "exports", "imports", "tgdp", "rfe",
-                                "sim", "dist", "rer", "cont", "lang",
-                                "ccol", "crel", "rta")) |> 
+                                "sim", "dist", "cont", "lang", "ccol", 
+                                "crel", "rta")) |> 
   arrange(Variable, year) |> 
   group_by(Variable)
 
