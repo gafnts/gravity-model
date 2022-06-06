@@ -14,12 +14,10 @@ imports <- gravity |> mutate(imports = 1 + imports) |> panel_data(id = iso_j, wa
 
 ```{r}
 formula_exports <- 
-  log(exports) ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
-  ccol + crel + rta
+  log(exports) ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 
 formula_imports <- 
-  log(imports) ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
-  ccol + crel + rta
+  log(imports) ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 ```
 
 ### Pooled estimator
@@ -109,12 +107,10 @@ imports_ppml |>
 ```{r}
 # Declaring formulas
 formula_exports_ppml <- 
-  exports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
-  ccol + crel + rta
+  exports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 
 formula_imports_ppml <- 
-  imports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
-  ccol + crel + rta
+  imports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 ```
 
 #### Estimation
@@ -144,7 +140,6 @@ vars <- c("Suma bilateral del producto interno bruto",
           "Diferencia en la proporción relativa de factores",
           "Similitud en el tamaño de las economías",
           "Distancia entre principales centros urbanos",
-          "Tipo de cambio efectivo real",
           "Fronteras en común",
           "Lenguaje en común", 
           "Colonizador en común",
