@@ -1,0 +1,11 @@
+# Trade openness and industry ranking
+
+```{r}
+pacman::p_load(tidyverse, here, WDI)
+```
+
+#### Trade openness over time
+
+```{r}
+
+```
