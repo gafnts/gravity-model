@@ -21,12 +21,10 @@ imports_data <-
 ```{r}
 # Declaring formulas
 exports_formula <- 
-  exports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
-  ccol + crel + rta
+  exports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 
 imports_formula <- 
-  imports ~ tgdp + rfe + sim + log(dist) + log(rer) + cont + lang + 
-  ccol + crel + rta
+  imports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 ```
 
 ```{r}
@@ -69,43 +67,48 @@ for (date in dates) {
 ```
 
 ```{r}
-spline_plot <- function(data, term, spline, name) {
- data |> 
-  filter(term == !!term) |> 
-  ggplot(aes(year, estimate)) +
-  geom_point() +
-  geom_smooth(color = 2, fill = 2, alpha = .1,
-              method = lm, formula = y ~ splines::bs(x, spline)) +
-  ggtitle(paste0(name)) +
-  theme(
-    axis.title = element_blank(),
-    axis.text = element_text(color = "black"),
-    legend.key.height = unit(6.9, "line"),
-    panel.background = element_rect(color = "gray10", fill = "white"),
-    plot.background = element_rect(color= "white", fill = "white"),
-    panel.grid = element_blank()
-  )
+spline_plot <- function(data, spline) {
+  data |> 
+    filter(term %in% c("rfe", "sim")) |> 
+    ggplot(aes(year, estimate, color = term)) +
+    geom_point(color = "gray15") +
+    facet_wrap(vars(term), scales = "free") +
+    geom_smooth(color = "#4E74BF", fill = "#4E74BF", alpha = .1,
+                method = lm, formula = y ~ splines::bs(x, spline)) +
+    scale_y_continuous() +
+    theme(
+      text = element_text(color = "gray15", 
+                          family = "Helvetica Neue",
+                          size = 19),
+      axis.title = element_blank(),
+      axis.text = element_text(color = "gray15"),
+      axis.ticks = element_blank(),
+      legend.title = element_blank(),
+      legend.position = "none",
+      legend.key = element_rect(fill = "white"),
+      legend.background = element_rect(color = "gray15", size = 0.25),
+      panel.background = element_rect(color = "gray15", fill = "white"),
+      panel.grid = element_blank(),
+      strip.background = element_rect(color = "gray15", fill = "gray15"),
+      strip.text = element_text(color = "white"),
+      plot.margin = unit(c(.5,0.1,.5,0.1), "cm"))
 }
 ```
 
 ```{r}
-p1 <- spline_plot(exports, "rfe", 3, "RFE en exportaciones a lo largo del tiempo")
-p2 <- spline_plot(exports, "sim", 3, "SIM en exportaciones a lo largo del tiempo")
-p1 + p2
+exports |> spline_plot(15)
 ```
 
 ```{r}
 ggsave(here("Econometrics", "Results", "RFE and SIM over time (exports).png"), 
-       width = 12.5, height = 6, dpi = 300, units = "in")
+       width = 13, height = 6, dpi = 300, units = "in")
 ```
 
 ```{r}
-p3 <- spline_plot(imports, "rfe", 3, "RFE en importaciones a lo largo del tiempo")
-p4 <- spline_plot(imports, "sim", 3, "SIM en importaciones a lo largo del tiempo")
-p3 + p4
+imports |> spline_plot(15)
 ```
 
 ```{r}
 ggsave(here("Econometrics", "Results", "RFE and SIM over time (imports).png"), 
-       width = 12.5, height = 6, dpi = 300, units = "in")
+       width = 13, height = 6, dpi = 300, units = "in")
 ```
