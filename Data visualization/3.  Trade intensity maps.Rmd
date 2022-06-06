@@ -1,4 +1,4 @@
-# Exploratory data anaylisis
+# Trade intensity maps
 
 ```{r}
 pacman::p_load(tidyverse, here, sf, patchwork)
@@ -60,27 +60,33 @@ p1 <-
   ggplot(aes(x = long, y = lat, group = group)) +
   geom_polygon(aes(fill = exports), color = "white", size = .1) +
   coord_cartesian(xlim = c(-170, -35), ylim = c(-55, 82)) +
-  scale_fill_gradientn(colours = c("#91C4D9", "gray80", 2),
+  scale_fill_gradientn(colours = c("#4E74BF", "#F2EFE4", "#D94343"),
                      values = scales::rescale(c(-0.1, -0.05, 0, 0.05, 0.1)),
                      na.value = "gray30") +
-  ggtitle("Promedio del logartimo de exportaciones\ndurante el periodo de análisis por país de destino") +
-  map_aesthetics(val = 7.6)
+  map_aesthetics(val = 7.6) +
+  theme(text = element_text(color = "gray15", 
+                        family = "Helvetica Neue",
+                        size = 19),
+        plot.margin = unit(c(.5,0.1,.5,0.1), "cm"))
 
 p2 <- 
   gravity_map |> 
   ggplot(aes(x = long, y = lat, group = group)) +
   geom_polygon(aes(fill = imports), color = "white", size = .1) +
   coord_cartesian(xlim = c(-170, -35), ylim = c(-55, 82)) +
-  scale_fill_gradientn(colours = c("#91C4D9", "gray80", 2),
+  scale_fill_gradientn(colours = c("#4E74BF", "#F2EFE4", "#D94343"),
                      values = scales::rescale(c(-0.1, -0.05, 0, 0.05, 0.1)),
                      na.value = "gray30") +
-  ggtitle("Promedio del logartimo de importaciones\ndurante el periodo de análisis por país de origen") +
-  map_aesthetics(val = 7.6)
+  map_aesthetics(val = 7.6) +
+  theme(text = element_text(color = "gray15", 
+                        family = "Helvetica Neue",
+                        size = 19),
+        plot.margin = unit(c(.5,0.1,.5,0.1), "cm"))
 
 p1 + p2
 ```
 
 ```{r}
 ggsave(here("Data visualization", "Plots", "maps.png"), 
-       width = 16, height = 12, dpi = 300, units = "in")
+       width = 16, height = 9, dpi = 300, units = "in")
 ```
