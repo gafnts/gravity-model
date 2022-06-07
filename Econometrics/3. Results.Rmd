@@ -1,0 +1,70 @@
+---
+title: "Results"
+author: Gabriel Fuentes
+date: "Jun, 2022"
+output:
+  pdf_document:
+    latex_engine: xelatex
+mainfont: Helvetica Neue
+geometry: "left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm"
+fontsize: 11pt
+header-includes: \usepackage{setspace}\spacing{1}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(tidyverse, kableExtra, here)
+gravity <- read_csv(here("gravity.csv"))
+```
+
+```{r include=FALSE}
+gravity_zeros <- 
+  gravity |> 
+  mutate(exports = ifelse(log(exports) <= 0, 0, log(exports)),
+         imports = ifelse(log(imports) <= 0, 0, log(imports)),
+         dist = log(dist)) |> 
+  select(where(is.numeric))
+
+gravity_longer <- 
+  gravity_zeros |> 
+  pivot_longer(!year, names_to = "Variable", values_to = "value")  |> 
+  mutate(Variable = fct_relevel(factor(Variable),
+                                "exports", "imports", "tgdp", "rfe",
+                                "sim", "dist", "cont", "lang", "ccol", 
+                                "crel", "rta")) |> 
+  arrange(Variable, year) |> 
+  group_by(Variable)
+
+descriptive <- 
+  gravity_longer |> 
+  summarise(Media = round(mean(value), 2),
+            Mediana = round(median(value), 2),
+            Mínimo = round(min(value), 2),
+            Máximo = round(max(value), 2),
+            `Desv. Est.` = round(sd(value), 2),
+            Asimetría = round(e1071::skewness(value), 2),
+            Curtosis = round(e1071::kurtosis(value), 2))
+
+obs <- 
+  gravity_longer |> 
+  count(Variable) |> 
+  rename(`Obs.` = n)
+
+descriptive_stats <- 
+  descriptive |> 
+  left_join(obs) |> 
+  as_tibble()
+```
+
+```{r table_one, echo=FALSE}
+kbl(descriptive_stats, 
+    booktabs = T,
+    align = c("c"))  |> 
+  kable_styling(font_size = 9,
+                full_width = T) |> 
+  row_spec(0, bold = TRUE) |> 
+  group_rows(start_row = 1, 
+             end_row = 11,
+             latex_gap_space = "-0.25cm") |> 
+  column_spec(6, width = "1.6cm")
+```
