@@ -1,7 +1,7 @@
-# Trade openness and industry ranking
+# Trade openness
 
 ```{r}
-pacman::p_load(tidyverse, here, WDI)
+pacman::p_load(tidyverse, here, WDI, sysfonts)
 
 gravity <- read_csv(here("gravity.csv")) |> select(year, iso_j, exports, imports)
 
@@ -66,9 +66,9 @@ america |>
   bind_rows(guatemala) |> 
   bind_rows(world) |> 
   ggplot(aes(year, openness, color = country)) +
-  geom_line() +
-  geom_point() +
-  scale_color_manual(values = c("#4E74BF", "gray50", "#D94343")) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("#4E74BF", "#D94343", "gray50")) +
   theme(
     text = element_text(color = "gray15", 
                         family = "Helvetica Neue",
