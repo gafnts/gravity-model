@@ -1,0 +1,9 @@
+# Industry ranking
+
+```{r}
+pacman::p_load(tidyverse, here)
+```
+
+```{r}
+
+```
