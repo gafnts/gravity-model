@@ -1,7 +1,4 @@
 ---
-title: "Results"
-author: Gabriel Fuentes
-date: "Jun, 2022"
 output:
   pdf_document:
     latex_engine: xelatex
@@ -9,6 +6,8 @@ mainfont: Helvetica Neue
 geometry: "left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm"
 fontsize: 11pt
 header-includes: \usepackage{setspace}\spacing{1}
+classoption: 
+  - landscape
 ---
 
 ```{r setup, include=FALSE}
