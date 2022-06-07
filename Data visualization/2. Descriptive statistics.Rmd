@@ -15,8 +15,6 @@ gravity <-
   select(where(is.numeric))
 ```
 
-#### Descriptive statistics table
-
 ```{r}
 gravity_longer <- 
   gravity |> 
@@ -27,31 +25,6 @@ gravity_longer <-
                                 "crel", "rta")) |> 
   arrange(Variable, year) |> 
   group_by(Variable)
-
-descriptive <- 
-  gravity_longer |> 
-  summarise(Media = round(mean(value), 2),
-            Mediana = round(median(value), 2),
-            Mínimo = round(min(value), 2),
-            Máximo = round(max(value), 2),
-            `Desv. Est.` = round(sd(value), 2),
-            Asimetría = round(e1071::skewness(value), 2),
-            Curtosis = round(e1071::kurtosis(value), 2))
-
-obs <- 
-  gravity_longer |> 
-  count(Variable) |> 
-  rename(`Obs.` = n)
-
-descriptive_stats <- 
-  descriptive |> 
-  left_join(obs) |> 
-  as.data.frame()
-```
-
-```{r}
-descriptive_stats |> 
-  write_csv(here("Data visualization", "Tables", "descriptive_stats.csv"))
 ```
 
 #### Histograms
