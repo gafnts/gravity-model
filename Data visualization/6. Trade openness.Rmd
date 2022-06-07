@@ -1,10 +1,10 @@
 # Trade openness
 
 ```{r}
-pacman::p_load(tidyverse, here, WDI, sysfonts)
+pacman::p_load(tidyverse, here, WDI)
+```
 
-gravity <- read_csv(here("gravity.csv")) |> select(year, iso_j, exports, imports)
-
+```{r}
 countries <- 
   read_csv(here("Data", "Main data frames", "partners_names.csv")) |> 
   pull(partner_iso) |> 
@@ -14,27 +14,14 @@ countries <-
 #### Trade openness over time
 
 ```{r}
-query <- function(country) {
+america <- 
   WDI(
     indicator = c(openness = "NE.TRD.GNFS.ZS"),
-    country = country,
+    country = countries,
     start = 1995,
     end = 2020
   ) |> 
-    as_tibble()
-}
-
-openness <- tibble()
-
-for (country in countries) {
-  data <- query(country)
-  openness <- bind_rows(openness, data)
-}
-```
-
-```{r}
-america <- 
-  openness |> 
+    as_tibble() |> 
   select(!iso2c) |> 
   pivot_wider(names_from = country, values_from = openness) |>
   select_if(~ !any(is.na(.))) |> 
@@ -45,9 +32,15 @@ america <-
   mutate(country = "América")
 
 guatemala <- 
-  openness |> 
-  filter(country == "Guatemala") |> 
-  select(!iso2c)
+  WDI(
+    indicator = c(openness = "NE.TRD.GNFS.ZS"),
+    country = "GTM",
+    start = 1995,
+    end = 2020
+  ) |> 
+    as_tibble() |> 
+  select(!iso2c) |> 
+  filter(country == "Guatemala")
 
 world <- 
   WDI(
