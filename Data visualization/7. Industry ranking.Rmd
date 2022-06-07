@@ -5,5 +5,83 @@ pacman::p_load(tidyverse, here)
 ```
 
 ```{r}
+trade_flows <- 
+  read_csv(here("Data", "Main data frames", "trade_flows.csv")) |> 
+  select(year, trade_flow, partner_iso, commodity, 
+         commodity_code, value = trade_value_usd) |> 
+  filter(partner_iso != "CUB")
+```
 
+#### Top 10 HS sections in exports and imports
+
+```{r}
+hs_raw <- 
+  trade_flows |> 
+  mutate(commodity_code = str_extract(commodity_code, "^\\d{2}")) |> 
+  mutate(hs = case_when(
+    between(commodity_code, 1, 5) ~ "Animales y productos derivados",
+    between(commodity_code, 6, 15) ~ "Productos vegetales",
+    between(commodity_code, 16, 24) ~ "Alimentos preparados",
+    between(commodity_code, 25, 27) ~ "Productos minerales",
+    between(commodity_code, 28, 38) ~ "Productos químicos",
+    between(commodity_code, 39, 40) ~ "Plásticos y sus manufacturas",
+    between(commodity_code, 41, 43) ~ "Cueros, pieles y sus manufacturas",
+    between(commodity_code, 44, 49) ~ "Madera y productos derivados",
+    between(commodity_code, 50, 63) ~ "Textiles y artículos derivados",
+    between(commodity_code, 64, 67) ~ "Calzado, sombreros y sombrillas",
+    between(commodity_code, 68, 71) ~ "Artículos de piedra, cerámica y vidrio",
+    between(commodity_code, 72, 83) ~ "Metales y artículos derivados",
+    between(commodity_code, 84, 85) ~ "Maquinaria y equipo eléctrico",
+    between(commodity_code, 86, 89) ~ "Vehículos y equipo asociado",
+    between(commodity_code, 90, 97) ~ "Artículos misceláneos manufacturados",
+  ))
+```
+
+```{r}
+hs <- 
+  hs_raw |> 
+  filter(year %in% c("1995", "2020")) |> 
+  group_by(year, hs, trade_flow) |> 
+  summarise(value = sum(value)) |> 
+  pivot_wider(names_from = trade_flow, values_from = value) |> 
+  group_by(year) |> 
+  mutate(ex_total = sum(Export),
+         im_total = sum(Import),
+         Exportaciones = Export / ex_total * 100,
+         Importaciones = Import / im_total * 100,
+         year = factor(year)) |> 
+  select(year, hs, Exportaciones, Importaciones) |> 
+  drop_na() |> 
+  pivot_longer(!c(year, hs), names_to = "flows")
+```
+
+```{r}
+hs |> 
+  ggplot(aes(value, fct_reorder(hs, value), fill = year)) +
+  facet_wrap(vars(flows)) +
+  geom_col(position = "dodge") +
+  scale_fill_manual(values = c("#D94343", "#4E74BF"))  +
+  theme(
+    text = element_text(color = "gray15", 
+                        family = "Helvetica Neue",
+                        size = 19),
+    axis.title = element_blank(),
+    axis.text = element_text(color = "gray15"),
+    axis.ticks = element_blank(),
+    legend.title = element_blank(),
+    legend.position = c(.87, .08),
+    legend.direction = "horizontal", 
+    legend.key = element_rect(fill = "white"),
+    legend.background = element_rect(color = "gray15", size = 0.25),
+    panel.background = element_rect(color = "gray15", fill = "white"),
+    panel.grid = element_blank(),
+    strip.background = element_rect(color = "gray15", fill = "gray15"),
+    strip.text = element_text(color = "white"),
+    plot.margin = unit(c(.5,0.1,.5,0.1), "cm")
+  )
+```
+
+```{r}
+ggsave(here("Data visualization", "Plots", "hs sections.png"), 
+       width = 13, height = 6, dpi = 300, units = "in")
 ```
