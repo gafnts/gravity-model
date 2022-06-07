@@ -1,18 +1,32 @@
+---
+output:
+  pdf_document:
+    latex_engine: xelatex
+mainfont: Helvetica Neue
+geometry: "left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm"
+fontsize: 11pt
+header-includes: 
+  - \usepackage{setspace}\spacing{1} 
+  - \pagenumbering{gobble}
+classoption: 
+  - landscape
+---
+
 # Econometric estimation
 
-```{r}
+```{r, include=FALSE}
 pacman::p_load(tidyverse, here, broom, panelr, plm, nlme, lmtest, stargazer)
-gravity <- read_csv("gravity.csv")
+gravity <- read_csv(here("gravity.csv"))
 ```
 
 #### Params
 
-```{r}
+```{r, include=FALSE}
 exports <- gravity |> mutate(exports = 1 + exports) |> panel_data(id = iso_j, wave = year)
 imports <- gravity |> mutate(imports = 1 + imports) |> panel_data(id = iso_j, wave = year)
 ```
 
-```{r}
+```{r, include=FALSE}
 formula_exports <- 
   log(exports) ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 
@@ -22,7 +36,7 @@ formula_imports <-
 
 ### Pooled estimator
 
-```{r}
+```{r, include=FALSE}
 exports_ols <- 
   plm(formula_exports,
       data = exports,
@@ -31,7 +45,7 @@ exports_ols <-
 exports_ols |> summary()
 ```
 
-```{r}
+```{r, include=FALSE}
 imports_ols <- 
   plm(formula_imports,
       data = imports,
@@ -42,7 +56,7 @@ imports_ols |> summary()
 
 ### Random effects estimator
 
-```{r}
+```{r, include=FALSE}
 exports_ree <- 
   plm(formula_exports,
       data = exports,
@@ -51,7 +65,7 @@ exports_ree <-
 exports_ree |> summary()
 ```
 
-```{r}
+```{r, include=FALSE}
 imports_ree <- 
   plm(formula_imports,
       data = imports,
@@ -62,7 +76,7 @@ imports_ree |> summary()
 
 ### Fixed effects estimator
 
-```{r}
+```{r, include=FALSE}
 exports_fee <- 
   plm(formula_exports,
       data = exports,
@@ -71,7 +85,7 @@ exports_fee <-
 exports_fee |> summary()
 ```
 
-```{r}
+```{r, include=FALSE}
 imports_fee <- 
   plm(formula_imports,
       data = imports,
@@ -84,7 +98,7 @@ imports_fee |> summary()
 
 #### Params
 
-```{r}
+```{r, include=FALSE}
 # Feature engineering
 exports_ppml <- 
   gravity |> 
@@ -97,14 +111,14 @@ imports_ppml <-
   panel_data(id = iso_j, wave = year)
 ```
 
-```{r}
+```{r, include=FALSE}
 # Just checking 
 imports_ppml |> 
   select(year, iso_j, imports) |> 
   filter(if_any(where(is.numeric), ~ .x <= 0))
 ```
 
-```{r}
+```{r, include=FALSE}
 # Declaring formulas
 formula_exports_ppml <- 
   exports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
@@ -115,7 +129,7 @@ formula_imports_ppml <-
 
 #### Estimation
 
-```{r}
+```{r, include=FALSE}
 ppml_exports <- 
   glm(formula_exports_ppml,
       family = quasipoisson(link = "log"),
@@ -124,7 +138,7 @@ ppml_exports <-
 ppml_exports |> summary()
 ```
 
-```{r}
+```{r, include=FALSE}
 ppml_imports <- 
   glm(formula_imports_ppml,
       family = quasipoisson(link = "log"),
@@ -135,7 +149,7 @@ ppml_imports |> summary()
 
 ### Results
 
-```{r}
+```{r, include=FALSE}
 vars <- c("Suma bilateral del producto interno bruto",
           "Diferencia en la proporción relativa de factores",
           "Similitud en el tamaño de las economías",
@@ -148,44 +162,48 @@ vars <- c("Suma bilateral del producto interno bruto",
           "Constante")
 ```
 
-```{r}
+```{r, include=FALSE}
 rob_se_exports <- list(sqrt(diag(vcovHC(exports_ols, type = "HC1"))),
                        sqrt(diag(vcovHC(exports_ree, type = "HC1"))),
                        sqrt(diag(vcovHC(exports_fee, type = "HC1"))),
                        sqrt(diag(vcovHC(ppml_exports, type = "HC1"))))
 ```
 
-```{r}
+```{r, results='asis', echo=FALSE}
 # Exports
 stargazer(exports_ols, exports_ree, exports_fee, ppml_exports,
           column.labels = c("OLS", "REE", "FEE", "PPML"),
           se = rob_se_exports,
           covariate.labels = vars,
-          type = "text",
           dep.var.caption = "",
           dep.var.labels.include = FALSE,
           model.names = FALSE,
-          model.numbers = FALSE,
-          out = here("Econometrics", "Results", "exports.html"))
+          model.numbers = TRUE,
+          column.sep.width = "-5pt",
+          font.size = "small",
+          style = "qje",
+          table.layout = "-c-#-t-s-n")
 ```
 
-```{r}
+```{r, include=FALSE}
 rob_se_imports <- list(sqrt(diag(vcovHC(imports_ols, type = "HC1"))),
                        sqrt(diag(vcovHC(imports_ree, type = "HC1"))),
                        sqrt(diag(vcovHC(imports_fee, type = "HC1"))),
                        sqrt(diag(vcovHC(ppml_imports, type = "HC1"))))
 ```
 
-```{r}
+```{r, results='asis', echo=FALSE}
 # Imports
 stargazer(imports_ols, imports_ree, imports_fee, ppml_imports,
           column.labels = c("OLS", "REE", "FEE", "PPML"),
           se = rob_se_imports,
           covariate.labels = vars,
-          type = "text",
           dep.var.caption = "",
           dep.var.labels.include = FALSE,
           model.names = FALSE,
-          model.numbers = FALSE,
-          out = here("Econometrics", "Results", "imports.html"))
+          model.numbers = TRUE,
+          column.sep.width = "-5pt",
+          font.size = "small",
+          style = "qje",
+          table.layout = "-c-#-t-s-n")
 ```
