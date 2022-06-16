@@ -76,7 +76,7 @@ total_imports <-
 
 ```{r}
 # Zeros in the total_import data set
-transaction_costs |> anti_join(total_imports) |> print(n = Inf)
+transaction_costs |> anti_join(total_imports) 
 ```
 
 ```{r}

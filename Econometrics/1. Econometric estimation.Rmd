@@ -28,10 +28,12 @@ imports <- gravity |> mutate(imports = 1 + imports) |> panel_data(id = iso_j, wa
 
 ```{r, include=FALSE}
 formula_exports <- 
-  log(exports) ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
+  log(exports) ~ tgdp + rfe + sim + log(dist) + cont + 
+  lang + ccol + crel + rta 
 
 formula_imports <- 
-  log(imports) ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
+  log(imports) ~ tgdp + rfe + sim + log(dist) + cont + 
+  lang + ccol + crel + rta 
 ```
 
 ### Pooled estimator
@@ -60,7 +62,9 @@ imports_ols |> summary()
 exports_ree <- 
   plm(formula_exports,
       data = exports,
-      model = "random")
+      index = c("iso_j"),
+      model = "random",
+      effect = "time")
 
 exports_ree |> summary()
 ```
@@ -69,7 +73,9 @@ exports_ree |> summary()
 imports_ree <- 
   plm(formula_imports,
       data = imports,
-      model = "random")
+      index = c("iso_j"),
+      model = "random",
+      effect = "time")
 
 imports_ree |> summary()
 ```
@@ -80,7 +86,9 @@ imports_ree |> summary()
 exports_fee <- 
   plm(formula_exports,
       data = exports,
-      model = "within")
+      index = c("iso_j"),
+      model = "within",
+      effect = "time")
 
 exports_fee |> summary()
 ```
@@ -89,12 +97,16 @@ exports_fee |> summary()
 imports_fee <- 
   plm(formula_imports,
       data = imports,
-      model = "within")
+      index = c("iso_j"),
+      model = "within",
+      effect = "time")
 
 imports_fee |> summary()
 ```
 
 ### Poisson pseudo maximum likelihood estimator
+
+Alternative approach: <https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html>
 
 #### Params
 
@@ -112,19 +124,14 @@ imports_ppml <-
 ```
 
 ```{r, include=FALSE}
-# Just checking 
-imports_ppml |> 
-  select(year, iso_j, imports) |> 
-  filter(if_any(where(is.numeric), ~ .x <= 0))
-```
-
-```{r, include=FALSE}
 # Declaring formulas
 formula_exports_ppml <- 
-  exports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
+  exports ~ tgdp + rfe + sim + log(dist) + cont + 
+  lang + ccol + crel + rta + 0
 
 formula_imports_ppml <- 
-  imports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
+  imports ~ tgdp + rfe + sim + log(dist) + cont +
+  lang + ccol + crel + rta + 0
 ```
 
 #### Estimation
@@ -134,8 +141,6 @@ ppml_exports <-
   glm(formula_exports_ppml,
       family = quasipoisson(link = "log"),
       data = exports_ppml)
-
-ppml_exports |> summary()
 ```
 
 ```{r, include=FALSE}
@@ -143,15 +148,13 @@ ppml_imports <-
   glm(formula_imports_ppml,
       family = quasipoisson(link = "log"),
       data = imports_ppml)
-
-ppml_imports |> summary()
 ```
 
 ### Results
 
 ```{r, include=FALSE}
 vars <- c("Suma bilateral del producto interno bruto",
-          "Diferencia en la proporción relativa de factores",
+          "Diferencia en la dotación relativa de factores",
           "Similitud en el tamaño de las economías",
           "Distancia entre principales centros urbanos",
           "Fronteras en común",
