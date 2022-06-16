@@ -104,7 +104,7 @@ imports_fee <-
 imports_fee |> summary()
 ```
 
-### Poisson pseudo maximum likelihood estimator
+### Poisson pseudo maximum likelihood
 
 Alternative approach: <https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html>
 
@@ -127,20 +127,29 @@ imports_ppml <-
 # Declaring formulas
 formula_exports_ppml <- 
   exports ~ tgdp + rfe + sim + log(dist) + cont + 
-  lang + ccol + crel + rta + 0
+  lang + ccol + crel + rta + 0 + factor(year) + factor(iso_j)
 
 formula_imports_ppml <- 
   imports ~ tgdp + rfe + sim + log(dist) + cont +
-  lang + ccol + crel + rta + 0
+  lang + ccol + crel + rta + 0 + factor(year) + factor(iso_j)
 ```
 
 #### Estimation
+
+```{r eval=FALSE, include=FALSE}
+feglm(exports ~ tgdp + rfe + sim + log(dist) + cont + 
+          lang + ccol + crel + rta | factor(year) + factor(iso_j), 
+      exports_ppml, 
+      family = quasipoisson(link = "log"))
+```
 
 ```{r, include=FALSE}
 ppml_exports <- 
   glm(formula_exports_ppml,
       family = quasipoisson(link = "log"),
       data = exports_ppml)
+
+ppml_exports |> summary()
 ```
 
 ```{r, include=FALSE}
@@ -148,6 +157,8 @@ ppml_imports <-
   glm(formula_imports_ppml,
       family = quasipoisson(link = "log"),
       data = imports_ppml)
+
+ppml_imports |> summary()
 ```
 
 ### Results
@@ -176,6 +187,7 @@ rob_se_exports <- list(sqrt(diag(vcovHC(exports_ols, type = "HC1"))),
 # Exports
 stargazer(exports_ols, exports_ree, exports_fee, ppml_exports,
           column.labels = c("OLS", "REE", "FEE", "PPML"),
+          omit = c("factor"),
           se = rob_se_exports,
           covariate.labels = vars,
           dep.var.caption = "",
@@ -199,6 +211,7 @@ rob_se_imports <- list(sqrt(diag(vcovHC(imports_ols, type = "HC1"))),
 # Imports
 stargazer(imports_ols, imports_ree, imports_fee, ppml_imports,
           column.labels = c("OLS", "REE", "FEE", "PPML"),
+          omit = c("factor"),
           se = rob_se_imports,
           covariate.labels = vars,
           dep.var.caption = "",
