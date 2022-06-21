@@ -4,7 +4,6 @@ output:
     latex_engine: xelatex
 mainfont: Helvetica Neue
 geometry: "left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm"
-fontsize: 11pt
 header-includes: \usepackage{setspace}\spacing{1}
 classoption: 
   - landscape
@@ -72,16 +71,19 @@ descriptive_stats <-
   rename('Variable' = 1)
 ```
 
+\renewcommand{\arraystretch}{1.5}
+
 ```{r table_one, echo=FALSE}
 kbl(descriptive_stats, 
     booktabs = T,
     align = paste0('l', paste0(rep('c', 8), collapse = ''))) |> 
-  kable_styling(font_size = 9,
+  kable_styling(font_size = 11,
                 full_width = T) |> 
   row_spec(0, bold = TRUE, align = 'c') |> 
   group_rows(start_row = 1, 
              end_row = 11,
-             latex_gap_space = "-0.27cm") |> 
-  column_spec(1, width = "7.5cm") |> 
-  column_spec(6, width = "1.6cm")
+             latex_gap_space = "-0.6cm") |> 
+  column_spec(1, width = "8cm") |> 
+  column_spec(6, width = "1.6cm") |> 
+  column_spec(9, width = "1cm")
 ```
