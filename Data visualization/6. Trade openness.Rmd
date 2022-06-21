@@ -18,7 +18,7 @@ america <-
   WDI(
     indicator = c(openness = "NE.TRD.GNFS.ZS"),
     country = countries,
-    start = 1995,
+    start = 1970,
     end = 2020
   ) |> 
     as_tibble() |> 
@@ -35,7 +35,7 @@ guatemala <-
   WDI(
     indicator = c(openness = "NE.TRD.GNFS.ZS"),
     country = "GTM",
-    start = 1995,
+    start = 1970,
     end = 2020
   ) |> 
     as_tibble() |> 
@@ -46,7 +46,7 @@ world <-
   WDI(
     indicator = c(openness = "NE.TRD.GNFS.ZS"),
     country = "WLD",
-    start = 1995,
+    start = 1970,
     end = 2020
   ) |> 
     as_tibble() |> 
