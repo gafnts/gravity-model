@@ -15,7 +15,7 @@ classoption:
 # Econometric estimation
 
 ```{r, include=FALSE}
-pacman::p_load(tidyverse, here, broom, panelr, plm, nlme, lmtest, stargazer)
+pacman::p_load(tidyverse, here, broom, panelr, plm, nlme, lmtest, stargazer, fixest)
 gravity <- read_csv(here("gravity.csv"))
 ```
 
@@ -88,7 +88,7 @@ exports_fee <-
       data = exports,
       index = c("iso_j"),
       model = "within",
-      effect = "time")
+      effect = "twoways")
 
 exports_fee |> summary()
 ```
@@ -99,7 +99,7 @@ imports_fee <-
       data = imports,
       index = c("iso_j"),
       model = "within",
-      effect = "time")
+      effect = "twoways")
 
 imports_fee |> summary()
 ```
@@ -126,12 +126,10 @@ imports_ppml <-
 ```{r, include=FALSE}
 # Declaring formulas
 formula_exports_ppml <- 
-  exports ~ tgdp + rfe + sim + log(dist) + cont + 
-  lang + ccol + crel + rta + 0 + factor(year) + factor(iso_j)
+  exports ~ tgdp + rfe + sim + rta + 0 + factor(year) + factor(iso_j)
 
 formula_imports_ppml <- 
-  imports ~ tgdp + rfe + sim + log(dist) + cont +
-  lang + ccol + crel + rta + 0 + factor(year) + factor(iso_j)
+  imports ~ tgdp + rfe + sim + rta + 0 + factor(year) + factor(iso_j)
 ```
 
 #### Estimation
