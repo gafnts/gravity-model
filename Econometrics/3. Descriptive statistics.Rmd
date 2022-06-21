@@ -49,21 +49,39 @@ obs <-
   count(Variable) |> 
   rename(`Obs.` = n)
 
+vars <- c("Exportaciones", "Importaciones", 
+          "Suma bilateral del producto interno bruto",
+          "Diferencia en la dotación relativa de factores",
+          "Similitud en el tamaño de las economías",
+          "Distancia entre principales centros urbanos",
+          "Fronteras en común",
+          "Lenguaje en común", 
+          "Colonizador en común",
+          "Índice de similitud en creencias religiosas",
+          "Acuerdos comerciales regionales") |> 
+  as_tibble()
+
+
 descriptive_stats <- 
   descriptive |> 
   left_join(obs) |> 
-  as_tibble()
+  as_tibble() |> 
+  bind_cols(vars) |> 
+  relocate(value) |> 
+  select(!2) |> 
+  rename('Variable' = 1)
 ```
 
 ```{r table_one, echo=FALSE}
 kbl(descriptive_stats, 
     booktabs = T,
-    align = c("c"))  |> 
+    align = paste0('l', paste0(rep('c', 8), collapse = ''))) |> 
   kable_styling(font_size = 9,
                 full_width = T) |> 
-  row_spec(0, bold = TRUE) |> 
+  row_spec(0, bold = TRUE, align = 'c') |> 
   group_rows(start_row = 1, 
              end_row = 11,
-             latex_gap_space = "-0.25cm") |> 
+             latex_gap_space = "-0.27cm") |> 
+  column_spec(1, width = "7.5cm") |> 
   column_spec(6, width = "1.6cm")
 ```
