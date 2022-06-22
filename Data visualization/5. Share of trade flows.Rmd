@@ -116,3 +116,114 @@ flows |>
 ggsave(here("Data visualization", "Plots", "share of trade flows.png"), 
        width = 13, height = 6, dpi = 300, units = "in")
 ```
+
+#### Proportions over time
+
+```{r}
+flows <- 
+  flows |> 
+  mutate(name = str_to_lower(str_trim(name))) |> 
+  pivot_wider(names_from = name, values_from = value) |> 
+  janitor::clean_names() |> 
+  mutate(america = america + estados_unidos,
+         total = total + america)
+```
+
+```{r}
+exports_us <- 
+  flows |> 
+  filter(id == 'Exportaciones') |> 
+  mutate(Exp = estados_unidos/total) |> 
+  select(!c(id, total, america, estados_unidos))
+  
+imports_us <- 
+  flows |> 
+  filter(id == 'Importaciones') |> 
+  mutate(`Imp  ` = estados_unidos/total) |> 
+  select(!c(year, id, total, america, estados_unidos))
+
+prop_us <- exports_us |> bind_cols(imports_us)
+```
+
+```{r}
+exports_am <- 
+  flows |> 
+  filter(id == 'Exportaciones') |> 
+  mutate(Exp = america/total) |> 
+  select(!c(id, total, america, estados_unidos))
+  
+imports_am <- 
+  flows |> 
+  filter(id == 'Importaciones') |> 
+  mutate(`Imp  ` = america/total) |> 
+  select(!c(year, id, total, america, estados_unidos))
+
+prop_am <- exports_am |> bind_cols(imports_am)
+```
+
+```{r}
+library(patchwork)
+
+p1 <- 
+  prop_am |> 
+  pivot_longer(!year, names_to = 'flows') |> 
+  ggplot(aes(year, value, color = flows)) +
+  geom_line() +
+  geom_point() +
+  ggtitle('América') +
+  scale_color_manual(values = c("#4E74BF", "#D94343"))  +
+  theme(
+    title = element_text(size = 15),
+    text = element_text(color = "gray15", 
+                        family = "Helvetica Neue",
+                        size = 19),
+    axis.title = element_blank(),
+    axis.text = element_text(color = "gray15"),
+    axis.ticks = element_blank(),
+    legend.title = element_blank(),
+    legend.position = 'none',
+    legend.direction = "horizontal", 
+    legend.key = element_rect(fill = "white"),
+    legend.background = element_rect(color = "gray15", size = 0.25),
+    panel.background = element_rect(color = "gray15", fill = "white"),
+    panel.grid = element_blank(),
+    strip.background = element_rect(color = "gray15", fill = "gray15"),
+    strip.text = element_text(color = "white"),
+    plot.margin = unit(c(.5,0.1,.5,0.1), "cm")
+  )
+
+p2 <- 
+  prop_us |> 
+  pivot_longer(!year, names_to = 'flows') |> 
+  ggplot(aes(year, value, color = flows)) +
+  geom_line() +
+  geom_point() +
+  ggtitle('Estados Unidos') +
+  scale_color_manual(values = c("#4E74BF", "#D94343"))  +
+  theme(
+    title = element_text(size = 15),
+    text = element_text(color = "gray15", 
+                        family = "Helvetica Neue",
+                        size = 19),
+    axis.title = element_blank(),
+    axis.text = element_text(color = "gray15"),
+    axis.ticks = element_blank(),
+    legend.title = element_blank(),
+    legend.position = c(.8, .92),
+    legend.direction = "horizontal", 
+    legend.key = element_rect(fill = "white"),
+    legend.background = element_rect(color = "gray15", size = 0.25),
+    panel.background = element_rect(color = "gray15", fill = "white"),
+    panel.grid = element_blank(),
+    strip.background = element_rect(color = "gray15", fill = "gray15"),
+    strip.text = element_text(color = "white"),
+    plot.margin = unit(c(.5,0.1,.5,0.1), "cm")
+  )
+
+p1 + p2
+```
+
+```{r}
+ggsave(here("Data visualization", "Plots", "shares of trade over time.png"), 
+       width = 13, height = 6, dpi = 300, units = "in")
+```
