@@ -133,13 +133,13 @@ flows <-
 exports_us <- 
   flows |> 
   filter(id == 'Exportaciones') |> 
-  mutate(Exp = estados_unidos/total) |> 
+  mutate(`Exp.` = estados_unidos/total) |> 
   select(!c(id, total, america, estados_unidos))
   
 imports_us <- 
   flows |> 
   filter(id == 'Importaciones') |> 
-  mutate(`Imp  ` = estados_unidos/total) |> 
+  mutate(`Imp.   ` = estados_unidos/total) |> 
   select(!c(year, id, total, america, estados_unidos))
 
 prop_us <- exports_us |> bind_cols(imports_us)
@@ -149,13 +149,13 @@ prop_us <- exports_us |> bind_cols(imports_us)
 exports_am <- 
   flows |> 
   filter(id == 'Exportaciones') |> 
-  mutate(Exp = america/total) |> 
+  mutate(`Exp.` = america/total) |> 
   select(!c(id, total, america, estados_unidos))
   
 imports_am <- 
   flows |> 
   filter(id == 'Importaciones') |> 
-  mutate(`Imp  ` = america/total) |> 
+  mutate(`Imp.   ` = america/total) |> 
   select(!c(year, id, total, america, estados_unidos))
 
 prop_am <- exports_am |> bind_cols(imports_am)
@@ -209,7 +209,7 @@ p2 <-
     axis.text = element_text(color = "gray15"),
     axis.ticks = element_blank(),
     legend.title = element_blank(),
-    legend.position = c(.8, .92),
+    legend.position = c(.785, .92),
     legend.direction = "horizontal", 
     legend.key = element_rect(fill = "white"),
     legend.background = element_rect(color = "gray15", size = 0.25),
