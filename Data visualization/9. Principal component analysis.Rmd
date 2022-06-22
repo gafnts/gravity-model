@@ -1,0 +1,72 @@
+# Principal component analysis
+
+```{r}
+pacman::p_load(tidyverse, tidymodels, here)
+flows <- read_csv(here("Data", "Main data frames", "trade_flows.csv")) |> 
+  select(year, trade_flow, partner_iso, commodity_code, commodity, trade_value_usd)
+```
+
+```{r}
+flows <- 
+  flows |> 
+  mutate(commodity_code = str_extract(commodity_code, "^\\d{2}")) |> 
+  mutate(hs = case_when(
+    between(commodity_code, 1, 5) ~ "Animales y productos derivados",
+    between(commodity_code, 6, 15) ~ "Productos vegetales",
+    between(commodity_code, 16, 24) ~ "Alimentos preparados",
+    between(commodity_code, 25, 27) ~ "Productos minerales",
+    between(commodity_code, 28, 38) ~ "Productos químicos",
+    between(commodity_code, 39, 40) ~ "Plásticos y sus manufacturas",
+    between(commodity_code, 41, 43) ~ "Cueros, pieles y sus manufacturas",
+    between(commodity_code, 44, 49) ~ "Madera y productos derivados",
+    between(commodity_code, 50, 63) ~ "Textiles y artículos derivados",
+    between(commodity_code, 64, 67) ~ "Calzado, sombreros y sombrillas",
+    between(commodity_code, 68, 71) ~ "Artículos de piedra, cerámica y vidrio",
+    between(commodity_code, 72, 83) ~ "Metales y artículos derivados",
+    between(commodity_code, 84, 85) ~ "Maquinaria y equipo eléctrico",
+    between(commodity_code, 86, 89) ~ "Vehículos y equipo asociado",
+    between(commodity_code, 90, 97) ~ "Artículos misceláneos manufacturados",
+  ))
+```
+
+```{r}
+flows |> 
+  filter(trade_flow == 'Export') |> 
+  select(!c(trade_flow, commodity_code)) |> 
+  relocate(hs, partner_iso, commodity, trade_value_usd) |> 
+  group_by(hs, partner_iso, commodity) |> 
+  summarise(value = sum(trade_value_usd)) |> 
+  pivot_wider(names_from = commodity, values_from = value) |> 
+  janitor::clean_names() |> 
+  mutate_all(~replace(., is.na(.), 0))
+  
+```
+
+```{r}
+pca_exports <- 
+  recipe(~., data = exports) |> 
+  update_role(partner_iso, new_role = 'id') |> 
+  step_normalize(all_predictors()) |> 
+  step_pca(all_predictors())
+
+prep_exports <- prep(pca_exports)
+tidy_exports <- tidy(prep_exports, 2)
+
+tidy_exports |> 
+  filter(component %in% paste0('PC', 1:5)) |> 
+  mutate(component = fct_inorder(component)) |> 
+  ggplot(aes(value, terms, fill = terms)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~component, nrow = 1) +
+  labs(y = NULL)
+```
+
+```{r}
+juice(prep_exports) %>%
+  ggplot(aes(PC1, PC2, label = partner_iso)) +
+  geom_point(aes(color = partner_iso), alpha = 0.7, size = 2) +
+  geom_text(check_overlap = TRUE, hjust = "inward", family = "IBMPlexSans") +
+  labs(color = NULL)
+```
+
+\
