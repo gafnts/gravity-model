@@ -1,5 +1,11 @@
 # Principal component analysis
 
+sthda: <http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/>
+
+julia: <https://juliasilge.com/blog/cocktail-recipes-umap/>
+
+Notes: Count data instead of sum of value
+
 ```{r}
 pacman::p_load(tidyverse, tidymodels, here)
 flows <- read_csv(here("Data", "Main data frames", "trade_flows.csv")) |> 
@@ -30,22 +36,36 @@ flows <-
 ```
 
 ```{r}
-flows |> 
+exports <- 
+  flows |> 
+  drop_na() |> 
   filter(trade_flow == 'Export') |> 
-  select(!c(trade_flow, commodity_code)) |> 
-  relocate(hs, partner_iso, commodity, trade_value_usd) |> 
-  group_by(hs, partner_iso, commodity) |> 
+  select(!c(trade_flow, commodity_code, commodity)) |> 
+  relocate(hs, partner_iso, trade_value_usd) |> 
+  group_by(hs, partner_iso) |> 
   summarise(value = sum(trade_value_usd)) |> 
-  pivot_wider(names_from = commodity, values_from = value) |> 
-  janitor::clean_names() |> 
-  mutate_all(~replace(., is.na(.), 0))
-  
+  pivot_wider(names_from = hs, values_from = value) |> 
+  # janitor::clean_names() |> 
+  mutate_all(~replace(., is.na(.), 0)) |> 
+  column_to_rownames('partner_iso')
+```
+
+```{r}
+pca <- prcomp(exports[, -1], center = TRUE, scale. = TRUE)
+summary(pca)
+
+library(factoextra)
+
+fviz_pca_biplot(pca, repel = TRUE,
+                col.var = "#2E9FDF", # Variables color
+                col.ind = "#696969"  # Individuals color
+                )
 ```
 
 ```{r}
 pca_exports <- 
   recipe(~., data = exports) |> 
-  update_role(partner_iso, new_role = 'id') |> 
+  update_role(hs, partner_iso, new_role = 'id') |> 
   step_normalize(all_predictors()) |> 
   step_pca(all_predictors())
 
@@ -64,8 +84,8 @@ tidy_exports |>
 ```{r}
 juice(prep_exports) %>%
   ggplot(aes(PC1, PC2, label = partner_iso)) +
-  geom_point(aes(color = partner_iso), alpha = 0.7, size = 2) +
-  geom_text(check_overlap = TRUE, hjust = "inward", family = "IBMPlexSans") +
+  geom_point(aes(color = hs), alpha = 0.7, size = 2) +
+  geom_text(check_overlap = TRUE, hjust = "inward") +
   labs(color = NULL)
 ```
 
