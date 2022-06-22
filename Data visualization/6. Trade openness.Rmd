@@ -59,8 +59,8 @@ america |>
   bind_rows(guatemala) |> 
   bind_rows(world) |> 
   ggplot(aes(year, openness, color = country)) +
-  geom_line(size = 1) +
-  geom_point(size = 2) +
+  geom_line() +
+  geom_point() +
   scale_color_manual(values = c("#4E74BF", "#D94343", "gray50")) +
   theme(
     text = element_text(color = "gray15", 
