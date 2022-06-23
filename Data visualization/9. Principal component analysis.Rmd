@@ -2,15 +2,12 @@
 
 ```{r}
 pacman::p_load(tidyverse, tidymodels, here, factoextra)
-
-flows <- 
-  read_csv(here("Data", "Main data frames", "trade_flows.csv")) |> 
-  select(year, trade_flow, partner_iso, commodity_code, commodity, trade_value_usd)
 ```
 
 ```{r}
 flows <- 
-  flows |> 
+  read_csv(here("Data", "Main data frames", "trade_flows.csv")) |> 
+  select(year, trade_flow, partner_iso, commodity_code, commodity, trade_value_usd) |> 
   mutate(commodity_code = str_extract(commodity_code, "^\\d{2}")) |> 
   mutate(hs = case_when(
     between(commodity_code, 1, 5) ~ "Animales y productos derivados",
@@ -32,27 +29,52 @@ flows <-
   ))
 ```
 
-#### Biplot
+#### Functions
 
 ```{r}
-exports <- 
-  flows |> 
-  filter(trade_flow == 'Export') |> 
-  select(!c(commodity_code, commodity)) |> 
-  group_by(partner_iso, hs) |> 
-  summarise(mean = mean(trade_value_usd)) |> 
-  pivot_wider(names_from = hs, values_from = mean) |> 
-  mutate_all(~ replace(., is.na(.), 0)) |> 
-  column_to_rownames('partner_iso')
+# Prepare data for PCA
+clean_flows <- 
+  function(data, flow){
+  data <- 
+    flows |> 
+    filter(trade_flow == !!flow) |> 
+    select(!c(commodity_code, commodity)) |> 
+    group_by(partner_iso, hs) |> 
+    summarise(mean = mean(trade_value_usd)) |> 
+    pivot_wider(names_from = hs, values_from = mean) |> 
+    mutate_all(~ replace(., is.na(.), 0))
+  return(data)
+  }
 
+# Apply PCA and generate the biplot
 biplot <- 
-  fviz_pca_biplot(
-    prcomp(exports, center = TRUE, scale. = TRUE), repel = TRUE,
-    col.var = "#2E9FDF", # Variables color
-    col.ind = "#696969"  # Individuals color
-)
+  function(data){
+   biplot <- 
+    fviz_pca_biplot(
+      prcomp(
+        data |> 
+          column_to_rownames('partner_iso'), 
+        center = TRUE, scale. = TRUE
+        ), 
+      col.var = "contrib",
+      col.ind = "#696969",
+      repel = TRUE)
+   return(biplot)
+}
+```
 
-biplot + ggtitle('Title')
+#### Exports
+
+```{r}
+biplot(clean_flows(flows, 'Export')) +
+  ggtitle('Exports')
+```
+
+#### Imports
+
+```{r}
+biplot(clean_flows(flows, 'Import')) +
+  ggtitle('Imports')
 ```
 
 #### Tidy way
@@ -83,14 +105,4 @@ tidy_exports |>
   geom_col(show.legend = FALSE) +
   facet_wrap(~component, nrow = 1) +
   labs(y = NULL)
-
-juice(prep_exports) %>%
-  ggplot(aes(PC1, PC2, label = partner_iso)) +
-  geom_point(alpha = 0.7, size = 2) +
-  geom_text(check_overlap = TRUE, hjust = "inward") +
-  labs(color = NULL)
 ```
-
-sthda: <http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/>
-
-julia: <https://juliasilge.com/blog/cocktail-recipes-umap/>\
