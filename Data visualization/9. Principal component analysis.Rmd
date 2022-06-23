@@ -1,8 +1,10 @@
 # Principal component analysis
 
 ```{r}
-pacman::p_load(tidyverse, tidymodels, here, factoextra)
+pacman::p_load(tidyverse, tidymodels, here, factoextra, patchwork)
 ```
+
+#### Import data
 
 ```{r}
 flows <- 
@@ -29,7 +31,7 @@ flows <-
   ))
 ```
 
-#### Functions
+#### Helper functions
 
 ```{r}
 # Prepare data for PCA
@@ -57,29 +59,72 @@ biplot <-
         center = TRUE, scale. = TRUE
         ), 
       col.var = "contrib",
-      col.ind = "#696969",
-      repel = TRUE)
+      col.ind = "gray15",
+      repel = TRUE,
+      axes.linetype = "dotted")
    return(biplot)
+  }
+
+# Plot aesthetics
+plot_aesthetics <- function(...){
+    theme(
+    title = element_text(size = 15),
+    text = element_text(color = "gray15", 
+                        family = "Helvetica Neue",
+                        size = 19),
+    axis.title.y = element_text(vjust = +5),
+    axis.title.x = element_text(vjust = -5),
+    axis.text = element_text(color = "gray15"),
+    axis.ticks = element_blank(),
+    legend.title = element_blank(),
+    legend.position = "right",
+    legend.key.width = unit(1, "line"),
+    legend.key.height = unit(6.7, "line"),
+    legend.direction = "vertical", 
+    legend.key = element_rect(fill = "white"),
+    legend.background = element_blank(),
+    panel.background = element_rect(color = "gray15", fill = "white"),
+    panel.grid = element_blank(),
+    strip.background = element_rect(color = "gray15", fill = "gray15"),
+    strip.text = element_text(color = "white"),
+    plot.margin = unit(c(.5,0.1,.5,1), "cm")
+  )
 }
 ```
 
-#### Exports
+#### Biplots
 
 ```{r}
-biplot(clean_flows(flows, 'Export')) +
-  ggtitle('Exports')
+high = "#4E74BF"
+low = "gray70"
+
+exports <- 
+  biplot(clean_flows(flows, 'Export')) +
+  ggtitle('Exportaciones') +
+  xlab('Componente 1 (Varianza explicada: 55.3%)') +
+  ylab('Componente 2 (Varianza explicada: 19%)') +
+  scale_colour_gradient(high = high, low = low) +
+  plot_aesthetics()
+
+imports <- 
+  biplot(clean_flows(flows, 'Import')) +
+  ggtitle('Importaciones') +
+  xlab('Componente 1 (Varianza explicada: 63.7%)') +
+  ylab('Componente 2 (Varianza explicada: 11.7%)') +
+  scale_colour_gradient(high = high, low = low) +
+  plot_aesthetics()
+
+exports / plot_spacer() / imports + plot_layout(heights = c(5, 1, 5))
 ```
 
-#### Imports
-
 ```{r}
-biplot(clean_flows(flows, 'Import')) +
-  ggtitle('Imports')
+ggsave(here("Data visualization", "Plots", "exports pca.png"), 
+       width = 13, height = 16, dpi = 300, units = "in")
 ```
 
-#### Tidy way
+#### The tidy way
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 exports <- 
   flows |> 
   filter(trade_flow == 'Export') |> 
