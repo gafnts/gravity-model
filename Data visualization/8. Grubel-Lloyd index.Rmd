@@ -1,11 +1,11 @@
 # Grubel-Lloyd index
 
 ```{r}
-pacman::p_load(tidyverse, here, patchwork)
+pacman::p_load(tidyverse, here, patchwork, ggrepel)
 ```
 
 ```{r}
-gravity <- read_csv(here("gravity.csv")) |> select(year, iso_j, sim)
+gravity <- read_csv(here("gravity.csv")) |> select(year, iso_j, rfe, sim)
 
 trade_flows <- 
   read_csv(here("Data", "Main data frames", "trade_flows.csv")) |> 
@@ -79,15 +79,15 @@ gl_partner_ts |>
   ggplot(aes(year, gl, fill = partner_iso)) +
   geom_line(color = "gray90") +
   geom_line(data = gl_partner_ts |> filter(partner_iso == "SLV"),
-            aes(year, gl, color = "SLV"), size = 1) +
+            aes(year, gl, color = "SLV")) +
   geom_line(data = gl_partner_ts |> filter(partner_iso == "USA"),
-            aes(year, gl, color = "USA"), size = 1) +
+            aes(year, gl, color = "USA")) +
   geom_line(data = gl_partner_ts |> filter(partner_iso == "CRI"),
-            aes(year, gl, color = "CRI"), size = 1) +
+            aes(year, gl, color = "CRI")) +
   geom_line(data = gl_partner_ts |> filter(partner_iso == "HND"),
-            aes(year, gl, color = "HND"), size = 1) +
+            aes(year, gl, color = "HND")) +
   geom_line(data = gl_partner_ts |> filter(partner_iso == "PAN"),
-            aes(year, gl, color = "PAN"), size = 1) +
+            aes(year, gl, color = "PAN")) +
   scale_color_manual(values=c("#4E74BF", "#3C5473", "#BAB1AC", "#D9958F", "#D94343")) +
   theme(
     text = element_text(color = "gray15", 
@@ -112,7 +112,7 @@ ggsave(here("Data visualization", "Plots", "gl index over time.png"),
        width = 13, height = 6, dpi = 300, units = "in")
 ```
 
-#### GL index and SIM index
+#### GL index vs. RFE and SIM index
 
 ```{r}
 gl_partner <- 
@@ -128,6 +128,11 @@ gl_partner <-
   summarise(gl = mean(gl)) |> 
   rename(iso_j = partner_iso)
 
+rfe_partner <- 
+  gravity |> 
+  group_by(iso_j) |> 
+  summarise(rfe = mean(rfe))
+
 sim_partner <- 
   gravity |> 
   group_by(iso_j) |> 
@@ -135,21 +140,20 @@ sim_partner <-
 
 index <- 
   gl_partner |> 
+  left_join(rfe_partner) |> 
   left_join(sim_partner)
 ```
 
 ```{r}
-index |> 
-  ggplot(aes(sim, gl))  +
-  geom_smooth(method = lm, formula = y ~ splines::ns(x, 2), se = TRUE,
-              color = "#4E74BF", fill = "#4E74BF", alpha = .1) +
-  geom_point(position = position_jitter()) +
-  geom_text(aes(label = iso_j), nudge_y = .01, size = 5) +
-  theme(
+geom_thesis <- 
+  function(...){
+    theme(
     text = element_text(color = "gray15", 
                         family = "Helvetica Neue",
                         size = 19),
-    axis.title = element_blank(),
+    plot.title = element_text(size = 18),
+    axis.title.x = element_text(margin = margin(1, 0, 0, 0, unit = 'cm')),
+    axis.title.y = element_text(margin = margin(0, 1, 0, 0, unit = 'cm')),
     axis.text = element_text(color = "gray15"),
     axis.ticks = element_blank(),
     legend.title = element_blank(),
@@ -163,9 +167,36 @@ index |>
     strip.text = element_text(color = "white"),
     plot.margin = unit(c(.5,0.1,.5,0.1), "cm")
   )
+}
 ```
 
 ```{r}
-ggsave(here("Data visualization", "Plots", "sim and gl index.png"), 
-       width = 13, height = 6, dpi = 300, units = "in")
+p1 <- 
+  index |> 
+  ggplot(aes(rfe, gl)) +
+  geom_smooth(method = lm, formula = y ~ splines::ns(x, 2), se = TRUE,
+              color = "#4E74BF", fill = "#4E74BF", alpha = .1) +
+  geom_point(position = position_jitter()) +
+  geom_text_repel(aes(label = iso_j), nudge_y = .01, size = 5) +
+  geom_thesis() +
+  xlab('Dotación relativa de factores de producción') +
+  ylab('Índice Grubel-Lloyd')
+
+p2 <- 
+  index |> 
+  ggplot(aes(sim, gl)) +
+  geom_smooth(method = lm, formula = y ~ splines::ns(x, 2), se = TRUE,
+              color = "#4E74BF", fill = "#4E74BF", alpha = .1) +
+  geom_point(position = position_jitter()) +
+  geom_text_repel(aes(label = iso_j), nudge_y = .01, size = 5) +
+  geom_thesis() +
+  xlab('Similitud en el tamaño de las economías') +
+  ylab('')
+
+p1 + p2
+```
+
+```{r}
+ggsave(here("Data visualization", "Plots", "gl, sim and rfe.png"), 
+       width = 13, height = 8, dpi = 300, units = "in")
 ```
