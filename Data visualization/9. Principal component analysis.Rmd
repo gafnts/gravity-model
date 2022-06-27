@@ -118,7 +118,7 @@ exports / plot_spacer() / imports + plot_layout(heights = c(7, 1, 7))
 ```
 
 ```{r}
-ggsave(here("Data visualization", "Plots", "exports pca.png"), 
+ggsave(here("Data visualization", "Plots", "pca.png"), 
        width = 13, height = 16, dpi = 300, units = "in")
 ```
 
@@ -127,7 +127,7 @@ ggsave(here("Data visualization", "Plots", "exports pca.png"),
 ```{r eval=FALSE, include=FALSE}
 exports <- 
   flows |> 
-  filter(trade_flow == 'Export') |> 
+  filter(trade_flow == 'Import') |> 
   select(!c(commodity_code, commodity)) |> 
   group_by(partner_iso, hs) |> 
   summarise(mean = mean(trade_value_usd)) |> 
