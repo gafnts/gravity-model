@@ -123,12 +123,12 @@ Alternative approach: <https://cran.r-project.org/web/packages/fixest/vignettes/
 # Feature engineering
 exports_ppml <- 
   gravity |> 
-  #mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
+  mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
   panel_data(id = iso_j, wave = year)
 
 imports_ppml <- 
   gravity |> 
-  #mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
+  mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
   panel_data(id = iso_j, wave = year)
 ```
 
@@ -171,11 +171,6 @@ ppml_imports <-
       data = imports_ppml)
 
 ppml_imports |> summary()
-```
-
-```{r}
-resettest(formula_exports_ppml, power = 2, type = 'regressor', data = exports_ppml)
-resettest(formula_imports_ppml, power = 2, type = 'regressor', data = imports_ppml)
 ```
 
 Interpretation: <https://stackoverflow.com/questions/69942339/understanding-the-output-of-my-ramsey-reset-test>
