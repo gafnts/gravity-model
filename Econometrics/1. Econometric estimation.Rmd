@@ -16,18 +16,20 @@ classoption:
 
 ```{r, include=FALSE}
 pacman::p_load(tidyverse, here, broom, gravity, panelr, plm, nlme, lmtest, stargazer, fixest)
-gravity <- read_csv(here("gravity.csv"))
 ```
 
-```{r}
+```{r, include=FALSE}
+gravity_raw <- 
+  read_csv(here("gravity.csv"))
+
 gravity_one <- 
-  gravity |> 
-  rename(iso_o = iso_i, iso_d = iso_j, trade_flow = exports) |> 
+  gravity_raw |> 
+  rename(iso_o = iso_i, iso_d = iso_j, trade = exports) |> 
   select(!imports)
 
 gravity_two <- 
-  gravity |> 
-  rename(iso_d = iso_i, iso_o = iso_j, trade_flow = imports) |> 
+  gravity_raw |> 
+  rename(iso_d = iso_i, iso_o = iso_j, trade = imports) |> 
   select(!exports)
 
 gravity <- 
@@ -35,119 +37,84 @@ gravity <-
   bind_rows(gravity_two)
 ```
 
-```{r}
-ppml(
-  dependent_variable = 'trade_flow',
-  distance = 'dist',
-  additional_regressors = c('tgdp', 'rfe', 'sim', 'cont', 
-                            'lang', 'ccol', 'crel', 'rta'),
-  robust = FALSE,
-  data = gravity
-) |> 
-  summary()
+```{r, include=FALSE}
+gravity_ols <- 
+  gravity |> 
+  mutate(trade = log(trade + 1)) |> 
+  panel_data(id = iso_o, wave = year)
+
+formula_ols <- 
+  trade ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 ```
 
-```{r}
-formula_exports_ppml <- 
-  trade_flow ~ 0 + tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta + 
-  iso_o + iso_d + year
+#### Pooled estimator
 
-ppml_exports <- 
-  glm(formula_exports_ppml,
+```{r, include=FALSE}
+pooled_ols <- 
+  plm(formula_ols,
+      data = gravity_ols,
+      model = 'pooling',
+      index = c('iso_o'))
+
+pooled_ols |> summary()
+```
+
+#### Random effects estimator
+
+```{r, include=FALSE}
+random_effects <- 
+  plm(formula_ols,
+      data = gravity_ols,
+      index = c('iso_o'),
+      model = 'random')
+
+random_effects |> summary()
+```
+
+#### Fixed effects estimator
+
+```{r, include=FALSE}
+fixed_effects <- 
+  plm(formula_ols,
+      data = gravity_ols,
+      index = c('iso_o'),
+      model = 'within',
+      effect = 'time')
+
+fixed_effects |> summary()
+```
+
+#### Poisson pseudo-maximum-likelihood estimator
+
+```{r, include=FALSE}
+poisson <- 
+  ppml(
+  dependent_variable = 'trade',
+  distance = 'dist',
+  additional_regressors = c('tgdp', 'rfe', 'sim', 'cont', 'lang', 'ccol', 'crel', 'rta'),
+  robust = FALSE,
+  data = gravity
+)
+
+poisson |> summary()
+```
+
+```{r, include=FALSE}
+formula_poisson <- 
+  trade ~ 0 + tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
+
+poisson <- 
+  glm(formula_poisson,
       family = quasipoisson(link = "log"),
       data = gravity)
 
-ppml_exports |> summary()
-```
-
-#### Params
-
-```{r, include=FALSE}
-exports <- gravity |> mutate(exports = 1 + exports) |> panel_data(id = iso_j, wave = year)
-imports <- gravity |> mutate(imports = 1 + imports) |> panel_data(id = iso_j, wave = year)
-```
-
-```{r, include=FALSE}
-formula_exports <- 
-  log(exports) ~ tgdp + rfe + sim + log(dist) + cont + 
-  lang + ccol + crel + rta 
-
-formula_imports <- 
-  log(imports) ~ tgdp + rfe + sim + log(dist) + cont + 
-  lang + ccol + crel + rta 
-```
-
-### Pooled estimator
-
-```{r, include=FALSE}
-exports_ols <- 
-  plm(formula_exports,
-      data = exports,
-      model = "pooling")
-
-exports_ols |> summary()
-```
-
-```{r, include=FALSE}
-imports_ols <- 
-  plm(formula_imports,
-      data = imports,
-      model = "pooling")
-
-imports_ols |> summary()
-```
-
-### Random effects estimator
-
-```{r, include=FALSE}
-exports_ree <- 
-  plm(formula_exports,
-      data = exports,
-      index = c("iso_j"),
-      model = "random")
-
-exports_ree |> summary()
-```
-
-```{r, include=FALSE}
-imports_ree <- 
-  plm(formula_imports,
-      data = imports,
-      index = c("iso_j"),
-      model = "random")
-
-imports_ree |> summary()
-```
-
-### Fixed effects estimator
-
-```{r, include=FALSE}
-exports_fee <- 
-  plm(formula_exports,
-      data = exports,
-      index = c("iso_j"),
-      model = "within",
-      effect = "twoways")
-
-exports_fee |> summary()
-```
-
-```{r, include=FALSE}
-imports_fee <- 
-  plm(formula_imports,
-      data = imports,
-      index = c("iso_j"),
-      model = "within",
-      effect = "twoways")
-
-imports_fee |> summary()
+poisson |> summary()
 ```
 
 #### Hausman test
 
-```{r}
-phtest(exports_ree, exports_fee)
-phtest(imports_ree, imports_fee)
+```{r, include=FALSE}
+phtest(random_effects, fixed_effects)
 ```
 
 Interpretation: <https://www.statisticshowto.com/hausman-test/>
@@ -155,34 +122,6 @@ Interpretation: <https://www.statisticshowto.com/hausman-test/>
 ### Poisson pseudo maximum likelihood
 
 Alternative approach: <https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html>
-
-#### Params
-
-```{r, include=FALSE}
-# Feature engineering
-exports_ppml <- 
-  gravity |> 
-  #mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
-  panel_data(id = iso_j, wave = year)
-
-imports_ppml <- 
-  gravity |> 
-  #mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
-  panel_data(id = iso_j, wave = year)
-```
-
-```{r, include=FALSE}
-# Declaring formulas
-formula_exports_ppml <- 
-  exports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta + 0
-  #+ factor(year) + factor(iso_j)
-
-formula_imports_ppml <- 
-  imports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta + 0
-  #+ factor(year) + factor(iso_j)
-```
-
-#### Estimation
 
 ```{r eval=FALSE, include=FALSE}
 feglm(exports ~ tgdp + rfe + sim + log(dist) + cont + 
@@ -232,42 +171,17 @@ vars <- c("Suma bilateral del producto interno bruto",
 ```
 
 ```{r, include=FALSE}
-rob_se_exports <- list(sqrt(diag(vcovHC(exports_ols, type = "HC1"))),
-                       sqrt(diag(vcovHC(exports_ree, type = "HC1"))),
-                       sqrt(diag(vcovHC(exports_fee, type = "HC1"))),
-                       sqrt(diag(vcovHC(ppml_exports, type = "HC1"))))
+rob_se <- list(sqrt(diag(vcovHC(pooled_ols, type = "HC1"))),
+               sqrt(diag(vcovHC(random_effects, type = "HC1"))),
+               sqrt(diag(vcovHC(fixed_effects, type = "HC1"))),
+               sqrt(diag(vcovHC(poisson, type = "HC1"))))
 ```
 
 ```{r, results='asis', echo=FALSE}
-# Exports
-stargazer(exports_ols, exports_ree, exports_fee, ppml_exports,
+stargazer(pooled_ols, random_effects, fixed_effects, poisson,
           column.labels = c("OLS", "REE", "FEE", "PPML"),
           omit = c("factor"),
-          se = rob_se_exports,
-          covariate.labels = vars,
-          dep.var.caption = "",
-          dep.var.labels.include = FALSE,
-          model.names = FALSE,
-          model.numbers = TRUE,
-          column.sep.width = "-5pt",
-          font.size = "small",
-          style = "qje",
-          table.layout = "-c-#-t-s-n")
-```
-
-```{r, include=FALSE}
-rob_se_imports <- list(sqrt(diag(vcovHC(imports_ols, type = "HC1"))),
-                       sqrt(diag(vcovHC(imports_ree, type = "HC1"))),
-                       sqrt(diag(vcovHC(imports_fee, type = "HC1"))),
-                       sqrt(diag(vcovHC(ppml_imports, type = "HC1"))))
-```
-
-```{r, results='asis', echo=FALSE}
-# Imports
-stargazer(imports_ols, imports_ree, imports_fee, ppml_imports,
-          column.labels = c("OLS", "REE", "FEE", "PPML"),
-          omit = c("factor"),
-          se = rob_se_imports,
+          se = rob_se,
           covariate.labels = vars,
           dep.var.caption = "",
           dep.var.labels.include = FALSE,
