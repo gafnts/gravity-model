@@ -15,8 +15,49 @@ classoption:
 # Econometric estimation
 
 ```{r, include=FALSE}
-pacman::p_load(tidyverse, here, broom, panelr, plm, nlme, lmtest, stargazer, fixest)
+pacman::p_load(tidyverse, here, broom, gravity, panelr, plm, nlme, lmtest, stargazer, fixest)
 gravity <- read_csv(here("gravity.csv"))
+```
+
+```{r}
+gravity_one <- 
+  gravity |> 
+  rename(iso_o = iso_i, iso_d = iso_j, trade_flow = exports) |> 
+  select(!imports)
+
+gravity_two <- 
+  gravity |> 
+  rename(iso_d = iso_i, iso_o = iso_j, trade_flow = imports) |> 
+  select(!exports)
+
+gravity <- 
+  gravity_one |> 
+  bind_rows(gravity_two)
+```
+
+```{r}
+ppml(
+  dependent_variable = 'trade_flow',
+  distance = 'dist',
+  additional_regressors = c('tgdp', 'rfe', 'sim', 'cont', 
+                            'lang', 'ccol', 'crel', 'rta'),
+  robust = FALSE,
+  data = gravity
+) |> 
+  summary()
+```
+
+```{r}
+formula_exports_ppml <- 
+  trade_flow ~ 0 + tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta + 
+  iso_o + iso_d + year
+
+ppml_exports <- 
+  glm(formula_exports_ppml,
+      family = quasipoisson(link = "log"),
+      data = gravity)
+
+ppml_exports |> summary()
 ```
 
 #### Params
@@ -63,8 +104,7 @@ exports_ree <-
   plm(formula_exports,
       data = exports,
       index = c("iso_j"),
-      model = "random",
-      effect = "time")
+      model = "random")
 
 exports_ree |> summary()
 ```
@@ -74,8 +114,7 @@ imports_ree <-
   plm(formula_imports,
       data = imports,
       index = c("iso_j"),
-      model = "random",
-      effect = "time")
+      model = "random")
 
 imports_ree |> summary()
 ```
@@ -123,34 +162,38 @@ Alternative approach: <https://cran.r-project.org/web/packages/fixest/vignettes/
 # Feature engineering
 exports_ppml <- 
   gravity |> 
-  mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
+  #mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
   panel_data(id = iso_j, wave = year)
 
 imports_ppml <- 
   gravity |> 
-  mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
+  #mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
   panel_data(id = iso_j, wave = year)
 ```
 
 ```{r, include=FALSE}
 # Declaring formulas
 formula_exports_ppml <- 
-  exports ~ tgdp + rfe + sim + rta + 0 + factor(year) + factor(iso_j)
+  exports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta + 0
+  #+ factor(year) + factor(iso_j)
 
 formula_imports_ppml <- 
-  imports ~ tgdp + rfe + sim + rta + 0 + factor(year) + factor(iso_j)
+  imports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta + 0
+  #+ factor(year) + factor(iso_j)
 ```
 
 #### Estimation
 
 ```{r eval=FALSE, include=FALSE}
 feglm(exports ~ tgdp + rfe + sim + log(dist) + cont + 
-          lang + ccol + crel + rta | factor(year) + factor(iso_j), 
+          lang + ccol + crel + rta + 0 | factor(year), 
+      #+ factor(iso_j), 
       exports_ppml, 
       family = quasipoisson(link = "log"))
 
 feglm(imports ~ tgdp + rfe + sim + log(dist) + cont + 
-          lang + ccol + crel + rta | factor(year) + factor(iso_j), 
+          lang + ccol + crel + rta + 0 | factor(year), 
+      #| factor(year) + factor(iso_j), 
       imports_ppml, 
       family = quasipoisson(link = "log"))
 ```
@@ -172,8 +215,6 @@ ppml_imports <-
 
 ppml_imports |> summary()
 ```
-
-Interpretation: <https://stackoverflow.com/questions/69942339/understanding-the-output-of-my-ramsey-reset-test>
 
 ### Results
 
