@@ -86,8 +86,12 @@ fixed_effects |> summary()
 
 #### Poisson pseudo-maximum-likelihood estimator
 
+For regressors not in logs, the semi-elasticity is given by 100\*(exp(beta) - 1)%.
+
+<https://www.statalist.org/forums/forum/general-stata-discussion/general/1458657-interpretation-of-coefficients-in-gravity-model-using-ppml-dummies>
+
 ```{r, include=FALSE}
-poisson <- 
+poisson_int <- 
   ppml(
   dependent_variable = 'trade',
   distance = 'dist',
@@ -96,7 +100,7 @@ poisson <-
   data = gravity
 )
 
-poisson |> summary()
+poisson_int |> summary()
 ```
 
 ```{r, include=FALSE}
@@ -108,51 +112,21 @@ poisson <-
       family = quasipoisson(link = "log"),
       data = gravity)
 
+pseudo_rsqr <- 1 - (poisson_int$deviance / poisson_int$null.deviance)
+
 poisson |> summary()
 ```
 
 #### Hausman test
 
 ```{r, include=FALSE}
-phtest(random_effects, fixed_effects)
+plm::phtest(random_effects, fixed_effects)
 ```
 
-Interpretation: <https://www.statisticshowto.com/hausman-test/>
+#### RESET test
 
-### Poisson pseudo maximum likelihood
-
-Alternative approach: <https://cran.r-project.org/web/packages/fixest/vignettes/fixest_walkthrough.html>
-
-```{r eval=FALSE, include=FALSE}
-feglm(exports ~ tgdp + rfe + sim + log(dist) + cont + 
-          lang + ccol + crel + rta + 0 | factor(year), 
-      #+ factor(iso_j), 
-      exports_ppml, 
-      family = quasipoisson(link = "log"))
-
-feglm(imports ~ tgdp + rfe + sim + log(dist) + cont + 
-          lang + ccol + crel + rta + 0 | factor(year), 
-      #| factor(year) + factor(iso_j), 
-      imports_ppml, 
-      family = quasipoisson(link = "log"))
-```
-
-```{r, include=FALSE}
-ppml_exports <- 
-  glm(formula_exports_ppml,
-      family = quasipoisson(link = "log"),
-      data = exports_ppml)
-
-ppml_exports |> summary()
-```
-
-```{r, include=FALSE}
-ppml_imports <- 
-  glm(formula_imports_ppml,
-      family = quasipoisson(link = "log"),
-      data = imports_ppml)
-
-ppml_imports |> summary()
+```{r}
+resettest(formula_poisson, power = 2, type = 'regressor', data = gravity)
 ```
 
 ### Results
@@ -179,8 +153,7 @@ rob_se <- list(sqrt(diag(vcovHC(pooled_ols, type = "HC1"))),
 
 ```{r, results='asis', echo=FALSE}
 stargazer(pooled_ols, random_effects, fixed_effects, poisson,
-          column.labels = c("OLS", "REE", "FEE", "PPML"),
-          omit = c("factor"),
+          column.labels = c("POLS", "REE", "FEE", "PPML"),
           se = rob_se,
           covariate.labels = vars,
           dep.var.caption = "",
@@ -190,5 +163,7 @@ stargazer(pooled_ols, random_effects, fixed_effects, poisson,
           column.sep.width = "-5pt",
           font.size = "small",
           style = "qje",
-          table.layout = "-c-#-t-s-n")
+          table.layout = "-c-#-t-sa",
+          df = FALSE,
+          add.lines = list(c('Pseudo R$^2$', '', '', '', round(pseudo_rsqr, 3))))
 ```
