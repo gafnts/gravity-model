@@ -8,14 +8,14 @@ fontsize: 11pt
 header-includes: 
   - \usepackage{setspace}\spacing{1} 
   - \pagenumbering{gobble}
-classoption: 
-  - landscape
 ---
 
 # Econometric estimation
 
 ```{r, include=FALSE}
-pacman::p_load(tidyverse, here, broom, gravity, panelr, plm, nlme, lmtest, stargazer, fixest)
+pacman::p_load(
+  tidyverse, here, broom, gravity, panelr, plm, nlme, lmtest, stargazer, fixest
+  )
 ```
 
 ```{r, include=FALSE}
@@ -66,7 +66,8 @@ random_effects <-
   plm(formula_ols,
       data = gravity_ols,
       index = c('iso_o'),
-      model = 'random')
+      model = 'random',
+      effect = 'individual')
 
 random_effects |> summary()
 ```
@@ -79,7 +80,7 @@ fixed_effects <-
       data = gravity_ols,
       index = c('iso_o'),
       model = 'within',
-      effect = 'time')
+      effect = 'individual')
 
 fixed_effects |> summary()
 ```
@@ -163,7 +164,8 @@ stargazer(pooled_ols, random_effects, fixed_effects, poisson,
           column.sep.width = "-5pt",
           font.size = "small",
           style = "qje",
-          table.layout = "-c-#-t-sa",
+          table.layout = "-c-#-t-sa-n",
           df = FALSE,
-          add.lines = list(c('Pseudo R$^2$', '', '', '', round(pseudo_rsqr, 3))))
+          add.lines = list(c('Pseudo R$^2$', '', '', '', round(pseudo_rsqr, 3))),
+          notes.append = FALSE)
 ```
