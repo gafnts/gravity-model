@@ -126,7 +126,7 @@ plm::phtest(random_effects, fixed_effects)
 
 #### RESET test
 
-```{r}
+```{r, include=FALSE}
 resettest(formula_poisson, power = 2, type = 'regressor', data = gravity)
 ```
 
