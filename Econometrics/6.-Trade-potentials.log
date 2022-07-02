@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.6.21)  2 JUL 2022 16:05
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.6.21)  2 JUL 2022 16:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -876,8 +876,9 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 93.
 (/Users/gabrielfuentes/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-
-LaTeX Warning: Float too large for page by 10.93716pt on input line 136.
+Overfull \hbox (22.06804pt too wide) in paragraph at lines 93--131
+ [][] 
+ []
 
 [1
 
