@@ -135,8 +135,15 @@ imports_ppml <-
 #### Hausman test
 
 ```{r, include=FALSE}
-plm::phtest(exports_ree, exports_fee)
-plm::phtest(imports_ree, imports_fee)
+plm::phtest(exports_ree, exports_fee, effect = 'individual')
+plm::phtest(imports_ree, imports_fee, effect = 'individual')
+```
+
+#### Breusch and Pagan Lagrangian Multiplier test
+
+```{r, include=FALSE}
+plmtest(exports_ree, 'bp', effect = 'individual')
+plmtest(imports_ree, 'bp', effect = 'individual')
 ```
 
 #### RESET test
