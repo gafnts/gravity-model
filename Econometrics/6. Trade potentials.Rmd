@@ -98,7 +98,11 @@ trade_potentials <-
 ```
 
 ```{r echo=FALSE}
-kable(trade_potentials, booktabs = TRUE, align = c('lcccccc')) |> 
+kable(trade_potentials, 
+      booktabs = TRUE, 
+      align = c('lcccccc'),
+      format.args = list(big.mark = ","),
+      linesep = "") |> 
   add_header_above(c(' ', 'Exportaciones' = 3, 'Importaciones' = 3)) |> 
   kable_styling()
 ```
