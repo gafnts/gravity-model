@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.6.21)  1 JUL 2022 10:16
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.6.21)  2 JUL 2022 08:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -422,7 +422,11 @@ Package: setspace 2011/12/19 v6.7a set line spacing
 LaTeX Warning: Unused global option(s):
     [11pt].
 
-(./1.-Econometric-estimation.aux)
+(./1.-Econometric-estimation.aux
+
+LaTeX Warning: Label `' multiply defined.
+
+)
 \openout1 = `1.-Econometric-estimation.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 72.
@@ -779,9 +783,17 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 (Font)              scaled to size 5.97466pt on input line 112.
 LaTeX Font Info:    Font shape `TU/HelveticaNeue(0)/m/it' will be
 (Font)              scaled to size 10.0pt on input line 148.
+
+Underfull \hbox (badness 1810) in paragraph at lines 159--162
+[]\TU/HelveticaNeue(0)/m/n/10.95 % Table created by stargazer v.5.2.3 by Marek Hlavac, Social Policy Institute. E-mail:
+ []
+
 [1
 
-] [2] (./1.-Econometric-estimation.aux)
+] [2] [3] (./1.-Econometric-estimation.aux)
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package rerunfilecheck Info: File `1.-Econometric-estimation.out' has not changed.
 (rerunfilecheck)             Checksum: DB56A43C3A2CBF87BF3E9DC4D4B232A1;246.
  )
@@ -792,10 +804,10 @@ Package rerunfilecheck Info: File `1.-Econometric-estimation.out' has not change
 Here is how much of TeX's memory you used:
  16400 strings out of 477882
  307128 string characters out of 5845936
- 775030 words of memory out of 5000000
+ 785069 words of memory out of 5000000
  37109 multiletter control sequences out of 15000+600000
  475752 words of font info for 85 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  86i,10n,122p,319b,7715s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on 1.-Econometric-estimation.pdf (2 pages).
+Output written on 1.-Econometric-estimation.pdf (3 pages).
