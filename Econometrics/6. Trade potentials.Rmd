@@ -1,0 +1,104 @@
+---
+output:
+  pdf_document:
+    latex_engine: xelatex
+mainfont: Helvetica Neue
+geometry: "left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm"
+fontsize: 11pt
+header-includes: 
+  - \usepackage{setspace}\spacing{1} 
+  - \pagenumbering{gobble}
+classoption: 
+  - landscape
+---
+
+# Trade potentials
+
+```{r, include=FALSE}
+pacman::p_load(tidyverse, here, broom, gravity, panelr, plm, kableExtra)
+```
+
+```{r, include=FALSE}
+gravity <- 
+  read_csv(here("gravity.csv"))
+
+exports <- 
+  gravity |> 
+  rename(iso_o = iso_i, iso_d = iso_j, trade = exports) |> 
+  select(!imports) |> 
+  panel_data(id = iso_d, wave = year)
+
+imports <- 
+  gravity |> 
+  rename(iso_d = iso_i, iso_o = iso_j, trade = imports) |> 
+  select(!exports) |> 
+  panel_data(id = iso_o, wave = year)
+
+formula_poisson <- 
+  trade ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
+```
+
+```{r, include=FALSE}
+exports_poisson <- 
+  glm(formula_poisson,
+      family = quasipoisson(link = "log"),
+      data = exports)
+
+imports_poisson <- 
+  glm(formula_poisson,
+      family = quasipoisson(link = "log"),
+      data = imports)
+```
+
+```{r, include=FALSE}
+countries <- 
+  read_csv(here("Data", "Main data frames", "partners_names.csv")) |> 
+  select(iso = partner_iso, name = partner)
+```
+
+```{r, include=FALSE}
+exports_potentials <- 
+  predict(exports_poisson,
+        type = 'response',
+        newdata = exports |> 
+          filter(year == 2020)) |> 
+  as_tibble() |> 
+  bind_cols(exports |> 
+              filter(year == 2020) |> 
+              select(iso_d, trade)) |> 
+  select(iso = iso_d, truth = trade, pred = value) |> 
+  mutate(diff = truth - pred) |> 
+  left_join(countries) |> 
+  select(País = name, 
+         `Flujo comercial` = truth,
+         Predicción = pred, 
+         Diferencia = diff)
+
+imports_potentials <- 
+  predict(imports_poisson,
+        type = 'response',
+        newdata = imports |> 
+          filter(year == 2020)) |> 
+  as_tibble() |> 
+  bind_cols(imports |> 
+              filter(year == 2020) |> 
+              select(iso_o, trade)) |> 
+  select(iso = iso_o, truth = trade, pred = value) |> 
+  mutate(diff = truth - pred) |> 
+  left_join(countries) |> 
+  select(País = name, 
+         `Flujo comercial` = truth,
+         Predicción = pred, 
+         Diferencia = diff)
+
+trade_potentials <- 
+  bind_cols(exports_potentials, 
+            imports_potentials |> select(!País), 
+            .name_repair = 'minimal')
+```
+
+```{r echo=FALSE}
+kable(trade_potentials, booktabs = TRUE, align = c('lcccccc')) |> 
+  add_header_above(c(' ', 'Exportaciones' = 3, 'Importaciones' = 3)) |> 
+  kable_styling()
+```
