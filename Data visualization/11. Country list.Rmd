@@ -1,0 +1,31 @@
+---
+output:
+  pdf_document:
+    latex_engine: xelatex
+mainfont: Helvetica Neue
+geometry: "left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm"
+fontsize: 11pt
+header-includes: 
+  - \usepackage{setspace}\spacing{1} 
+  - \pagenumbering{gobble}
+---
+
+# Country list
+
+```{r include = FALSE}
+pacman::p_load(tidyverse, here, kableExtra)
+partners <- read.csv(here('Data', 'Main data frames', 'partners_names.csv')) |> as_tibble()
+```
+
+```{r echo = FALSE}
+partners |> 
+  rename(
+    País = partner,
+    `Código ISO` = partner_iso,
+    Subregión = subregions
+  ) |> 
+  select(1:2) |> 
+  kable(booktabs = TRUE, 
+        align = 'lcl',
+        linesep = '')
+```
