@@ -4,7 +4,7 @@ output:
     latex_engine: xelatex
 mainfont: Helvetica Neue
 geometry: "left = 2.5cm, right = 2.5cm, top = 2.5cm, bottom = 2.5cm"
-fontsize: 11pt
+fontsize: 10pt
 header-includes: 
   - \usepackage{setspace}\spacing{1} 
   - \pagenumbering{gobble}
@@ -14,18 +14,29 @@ header-includes:
 
 ```{r include = FALSE}
 pacman::p_load(tidyverse, here, kableExtra)
-partners <- read.csv(here('Data', 'Main data frames', 'partners_names.csv')) |> as_tibble()
+
+partners_raw <- 
+  read.csv(here('Data', 'Main data frames', 'partners_names.csv')) |> 
+  as_tibble()
 ```
 
 ```{r echo = FALSE}
-partners |> 
+partners <- 
+  partners_raw |> 
   rename(
     País = partner,
-    `Código ISO` = partner_iso,
-    Subregión = subregions
-  ) |> 
-  select(1:2) |> 
+    `Código ISO` = partner_iso) |> 
+  select(1:2) 
+
+one <- partners |> slice(1:15)
+two <- partners |> slice(16:30)
+
+one |> 
+  bind_cols(two, .name_repair = 'minimal') |> 
   kable(booktabs = TRUE, 
-        align = 'lcl',
-        linesep = '')
+        align = 'lclc',
+        linesep = '\\addlinespace') |> 
+  kable_styling(full_width = TRUE) |> 
+  column_spec(2, width = '2cm') |> 
+  column_spec(4, width = '2cm')
 ```
