@@ -6,25 +6,25 @@ gravity <- read_csv("gravity.csv")
 ```
 
 ```{r}
-# Feature engineering
+gravity_raw <- 
+  read_csv(here("gravity.csv"))
+
 exports_data <- 
-  gravity |> 
-  mutate(exports = ifelse(log(exports) <= 0, 0, log(exports))) |> 
-  panel_data(id = iso_j, wave = year)
+  gravity_raw |> 
+  rename(iso_o = iso_i, iso_d = iso_j, trade = exports) |> 
+  select(!imports) |> 
+  mutate(trade_log = log(trade + 1)) |> 
+  panel_data(id = iso_d, wave = year)
 
 imports_data <- 
-  gravity |> 
-  mutate(imports = ifelse(log(imports) <= 0, 0, log(imports))) |> 
-  panel_data(id = iso_j, wave = year)
-```
+  gravity_raw |> 
+  rename(iso_d = iso_i, iso_o = iso_j, trade = imports) |> 
+  select(!exports) |> 
+  mutate(trade_log = log(trade + 1)) |> 
+  panel_data(id = iso_o, wave = year)
 
-```{r}
-# Declaring formulas
-exports_formula <- 
-  exports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
-
-imports_formula <- 
-  imports ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
+formula <- 
+  trade ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 ```
 
 ```{r}
@@ -54,14 +54,14 @@ dates <- c(1995:2020)
 exports <- tibble()
 
 for (date in dates) {
-  extraction <- extract(exports_data, exports_formula, date)
+  extraction <- extract(exports_data, formula, date)
   exports <- bind_rows(exports, extraction)
 }
 
 imports <- tibble()
 
 for (date in dates) {
-  extraction <- extract(imports_data, imports_formula, date)
+  extraction <- extract(imports_data, formula, date)
   imports <- bind_rows(imports, extraction)
 }
 ```
