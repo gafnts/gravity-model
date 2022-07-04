@@ -28,12 +28,6 @@ exports <-
   select(!imports) |> 
   panel_data(id = iso_d, wave = year)
 
-imports <- 
-  gravity |> 
-  rename(iso_d = iso_i, iso_o = iso_j, trade = imports) |> 
-  select(!exports) |> 
-  panel_data(id = iso_o, wave = year)
-
 formula_poisson <- 
   trade ~ tgdp + rfe + sim + log(dist) + cont + lang + ccol + crel + rta
 ```
@@ -43,11 +37,6 @@ exports_poisson <-
   glm(formula_poisson,
       family = quasipoisson(link = "log"),
       data = exports)
-
-imports_poisson <- 
-  glm(formula_poisson,
-      family = quasipoisson(link = "log"),
-      data = imports)
 ```
 
 ```{r, include=FALSE}
@@ -67,42 +56,29 @@ exports_potentials <-
               filter(year == 2020) |> 
               select(iso_d, trade)) |> 
   select(iso = iso_d, truth = trade, pred = value) |> 
-  mutate(diff = truth - pred) |> 
+  mutate(diff = truth - pred,
+         div = round(pred / truth, 2)) |> 
   left_join(countries) |> 
   select(País = name, 
-         `Flujo comercial` = truth,
+         `Flujo observado` = truth,
          Predicción = pred, 
-         Diferencia = diff)
-
-imports_potentials <- 
-  predict(imports_poisson,
-        type = 'response',
-        newdata = imports |> 
-          filter(year == 2020)) |> 
-  as_tibble() |> 
-  bind_cols(imports |> 
-              filter(year == 2020) |> 
-              select(iso_o, trade)) |> 
-  select(iso = iso_o, truth = trade, pred = value) |> 
-  mutate(diff = truth - pred) |> 
-  left_join(countries) |> 
-  select(País = name, 
-         `Flujo comercial` = truth,
-         Predicción = pred, 
-         Diferencia = diff)
-
-trade_potentials <- 
-  bind_cols(exports_potentials, 
-            imports_potentials |> select(!País), 
-            .name_repair = 'minimal')
+         Diferencia = diff,
+         Ratio = div) |> 
+  arrange(desc(Ratio))
 ```
 
 ```{r echo=FALSE}
-kable(trade_potentials, 
+kable(exports_potentials, 
       booktabs = TRUE, 
-      align = c('lcccccc'),
+      align = c('lcccc'),
       format.args = list(big.mark = ","),
       linesep = "") |> 
-  add_header_above(c(' ', 'Exportaciones' = 3, 'Importaciones' = 3)) |> 
+  add_header_above(c(' ', 'Exportaciones' = 4)) |> 
+  pack_rows('Canales comerciales infrautilizados', 1, 17,
+            latex_gap_space = "0.5em",
+            bold = FALSE, italic = TRUE) |> 
+  pack_rows('Canales comerciales sobreutilizados', 18, 30,
+            latex_gap_space = "0.5em",
+            bold = FALSE, italic = TRUE) |> 
   kable_styling()
 ```
