@@ -14,7 +14,7 @@ header-includes:
 
 ```{r, include=FALSE}
 pacman::p_load(
-  tidyverse, here, broom, gravity, panelr, plm, nlme, lmtest, stargazer, fixest
+  tidyverse, here, broom, gravity, panelr, plm, nlme, lmtest, stargazer, fixest, kableExtra
   )
 ```
 
@@ -132,27 +132,6 @@ imports_ppml <-
 # imports_pseudo_rsqr <- 1 - ((imports_ppml$deviance)/ imports_ppml$null.deviance)
 ```
 
-#### Hausman test
-
-```{r, include=FALSE}
-plm::phtest(exports_ree, exports_fee, effect = 'individual')
-plm::phtest(imports_ree, imports_fee, effect = 'individual')
-```
-
-#### Breusch and Pagan Lagrangian Multiplier test
-
-```{r, include=FALSE}
-plmtest(exports_ree, 'bp', effect = 'individual')
-plmtest(imports_ree, 'bp', effect = 'individual')
-```
-
-#### RESET test
-
-```{r, include=FALSE}
-resettest(formula_poisson, power = 2, type = 'regressor', data = exports)
-resettest(formula_poisson, power = 2, type = 'regressor', data = imports)
-```
-
 ### Results
 
 ```{r, include=FALSE}
@@ -214,4 +193,81 @@ stargazer(imports_pols, imports_ree, imports_fee, imports_ppml,
           df = FALSE,
           # add.lines = list(c('Pseudo R$^2$', '', '', '', round(imports_pseudo_rsqr, 3))),
           notes.append = FALSE)
+```
+
+#### Tests
+
+```{r, results='asis', echo=FALSE}
+bptest(exports_pols) |>
+  glance() |>
+  select(
+    Estadístico = statistic,
+    `Valor p` = p.value,
+    `Grados de libertad` = parameter
+  ) |>
+  mutate(Modelo = 'POLS (Exportaciones)') |>
+  relocate(Modelo) |>
+  bind_rows(
+    bptest(imports_pols) |>
+      glance() |>
+      select(
+        Estadístico = statistic,
+        `Valor p` = p.value,
+        `Grados de libertad` = parameter
+        ) |>
+      mutate(Modelo = 'POLS (Importaciones)') |>
+      relocate(Modelo)
+  ) |>
+  bind_rows(
+    plm::phtest(exports_ree, exports_fee, effect = 'individual') |>
+      glance() |>
+      select(
+        Estadístico = statistic,
+        `Valor p` = p.value,
+        `Grados de libertad` = parameter
+      ) |>
+      mutate(Modelo = 'REE & FEE (Exportaciones)') |>
+      relocate(Modelo) |>
+      bind_rows(
+        plm::phtest(imports_ree, imports_fee, effect = 'individual') |>
+          glance() |>
+          select(
+            Estadístico = statistic,
+            `Valor p` = p.value,
+            `Grados de libertad` = parameter
+          ) |>
+          mutate(Modelo = 'REE & FEE (Importaciones)') |>
+          relocate(Modelo)
+      )
+  ) |> 
+kable(
+  booktabs = TRUE,
+  align = c('cccc'),
+  format.args = list(big.mark = ","),
+  linesep = ""
+) |>
+  pack_rows(
+    'Breusch-Pagan test',
+    1,
+    2,
+    latex_gap_space = "0.5em",
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  pack_rows(
+    'Hausman test',
+    3,
+    4,
+    latex_gap_space = "0.5em",
+    bold = FALSE,
+    italic = TRUE
+  ) |>
+  kable_styling()
+```
+
+#### RESET test
+
+```{r, include=FALSE}
+resettest(formula_poisson, power = 2, type = 'regressor', data = exports)
+resettest(formula_poisson, power = 2, type = 'regressor', data = imports)
 ```
