@@ -1,5 +1,6 @@
-# Los patrones comerciales de Guatemala
-Repositorio para mi tesis de grado: Relación entre el volumen de los flujos de comercio bilateral de Guatemala y la diferencia en la dotación relativa de factores productivos con sus socios de comercio exterior en América durante el período de 1995 a 2020
+#Relación entre el volumen de los flujos de comercio bilateral de Guatemala y la diferencia en la dotación relativa de factores productivos con sus socios de comercio exterior en América durante el período de 1995 a 2020
+
+# Tesis de grado (Universidad Rafael Landívar) 
 
 La presente investigación emplea una ecuación gravitacional ajustada a un panel de datos (que comprende a los flujos de exportaciones e importaciones desde 1995 hasta 2020 entre Guatemala y 30 economías radicadas en América) mediante el estimador de pseudo-máxima verosimilitud de Poisson, con el propósito de determinar la forma en la que los patrones comerciales del país pueden ser caracterizados según la teoría del comercio, examinar los determinantes del volumen de los flujos de intercambio comercial bilateral y evaluar el potencial de expansión de las actividades comerciales de Guatemala en materia de exportación de mercancías. Los resultados sugieren que el patrón comercial del país es explicado mayoritariamente por la teoría de las proporciones factoriales para ambos tipos de flujos de comercio, que los determinantes de las exportaciones difieren ligeramente al de los patrones que determinan al nivel esperado de los flujos de importaciones y que, para el 2020, Guatemala contaba con potencial para aumentar el volumen de sus exportaciones con 17 de los 30 socios comerciales incluidos en el análisis.
 
