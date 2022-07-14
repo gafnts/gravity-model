@@ -6,12 +6,16 @@ La presente investigación emplea una ecuación gravitacional ajustada a un pane
 
 El recrudecimiento de la guerra civil guatemalteca a inicios de la década de los ochenta tuvo un impacto negativo en el volumen de los flujos de comercio internacional del país, reduciendo a la mitad el porcentaje de apertura comercial de Guatemala—al pasar de un punto máximo del 50% de apertura en 1977, a un 25% durante 1985, según cifras del Banco Mundial. Sin embargo, Guatemala comenzó de manera unilateral en los años noventa un proceso de inserción internacional, reforzado mediante un proceso de liberalización de carácter multilateral en el marco de la Organización Mundial del Comercio (OMC) y de la suscripción de tratados comerciales regionales y bilaterales. 
 
-###### Porcentaje de apertura comercial a lo largo del tiempo: Guatemala, América y el mundo
+##### Porcentaje de apertura comercial a lo largo del tiempo: Guatemala, América y el mundo
 ![](https://raw.githubusercontent.com/gafnts/gravity-model/main/Data%20visualization/Plots/trade%20openness.png)
 
 El resultado de este primer esfuerzo de inserción del país en los mercados internacionales fue exitoso en términos de apertura. Para el 2001, Guatemala habría registrado setenta puntos porcentuales en tal indicador. No obstante, esta tendencia se revierte a medida que el siglo avanza (para el 2020, la apertura comercial del país ha vuelto a niveles similares a los observados en 1970 y 1990).
 
 Durante el 2012, el Consejo Nacional de Promoción de Exportaciones (CONAPEX) elaboró la Política Integrada de Comercio Exterior, Competitividad e Inversiones, un plan que sigue siendo utilizado en la actualidad por el Ministerio de Economía y, específicamente, por el Viceministerio de Integración y Comercio Exterior. Sus principales objetivos son diversificar la oferta exportable del país y ampliar el acceso de Guatemala en los mercados internacionales a través de la mejora de la competitividad de sus industrias. Sin embargo, la inserción del país en los mercados internacionales cuenta con una serie de desafíos que siguen sin ser completamente abordados. Entre ellos se encuentra la creciente sofisticación de la demanda a nivel mundial.
+
+##### Mapas de intensidad de los flujos de exportación (derecha) e importación (izquierda)
+###### Promedio del logaritmo de los flujos comerciales entre Guatemala y América desde 1995 hasta el año 2020
+![](https://raw.githubusercontent.com/gafnts/gravity-model/main/Data%20visualization/Plots/maps.png)
 
 En atención a estos hechos, la presente investigación tiene como principal propósito analizar los flujos de exportaciones e importaciones entre Guatemala y el resto de naciones en América desde 1995 hasta el año 2020, en el contexto de un modelo gravitacional aumentado, con el objeto de determinar estadísticamente la forma en la que la diferencia en la dotación relativa de factores productivos entre dichas economías ha influido en la determinación del volumen de los flujos de comercio bilateral del país.
 
