@@ -13,7 +13,7 @@ El resultado de este primer esfuerzo de inserción del país en los mercados int
 
 Durante el 2012, el Consejo Nacional de Promoción de Exportaciones (CONAPEX) elaboró la Política Integrada de Comercio Exterior, Competitividad e Inversiones, un plan que sigue siendo utilizado en la actualidad por el Ministerio de Economía y, específicamente, por el Viceministerio de Integración y Comercio Exterior. Sus principales objetivos son diversificar la oferta exportable del país y ampliar el acceso de Guatemala en los mercados internacionales a través de la mejora de la competitividad de sus industrias. Sin embargo, la inserción del país en los mercados internacionales cuenta con una serie de desafíos que siguen sin ser completamente abordados. Entre ellos se encuentra la creciente sofisticación de la demanda a nivel mundial.
 
-###### Mapas de intensidad de los flujos de exportación (derecha) e importación (izquierda)
+### Mapas de intensidad de los flujos de exportación (derecha) e importación (izquierda)
 ###### (Promedio del logaritmo de los flujos comerciales entre Guatemala y América desde 1995 hasta el año 2020)
 ![](https://raw.githubusercontent.com/gafnts/gravity-model/main/Data%20visualization/Plots/maps.png)
 
@@ -21,10 +21,7 @@ En atención a estos hechos, la presente investigación tiene como principal pro
 
 Las contribuciones del estudio abarcan tres áreas. En primer lugar, esta investigación demuestra que existe evidencia para considerar que los patrones comerciales de Guatemala con el resto de economías en América se desarrolla de un modo que es mayoritariamente consistente con la teoría de las proporciones factoriales, por lo que el patrón de los flujos comerciales del país puede ser caracterizado como inter-industrial (en contraposición a un patrón de comercio intra-industrial, basado en las nociones de la hipótesis de Linder).
 
-F_{ij} = \tilde{G}\frac{Y_i E_j} {T_{ij}^{\theta}}
-ln F_{ij,t} = \alpha_0 + \alpha_1TGDP_{ij,t} + \alpha_2RFE_{ij,t} + \alpha_3SIM_{ij,t} + \alpha_4lnDIST_{ij,t} + \alpha_5CONT_{ij} + \alpha_6LANG_{ij} + \alpha_7CCOL_{ij} + \alpha_8CREL_{ij} + \alpha_9RTA_{ij,t} + \epsilon_{ij,t}
-
-###### Semi-elasticidad de la diferencia en la dotación relativa de factores a lo largo del tiempo
+### Semi-elasticidad de la diferencia en la dotación relativa de factores a lo largo del tiempo
 ###### (Parámetro estimado mediante PPML para cada año del análisis | Errores estándar en gris) 
 ![](https://raw.githubusercontent.com/gafnts/gravity-model/main/Econometrics/Results/RFE%20over%20time.png)
 
